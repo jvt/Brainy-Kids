@@ -59,3 +59,7 @@ typings/
 
 # next.js build output
 .next
+
+# React auto-generated files
+public/**.hot-update.js
+public/bundle.js
