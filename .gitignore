@@ -61,5 +61,5 @@ typings/
 .next
 
 # React auto-generated files
-public/**.hot-update.js
+public/*.hot-update.js
 public/bundle.js
