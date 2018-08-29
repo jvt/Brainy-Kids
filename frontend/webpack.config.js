@@ -14,9 +14,9 @@ module.exports = {
 				options: {
 					// cacheDirectory: true
 					presets: ['es2015', 'react'],
-					plugins: [['import', { libraryName: 'antd', style: true }]]
+					plugins: [['import', { libraryName: 'antd', style: true }]],
 				},
-				exclude: /node_modules/
+				exclude: /node_modules/,
 			},
 			{
 				test: /\.less$/,
@@ -25,10 +25,9 @@ module.exports = {
 					{ loader: 'css-loader' },
 					{
 						loader: 'less-loader',
-						options: {
-						}
-					}
-				]
+						options: {},
+					},
+				],
 			},
 			{ test: /\.css/, loader: 'style-loader!css-loader' },
 			{
@@ -37,33 +36,33 @@ module.exports = {
 					{
 						loader: 'url-loader',
 						options: {
-							limit: 8192
-						}
-					}
-				]
-			}
-		]
+							limit: 8192,
+						},
+					},
+				],
+			},
+		],
 	},
 	resolve: {
-		extensions: ['.js', '.less', '.css']
+		extensions: ['.js', '.less', '.css'],
 	},
 	output: {
-		path: path.join(__dirname, '/public'),
+		path: path.join(__dirname, '..', '/public'),
 		publicPath: '/',
-		filename: 'bundle.js'
+		filename: 'bundle.js',
 	},
 	devtool: 'cheap-eval-source-map',
 	devServer: {
-		contentBase: './public',
+		contentBase: '../public',
 		hot: true,
 		watchOptions: {
-			poll: true
-		}
+			poll: true,
+		},
 	},
 	plugins: [
 		new Dotenv({ path: './.env' }),
 		new webpack.optimize.OccurrenceOrderPlugin(),
 		new webpack.HotModuleReplacementPlugin(),
-		new webpack.NoEmitOnErrorsPlugin()
-	]
+		new webpack.NoEmitOnErrorsPlugin(),
+	],
 };

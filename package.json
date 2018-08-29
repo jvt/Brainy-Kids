@@ -7,8 +7,8 @@
 		"build": "webpack --config frontend/webpack.prod.config.js",
 		"dev": "concurrently -k \"npm run frontend\" \"npm run backend\"",
 		"frontend": "webpack -d --watch --config frontend/webpack.config.js",
-		"backend": "nodemon backend/server.js",
-		"production": "NODE_ENV=production node backend/server.js"
+		"backend": "nodemon server.js",
+		"production": "NODE_ENV=production node server.js"
 	},
 	"repository": {
 		"type": "git",
