@@ -10,10 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Render React page
-app.get('/*', (req, res) => {
-	res.sendFile(path.join(__dirname, 'public/index.html')); // For React/Redux
-});
+require('./backend/routes')(app);
 
 app.listen(PORT, error => {
 	error
