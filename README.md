@@ -1,6 +1,6 @@
-# 8108 - BrainyKidz
+# 8108 - Brainy Kids Administration panel and Analytics Platform
 
-This is the codebase for the BrainyKidz backend and administration panel.
+This is the codebase for the Brainy Kids backend and administration panel. This repository also includes the code required for ingesting analytics from the various applications.
 
 ## Getting started
 1. Make sure you have Node.js installed (Make sure `node --version` prints out a version number)
