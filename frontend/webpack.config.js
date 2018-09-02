@@ -25,7 +25,9 @@ module.exports = {
 					{ loader: 'css-loader' },
 					{
 						loader: 'less-loader',
-						options: {},
+						options: {
+							javascriptEnabled: true,
+						},
 					},
 				],
 			},
