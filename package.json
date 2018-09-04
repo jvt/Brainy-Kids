@@ -8,7 +8,8 @@
 		"dev": "concurrently -k \"npm run frontend\" \"npm run backend\"",
 		"frontend": "webpack -d --watch --config frontend/webpack.config.js",
 		"backend": "nodemon server.js",
-		"production": "NODE_ENV=production node server.js"
+		"production": "NODE_ENV=production node server.js",
+		"test": "NODE_ENV=testing nyc mocha --exit $(find test -name '*.spec.js')"
 	},
 	"repository": {
 		"type": "git",
@@ -71,6 +72,7 @@
 	"devDependencies": {
 		"babel-eslint": "^7.2.2",
 		"babel-plugin-import": "^1.6.6",
+		"chai": "^4.1.2",
 		"concurrently": "^3.5.0",
 		"eslint": "^3.19.0",
 		"eslint-loader": "^1.9.0",
@@ -80,9 +82,11 @@
 		"file-loader": "^1.1.6",
 		"husky": "^0.14.3",
 		"ignore-styles": "^5.0.1",
+		"mocha": "^5.2.0",
 		"nodemon": "^1.18.4",
 		"react-addons-test-utils": "^15.5.1",
 		"react-test-renderer": "^15.5.4",
+		"supertest": "^3.1.0",
 		"webpack-dev-middleware": "^1.10.1",
 		"webpack-dev-server": "^3.1.7",
 		"webpack-hot-middleware": "^2.18.0"
