@@ -22,3 +22,7 @@ This is the codebase for the Brainy Kids backend and administration panel. This 
 
 1.  From a terminal window, run `npm run test` or `npm test` (both do the same thing)
 2.  Let the tests run, it will generate a coverage window in the terminal once all the tests have completed running
+
+## Continuous Integration
+
+CI is provided by CircleCI and runs on every pull request to ensure tests pass. Merging is disabled until tests pass.
