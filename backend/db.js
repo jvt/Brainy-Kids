@@ -17,7 +17,7 @@ const db = mongoose.connection;
 /**
  * Place all Collection schemas here
  */
-// require('./models/allergy');
+require('./models/teacher');
 
 // Bind connection to error event (to get notification of connection errors)
 db.on('error', err => {
