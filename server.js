@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+require('./backend/db');
+
 require('./backend/routes')(app);
 
 app.listen(PORT, error => {
