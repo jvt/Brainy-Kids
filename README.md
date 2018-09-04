@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/jvt/Brainy-Kidz.svg?style=svg)](https://circleci.com/gh/jvt/Brainy-Kidz)
+
 # 8108 - Brainy Kids Administration panel and Analytics Platform
 
 This is the codebase for the Brainy Kids backend and administration panel. This repository also includes the code required for ingesting analytics from the various applications.
