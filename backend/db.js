@@ -9,7 +9,10 @@ if (!mongoDB) {
 	console.error('No MONGODB_URI found in environment');
 	return;
 }
-mongoose.connect(mongoDB);
+mongoose.connect(
+	mongoDB,
+	{ useNewUrlParser: true }
+);
 
 // Get the default connection
 const db = mongoose.connection;
