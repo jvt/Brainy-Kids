@@ -9,7 +9,8 @@ const schema = mongoose.Schema(
 		},
 		// Reference to teacher
 		teacher: {
-			type: mongoose.Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Teacher',
 			required: true,
 		},
 		// Defines if this student has been deleted or not. true = deleted

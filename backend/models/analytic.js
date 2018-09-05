@@ -2,25 +2,42 @@ const mongoose = require('mongoose');
 
 const schema = mongoose.Schema(
 	{
-		// 3-character unique ID for this student
-		student_id: {
-			type: String,
+		// reference to the focus item
+		focus_item: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Focus_Item',
 			required: true,
 		},
-		// Reference to teacher
-		teacher: {
-			type: mongoose.Schema.Types.ObjectId,
+		// Reference to the program
+		program: {
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Program',
 			required: true,
 		},
-		// Defines if this student has been deleted or not. true = deleted
-		deleted: {
-			type: Boolean,
-			default: false
-		},
+        // How many guesses needed until the correct answer was gotten?
+        correct_on: {
+            type: Number,
+            required: false,
+        },
+        //time spent on this item
+        time_spent: {
+            type: Number,
+            required: false,
+        },
+        //time watching in millis. applicable to watching videos
+        time_watching: {
+            type: Number,
+            required: false,
+        },
+        //length of video in millis. applicable to watching videos
+        total_video_time: {
+            type: Number,
+            required: false,
+        }
 	},
 	{
 		timestamps: true,
 	}
 );
 
-module.exports = mongoose.model('Student', schema);
+module.exports = mongoose.model('Analytic', schema);
