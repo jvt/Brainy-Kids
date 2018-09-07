@@ -9,7 +9,7 @@
 		"frontend": "webpack -d --watch --config frontend/webpack.config.js",
 		"backend": "nodemon server.js",
 		"production": "NODE_ENV=production node server.js",
-		"test": "NODE_ENV=testing nyc mocha --exit $(find test -name '*.spec.js')"
+		"test": "nyc mocha --exit --recursive test/**/*.spec.js"
 	},
 	"repository": {
 		"type": "git",
