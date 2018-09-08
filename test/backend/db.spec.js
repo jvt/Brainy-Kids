@@ -32,9 +32,4 @@ describe('Simple database test', () => {
 		});
 	});
 
-	it('Ensure the program is deleted from the databse', function() {
-
-	});
-	
-
 });
