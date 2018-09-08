@@ -9,6 +9,7 @@ if (!mongoDB) {
 	console.error('No MONGODB_URI found in environment');
 	return;
 }
+console.log("Mongo DB String: " + mongoDB)
 mongoose.connect(
 	mongoDB,
 	{ useNewUrlParser: true }
@@ -21,6 +22,10 @@ const db = mongoose.connection;
  * Place all Collection schemas here
  */
 require('./models/teacher');
+require('./models/focus_item');
+require('./models/analytic');
+require('./models/program');
+require('./models/student');
 
 // Bind connection to error event (to get notification of connection errors)
 db.on('error', err => {
