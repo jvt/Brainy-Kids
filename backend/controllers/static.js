@@ -7,10 +7,6 @@ module.exports.status = (req, res) => {
 	});
 };
 
-module.exports.routes = app => {
-	app.get('/status', this.status);
-
-	app.get('/*', (req, res) => {
-		res.sendFile(path.join(__dirname, '../../', 'public/index.html'));
-	});
+module.exports.getAll = (req, res) => {
+	return res.sendFile(path.join(__dirname, '../../', 'public/index.html'));
 };
