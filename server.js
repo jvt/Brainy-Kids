@@ -12,7 +12,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 require('./backend/db');
 
-require('./backend/routes')(app);
+const passport = require('./backend/passport').initialize(app);
+
+require('./backend/routes')(app, passport);
 
 app.listen(PORT, error => {
 	error
