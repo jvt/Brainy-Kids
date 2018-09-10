@@ -12,6 +12,11 @@ const schema = mongoose.Schema(
 			type: String,
 			required: false,
 		},
+        type: {
+            type: String,
+            required: true,
+            enum: ['mobile game', 'website']
+        }
 	},
 	{
 		timestamps: true,
