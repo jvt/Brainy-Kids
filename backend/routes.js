@@ -16,6 +16,15 @@ module.exports = (app, passport) => {
 
 	app.get('/status', [], controllers.static.status);
 
+	/**
+	 * Program Routes
+	 */
+	app.get('/api/programs', [], controllers.program.getAll);
+	app.get('/api/program/:id', [], controllers.program.getOne);
+	app.post('/api/program', [], controllers.program.create);
+	app.put('/api/program/:id', [], controllers.program.update);
+	app.delete('/api/program/:id', [], controllers.program.deleteOne);
+
 	// Render React page
 	app.get('/*', [], controllers.static.getAll);
 };
