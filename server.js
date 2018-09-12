@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const bodyParser = require('body-parser');
 
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
@@ -9,10 +10,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 require('./backend/db');
 
-require('./backend/routes')(app);
+const passport = require('./backend/passport').initialize(app);
+
+require('./backend/routes')(app, passport);
 
 app.listen(PORT, error => {
 	error
