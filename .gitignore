@@ -68,3 +68,6 @@ public/*.json
 public/*.js
 public/bundle.js
 public/bundle.js
+
+# Vim swap files
+*.swp
