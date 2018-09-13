@@ -32,7 +32,7 @@ module.exports.new = {
                 });
             } else {
                 var id = ++maxId;
-                new Teacher({name:req.body.name, email:req.body.email, teacher_id:id, password:hash(password)})
+                new Teacher({name:req.body.name, email:req.body.email, teacher_id:id, password:hash(req.body.password)})
                     .save().then(teacher => {
                         return res.status(200).json({
                             status: 'success',

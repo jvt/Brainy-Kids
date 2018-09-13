@@ -9,7 +9,7 @@
 		"frontend": "webpack -d --watch --config frontend/webpack.config.js",
 		"backend": "nodemon server.js",
 		"production": "NODE_ENV=production node server.js",
-		"test": "nyc mocha --exit --recursive test/**/*.spec.js"
+		"test": "nyc mocha --exit --recursive $(find test -name *.spec.js)"
 	},
 	"repository": {
 		"type": "git",
@@ -72,7 +72,7 @@
 		"style-loader": "^0.16.1",
 		"url-loader": "^0.6.2",
 		"webpack": "^2.3.3",
-        "bcrypt": "^2.4.3"
+		"bcrypt": "^3.0.0"
 	},
 	"devDependencies": {
 		"babel-eslint": "^7.2.2",
