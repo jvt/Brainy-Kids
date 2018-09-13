@@ -71,7 +71,8 @@
 		"sass-loader": "^6.0.3",
 		"style-loader": "^0.16.1",
 		"url-loader": "^0.6.2",
-		"webpack": "^2.3.3"
+		"webpack": "^2.3.3",
+        "bcrypt": "^2.4.3"
 	},
 	"devDependencies": {
 		"babel-eslint": "^7.2.2",
