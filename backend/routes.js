@@ -27,5 +27,5 @@ module.exports = (app, passport) => {
 
 	// Render React page
 	app.get('/*', [], controllers.static.getAll);
-    app.post('/api/sessions/new/teacher', [], controllers.sessions.new.teacher);
+    app.post('/api/session/newTeacher', [], controllers.session.newTeacher);
 };

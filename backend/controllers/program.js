@@ -1,5 +1,5 @@
 const Program = require('mongoose').model('Program');
-var bcrypt = require('bcryptjs');
+var bcrypt = require('bcrypt');
 
 module.exports.getAll = (req, res) => {
 	Program.find({})
