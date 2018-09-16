@@ -38,6 +38,7 @@ module.exports.create = (req, res) => {
 	new Program({
 		name: req.body.name,
 		description: req.body.description,
+		type: req.body.type,
 	})
 		.save()
 		.then(program => {
@@ -72,6 +73,9 @@ module.exports.update = (req, res) => {
 			program.description = req.body.description
 				? req.body.description
 				: program.description;
+
+			// Update the type if the body request contains a type
+			program.type = req.body.type ? req.body.type : program.type;
 
 			program
 				.save()
