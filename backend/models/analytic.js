@@ -31,12 +31,12 @@ const schema = mongoose.Schema(
         //time spent on this item
         time_spent: {
             type: Number,
-            required: false,
+            required: function() {return (this.correct_on !== null) || (this.time_watching !== null && this.total_video_time !== null)},
         },
         //time watching in millis. applicable to watching videos
         time_watching: {
             type: Number,
-            required: false,
+            required: function() {return (this.total_video_time !== null) || (this.correct_on !== null && this.time_spent !== null)},
         },
         //length of video in millis. applicable to watching videos
         total_video_time: {
