@@ -13,6 +13,7 @@ module.exports = (app, passport) => {
 	 *
 	 * Middleware: passport.authenticate('jwt', PASSPORT_OPTIONS)
 	 */
+    app.post('/api/session/register', [], controllers.session.newTeacher);
 
 	app.get('/status', [], controllers.static.status);
 
@@ -25,7 +26,6 @@ module.exports = (app, passport) => {
 	app.put('/api/program/:id', [], controllers.program.update);
 	app.delete('/api/program/:id', [], controllers.program.deleteOne);
 
-	// Render React page
+	// Render React page. Must be last route
 	app.get('/*', [], controllers.static.getAll);
-    app.post('/api/session/newTeacher', [], controllers.session.newTeacher);
 };

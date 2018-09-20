@@ -9,7 +9,8 @@ const name = 'Test Program';
 const desc = 'A temporary program used to run tests on the database.';
 const program_json = {
 	name: name,
-	description: desc
+	description: desc,
+    type: "mobile game"
 };
 
 describe('Simple database test', () => {
