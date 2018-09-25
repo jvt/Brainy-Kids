@@ -34,6 +34,13 @@ module.exports = (app, passport) => {
     app.put('/api/focusitem/:id', [], controllers.focusitem.update);
     app.delete('/api/focusitem/:id', [], controllers.focusitem.deleteOne);
 
+	/**
+	 * Analytics Routes
+	 */
+    app.post('/api/analytics/hearatale', [], controllers.analytics.hearatale);
+    app.post('/api/analytics/application', [], controllers.analytics.application);
+
+
 	// Render React page
 	app.get('/*', [], controllers.static.getAll);
 };
