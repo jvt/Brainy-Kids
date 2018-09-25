@@ -18,6 +18,8 @@ describe('Creates new teacher', () => {
 		chai.expect(res.body).to.be.an('object');
 		chai.expect(res.body.status).to.be.a('string');
 		chai.expect(res.body.status).to.equal('success');
+        chai.expect(res.body.teacher.email).equal("lsenseney3@gatech.edu");
+        chai.expect(res.body.teacher.name).equal("Luke Senseney");
 
         var createdTeacher = await Teacher.find({email:"lsenseney3@gatech.edu"});
         chai.expect(createdTeacher.length).equal(1);

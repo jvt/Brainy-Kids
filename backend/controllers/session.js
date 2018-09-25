@@ -1,7 +1,10 @@
 'use strict';
+const consts = require('../helpers/consts');
 const path = require('path');
 const Teacher = require('mongoose').model('Teacher');
-var bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 function hash(password){
     var salt = bcrypt.genSaltSync(10);
@@ -27,7 +30,6 @@ function unexpectedError(error, res) {
 
 function createNewTeacher(name, email, passwordHash, res){
     var id = ++maxId;
-    console.log("Using id:" + id);
     new Teacher({name:name, email:email, teacher_id:id, password:passwordHash})
                 .save().then(teacher => {
                     //Duplicate created with same id due to race condition
@@ -38,6 +40,8 @@ function createNewTeacher(name, email, passwordHash, res){
                     } else {
                         return res.status(200).json({
                             status: 'success',
+                            teacher,
+                            token:jwt.sign({type:consts.TEACHER, id:teacher.id}, process.env.JWT_SECRET)
                         });
                     }
                 }).catch(unexpectedError, res);
