@@ -10,7 +10,7 @@
 		"backend": "nodemon server.js",
 		"production": "NODE_ENV=production node server.js",
 		"test": "nyc mocha --exit --recursive test/**/*.spec.js",
-		"testLinux": "nyc mocha --exit --recursive $(find test -name *.spec.js)"
+		"testUnix": "nyc mocha --exit --recursive $(find test -name *.spec.js)"
 	},
 	"repository": {
 		"type": "git",
