@@ -1,2 +1,5 @@
+export const LOGIN = 'LOGIN';
+export const LOGOUT = 'LOGOUT';
+
 export const SHOW_GLOBAL_LOADING = 'SHOW_GLOBAL_LOADING';
 export const HIDE_GLOBAL_LOADING = 'HIDE_GLOBAL_LOADING';
