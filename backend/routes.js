@@ -4,6 +4,7 @@ const controllers = require('./controllers');
 // We disable sessions since we want to validate the token on each request
 const PASSPORT_OPTIONS = { session: false };
 
+
 module.exports = (app, passport) => {
 	/**
 	 * The following code is used on routes which we wish to protect via JWTs.
