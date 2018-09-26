@@ -9,7 +9,7 @@ if (!mongoDB) {
 	console.error('No MONGODB_URI found in environment');
 	return;
 }
-console.log("Mongo DB String: " + mongoDB)
+
 mongoose.connect(
 	mongoDB,
 	{ useNewUrlParser: true }
