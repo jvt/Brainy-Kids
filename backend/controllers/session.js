@@ -116,3 +116,50 @@ module.exports.login = async (req, res) => {
         teacher: cleanTeacher,
     });
 };
+
+module.exports.loginStudent = async (req, res) => {
+    const INCORRECT_MESSAGE = 'Your id / password combination is incorrect.';
+
+    const teacher = await Teacher.findOne({
+        teacher_id: req.body.student_id.substring(0, 3),
+    });
+    
+    if (!student) {
+        // We have a random delay to prevent time-attacks
+        setTimeout(() => {
+            if(!teacher){
+                return res.status(401).json({
+                    status: 'error',
+                    message: INCORRECT_MESSAGE,
+                });
+            }
+        }, Math.random() * 100);
+        return;
+    }
+
+    const student = await Student.findOne({teacher:teacher._id, student_id:req.body.student});
+
+    if (!student) {
+        // We have a random delay to prevent time-attacks
+        setTimeout(() => {
+            return res.status(403).json({
+                status: 'error',
+                message: INCORRECT_MESSAGE,
+            });
+        }, Math.random() * 100);
+        return;
+    }
+
+    const payload = {
+        id: student._id,
+        type: consts.STUDENT,
+    };
+
+    const jwtToken = jwt.sign(payload, process.env.JWT_SECRET);
+
+    return res.json({
+        status: 'ok',
+        token: jwtToken,
+        student: studen,
+    });
+};

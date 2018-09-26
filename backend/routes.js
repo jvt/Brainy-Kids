@@ -16,6 +16,7 @@ module.exports = (app, passport) => {
 	 */
 	app.post('/api/session/login', [], controllers.session.login);
 	app.post('/api/session/register', [], controllers.session.newTeacher);
+	app.post('/api/session/student', [], controllers.session.loginStudent);
 
 	app.get('/status', [], controllers.static.status);
 
