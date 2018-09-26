@@ -11,13 +11,14 @@ function hash(password){
     return bcrypt.hashSync(password, salt);
 }
 
-var maxId = Teacher.findOne({}).sort({teacher_id:'desc'}).exec((err, teacher) => {
-    if(teacher){
-        maxId = teacher.teacher_id;
-    } else {
-        maxId = 0;
+async function maxId(){
+    var toRet = await Teacher.findOne({}).sort({teacher_id:'desc'});
+    if(toRet){
+        return toRet.teacher_id;
+    }else{
+        return 0;
     }
-});
+}
 
 function unexpectedError(error, res) {
     console.log(error);
@@ -28,8 +29,10 @@ function unexpectedError(error, res) {
     });
 };
 
-function createNewTeacher(name, email, passwordHash, res){
-    var id = ++maxId;
+async function createNewTeacher(name, email, passwordHash, res){
+    var mId = parseInt(await maxId());
+    var id = mId + 1;
+
     new Teacher({name:name, email:email, teacher_id:id, password:passwordHash})
                 .save().then(teacher => {
                     //Duplicate created with same id due to race condition
@@ -38,10 +41,12 @@ function createNewTeacher(name, email, passwordHash, res){
                         Teacher.deleteOne({email:email});
                         setTimeout(function(){createNewTeacher(name, email, passwordHash, res)}, Math.random() * 5);
                     } else {
-                        return res.status(200).json({
-                            status: 'success',
-                            teacher,
-                            token:jwt.sign({type:consts.TEACHER, id:teacher.id}, process.env.JWT_SECRET)
+                        Teacher.findOne({email}).then(teacher => {
+                            return res.status(200).json({
+                                status: 'success',
+                                teacher,
+                                token:jwt.sign({type:consts.TEACHER, id:teacher.id}, process.env.JWT_SECRET)
+                            });
                         });
                     }
                 }).catch(unexpectedError, res);
