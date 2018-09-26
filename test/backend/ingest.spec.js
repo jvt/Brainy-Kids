@@ -18,7 +18,7 @@ const bcrypt = require('bcrypt');
  // Non vairables: 3 programs, 30 teachers
 
 const number_of_students = 800;
-const number_of_analytics = 4500;
+const number_of_analytics = 7500;
 const number_of_focus_items = 100;
 
  /**
@@ -223,7 +223,6 @@ for (var i = 0; i < number_of_analytics; i++) {
         analytic_json.total_video_time = total_video_time;
     }
     const saved_analytic = new Analytic(analytic_json);
-    console.log(saved_analytic);
     analytic_docs.push(saved_analytic);
     saved_analytic.save(function(err, doc) {
         if (err) {
