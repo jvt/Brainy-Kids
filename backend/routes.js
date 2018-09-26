@@ -14,7 +14,8 @@ module.exports = (app, passport) => {
 	 *
 	 * Middleware: passport.authenticate('jwt', PASSPORT_OPTIONS)
 	 */
-    app.post('/api/session/register', [], controllers.session.newTeacher);
+	app.post('/api/session/login', [], controllers.session.login);
+	app.post('/api/session/register', [], controllers.session.newTeacher);
 
 	app.get('/status', [], controllers.static.status);
 
@@ -30,11 +31,21 @@ module.exports = (app, passport) => {
 	/**
 	 * Focus Item Routes
 	 */
-    app.get('/api/focusitem', [], controllers.focusitem.getAll);
-    app.get('/api/focusitem/:id', [], controllers.focusitem.getOne);
-    app.post('/api/focusitem', [], controllers.focusitem.create);
-    app.put('/api/focusitem/:id', [], controllers.focusitem.update);
-    app.delete('/api/focusitem/:id', [], controllers.focusitem.deleteOne);
+	app.get('/api/focusitem', [], controllers.focusitem.getAll);
+	app.get('/api/focusitem/:id', [], controllers.focusitem.getOne);
+	app.post('/api/focusitem', [], controllers.focusitem.create);
+	app.put('/api/focusitem/:id', [], controllers.focusitem.update);
+	app.delete('/api/focusitem/:id', [], controllers.focusitem.deleteOne);
+
+	/**
+	 * Analytics Routes
+	 */
+	app.post('/api/analytics/hearatale', [], controllers.analytics.hearatale);
+	app.post(
+		'/api/analytics/application',
+		[],
+		controllers.analytics.application
+	);
 
 	// Render React page
 	app.get('/*', [], controllers.static.getAll);

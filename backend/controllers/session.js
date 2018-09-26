@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-function hash(password){
+function hash(password) {
     var salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(password, salt);
 }
@@ -64,4 +64,55 @@ module.exports.newTeacher =  (req, res) => {
             return createNewTeacher(req.body.name, req.body.email.toLowerCase(), hash(req.body.password), res);
         }
     }).catch(error => unexpectedError(error, res));
+};
+
+module.exports.login = async (req, res) => {
+    const INCORRECT_MESSAGE = 'Your email / password combination is incorrect.';
+
+    const teacher = await Teacher.findOne({
+        email: req.body.email.toLowerCase(),
+    })
+        .select('+password')
+        .exec()
+        .catch(error => unexpectedError(error, res));
+
+    if (!teacher) {
+        // We have a random delay to prevent time-attacks
+        setTimeout(() => {
+            return res.status(403).json({
+                status: 'error',
+                message: INCORRECT_MESSAGE,
+            });
+        }, Math.random() * 100);
+        return;
+    }
+
+    const passwordsEqual = await bcrypt.compare(
+        req.body.password,
+        teacher.password
+    );
+
+    if (!passwordsEqual) {
+        return res.status(401).json({
+            status: 'error',
+            message: INCORRECT_MESSAGE,
+        });
+    }
+
+    const payload = {
+        id: teacher._id,
+        type: consts.TEACHER,
+    };
+
+    const jwtToken = jwt.sign(payload, process.env.JWT_SECRET);
+
+    const cleanTeacher = await Teacher.findById(teacher._id).catch(error =>
+        unexpectedError(error, res)
+    );
+
+    return res.json({
+        status: 'ok',
+        token: jwtToken,
+        teacher: cleanTeacher,
+    });
 };

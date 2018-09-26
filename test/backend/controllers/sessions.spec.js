@@ -49,5 +49,5 @@ describe('Creates new teacher', () => {
 
         Teacher.deleteMany({name:"Luke Senseney"}).exec();
         Teacher.deleteMany({name:"Not Senseney"}).exec();
-    });
+	});
 });
