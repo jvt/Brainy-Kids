@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const schema = mongoose.Schema(
 	{
         // reference to the focus item
-		focus_item: {
+		student: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Student',
 			required: true,
@@ -34,7 +34,7 @@ const schema = mongoose.Schema(
             type: Number,
             required: function() {return (this.time_spent !== null) || (this.time_watching !== null && this.total_video_time !== null)},
         },
-        //time spent on this item
+        //time spent on this item in millis
         time_spent: {
             type: Number,
             required: function() {return (this.correct_on !== null) || (this.time_watching !== null && this.total_video_time !== null)},
