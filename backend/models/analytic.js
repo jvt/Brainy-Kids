@@ -48,6 +48,16 @@ const schema = mongoose.Schema(
         total_video_time: {
             type: Number,
             required: function() {return (this.time_watching !== null) ||  (this.correct_on !== null && this.time_spent !== null)},
+        },
+        //optional created_at to pass in previous time (device not connected to internet)
+        created_at: {
+            type: Date,
+            required: false
+        },
+        //optional updated_at to pass in previous time (device not connected to internet)
+        updated_at: {
+            type : Date,
+            required: false
         }
 	},
 	{
