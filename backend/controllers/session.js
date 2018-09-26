@@ -2,6 +2,7 @@
 const consts = require('../helpers/consts');
 const path = require('path');
 const Teacher = require('mongoose').model('Teacher');
+const Student = require('mongoose').model('Student');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -33,7 +34,7 @@ async function createNewTeacher(name, email, passwordHash, res){
     var mId = parseInt(await maxId());
     var id = mId + 1;
 
-    new Teacher({name:name, email:email, teacher_id:id, password:passwordHash})
+    new Teacher({name:name, email:email, teacher_id:("00" + id).slice(-3), password:passwordHash})
                 .save().then(teacher => {
                     //Duplicate created with same id due to race condition
                     //Removes and retries after random delay
@@ -121,14 +122,14 @@ module.exports.loginStudent = async (req, res) => {
     const INCORRECT_MESSAGE = 'Your id / password combination is incorrect.';
 
     const teacher = await Teacher.findOne({
-        teacher_id: req.body.student_id.substring(0, 3),
+        teacher_id: req.body.student_id.substring(0, 3)
     });
     
-    if (!student) {
+    if (!teacher) {
         // We have a random delay to prevent time-attacks
         setTimeout(() => {
             if(!teacher){
-                return res.status(401).json({
+                return res.status(403).json({
                     status: 'error',
                     message: INCORRECT_MESSAGE,
                 });
@@ -137,10 +138,11 @@ module.exports.loginStudent = async (req, res) => {
         return;
     }
 
-    const student = await Student.findOne({teacher:teacher._id, student_id:req.body.student});
+    const student = await Student.findOne({teacher:teacher._id, student_id:req.body.student_id.substring(3)});
 
     if (!student) {
         // We have a random delay to prevent time-attacks
+        console.log("Bad student");
         setTimeout(() => {
             return res.status(403).json({
                 status: 'error',
@@ -160,6 +162,6 @@ module.exports.loginStudent = async (req, res) => {
     return res.json({
         status: 'ok',
         token: jwtToken,
-        student: studen,
+        student: student
     });
 };
