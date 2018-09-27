@@ -7,8 +7,16 @@ module.exports.hearatale = (req, res) => {
         focus_item: req.body.focus_item,
         time_watching: req.body.time_watching,
         total_video_time: req.body.total_video_time
+    })  .save()
+        .then(analytic => {
+        if (req.body.created_at) { 
+            analytic.created_at = req.body.created_at;
+        }
+        if (req.body.updated_at) { 
+            analytic.updated_at = req.body.updated_at;
+        }
+        analytic.save();
     })
-        .save()
         .then(analytic => {
             return res.status(200).json({
                 status: 'success',
@@ -32,7 +40,7 @@ module.exports.application = (req, res) => {
         focus_item: req.body.focus_item,
         correct_on: req.body.correct_on,
         time_spent: req.body.time_spent
-    })
+    })  .save()
         .then(analytic => {
         if (req.body.created_at) { 
             analytic.created_at = req.body.created_at;
@@ -40,8 +48,8 @@ module.exports.application = (req, res) => {
         if (req.body.updated_at) { 
             analytic.updated_at = req.body.updated_at;
         }
+        analytic.save();
     })
-        .save()
         .then(analytic => {
             return res.status(200).json({
                 status: 'success',
