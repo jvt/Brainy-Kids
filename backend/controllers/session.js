@@ -6,18 +6,19 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-function hash(password){
+function hash(password) {
     var salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(password, salt);
 }
 
-var maxId = Teacher.findOne({}).sort({teacher_id:'desc'}).exec((err, teacher) => {
-    if(teacher){
-        maxId = teacher.teacher_id;
-    } else {
-        maxId = 0;
+async function maxId(){
+    var toRet = await Teacher.findOne({}).sort({teacher_id:'desc'});
+    if(toRet){
+        return toRet.teacher_id;
+    }else{
+        return 0;
     }
-});
+}
 
 function unexpectedError(error, res) {
     console.log(error);
@@ -28,8 +29,10 @@ function unexpectedError(error, res) {
     });
 };
 
-function createNewTeacher(name, email, passwordHash, res){
-    var id = ++maxId;
+async function createNewTeacher(name, email, passwordHash, res){
+    var mId = parseInt(await maxId());
+    var id = mId + 1;
+
     new Teacher({name:name, email:email, teacher_id:id, password:passwordHash})
                 .save().then(teacher => {
                     //Duplicate created with same id due to race condition
@@ -38,10 +41,12 @@ function createNewTeacher(name, email, passwordHash, res){
                         Teacher.deleteOne({email:email});
                         setTimeout(function(){createNewTeacher(name, email, passwordHash, res)}, Math.random() * 5);
                     } else {
-                        return res.status(200).json({
-                            status: 'success',
-                            teacher,
-                            token:jwt.sign({type:consts.TEACHER, id:teacher.id}, process.env.JWT_SECRET)
+                        Teacher.findOne({email}).then(teacher => {
+                            return res.status(200).json({
+                                status: 'success',
+                                teacher,
+                                token:jwt.sign({type:consts.TEACHER, id:teacher.id}, process.env.JWT_SECRET)
+                            });
                         });
                     }
                 }).catch(unexpectedError, res);
@@ -59,4 +64,55 @@ module.exports.newTeacher =  (req, res) => {
             return createNewTeacher(req.body.name, req.body.email.toLowerCase(), hash(req.body.password), res);
         }
     }).catch(error => unexpectedError(error, res));
+};
+
+module.exports.login = async (req, res) => {
+    const INCORRECT_MESSAGE = 'Your email / password combination is incorrect.';
+
+    const teacher = await Teacher.findOne({
+        email: req.body.email.toLowerCase(),
+    })
+        .select('+password')
+        .exec()
+        .catch(error => unexpectedError(error, res));
+
+    if (!teacher) {
+        // We have a random delay to prevent time-attacks
+        setTimeout(() => {
+            return res.status(403).json({
+                status: 'error',
+                message: INCORRECT_MESSAGE,
+            });
+        }, Math.random() * 100);
+        return;
+    }
+
+    const passwordsEqual = await bcrypt.compare(
+        req.body.password,
+        teacher.password
+    );
+
+    if (!passwordsEqual) {
+        return res.status(401).json({
+            status: 'error',
+            message: INCORRECT_MESSAGE,
+        });
+    }
+
+    const payload = {
+        id: teacher._id,
+        type: consts.TEACHER,
+    };
+
+    const jwtToken = jwt.sign(payload, process.env.JWT_SECRET);
+
+    const cleanTeacher = await Teacher.findById(teacher._id).catch(error =>
+        unexpectedError(error, res)
+    );
+
+    return res.json({
+        status: 'ok',
+        token: jwtToken,
+        teacher: cleanTeacher,
+    });
 };

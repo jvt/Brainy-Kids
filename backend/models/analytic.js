@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const schema = mongoose.Schema(
 	{
-        // reference to the student
+    // reference to the student
 		student: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Student',
@@ -34,7 +34,7 @@ const schema = mongoose.Schema(
             type: Number,
             required: function() {return !(this.time_watching && this.total_video_time)},
         },
-        //time spent on this item
+        //time spent on this item in millis
         time_spent: {
             type: Number,
             required: function() {return !(this.time_watching && this.total_video_time)},
