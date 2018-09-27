@@ -4,7 +4,9 @@ const Teacher = require('../../../backend/models/teacher');
 const app = require('../../../server');
 
 describe('Creates new teacher', () => {
-	it('responds with a status ok', async () => {
+    var createdTeacher;
+
+	it('creates a teacher', async () => {
         Teacher.deleteMany({name:"Luke Senseney"}).exec();
         Teacher.deleteMany({name:"Not Senseney"}).exec();
 
@@ -21,21 +23,25 @@ describe('Creates new teacher', () => {
         chai.expect(res.body.teacher.email).equal("lsenseney3@gatech.edu");
         chai.expect(res.body.teacher.name).equal("Luke Senseney");
 
-        var createdTeacher = await Teacher.find({email:"lsenseney3@gatech.edu"});
+        createdTeacher = await Teacher.find({email:"lsenseney3@gatech.edu"});
         chai.expect(createdTeacher.length).equal(1);
         chai.expect(createdTeacher[0].name).equal("Luke Senseney");
+    });
 
+    it("Doesn't allow duplicates", async () => {
         var teacher_json2 = {name:"Not Senseney", email:"LSEnseney3@gatech.edu", password:"DefinitlyMyPasswordblah"};
 		const res2 = await request(app)
 			.post('/api/session/register')
             .send(teacher_json2)
 			.expect(409);
+    });
 
+    it("Increments ids", async () => {
         var teacher_json3 = {name:"Not Senseney", email:"lsenseney4@gatech.edu", password:"DefinitlyMyPasswordblah"}
-		const res3 = await request(app)
-			.post('/api/session/register')
+        const res3 = await request(app)
+            .post('/api/session/register')
             .send(teacher_json3)
-			.expect(200);
+            .expect(200);
 
         var createdTeacher2 = await Teacher.find({email:"lsenseney4@gatech.edu"});
         chai.expect(createdTeacher2.length).equal(1);
