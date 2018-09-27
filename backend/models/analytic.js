@@ -32,22 +32,27 @@ const schema = mongoose.Schema(
         // How many guesses needed until the correct answer was gotten?
         correct_on: {
             type: Number,
-            required: function() {return (this.time_spent !== null) || (this.time_watching !== null && this.total_video_time !== null)},
+            required: function() {
+                // console.log("time spent: " + this.time_spent);
+                // console.log("time_watching: " + this.time_watching);
+                // console.log("total_video_time: " + this.total_video_time)
+                return (this.time_spent) || (!this.time_watching && !this.total_video_time);
+            },
         },
-        //time spent on this item
+        //time spent on this item in millis
         time_spent: {
             type: Number,
-            required: function() {return (this.correct_on !== null) || (this.time_watching !== null && this.total_video_time !== null)},
+            required: function() {return (this.correct_on) || (!this.time_watching && !this.total_video_time)},
         },
         //time watching in millis. applicable to watching videos
         time_watching: {
             type: Number,
-            required: function() {return (this.total_video_time !== null) || (this.correct_on !== null && this.time_spent !== null)},
+            required: function() {return (this.total_video_time) || (!this.correct_on && !this.time_spent)},
         },
         //length of video in millis. applicable to watching videos
         total_video_time: {
             type: Number,
-            required: function() {return (this.time_watching !== null) ||  (this.correct_on !== null && this.time_spent !== null)},
+            required: function() {return (this.time_watching) ||  (!this.correct_on && !this.time_spent)},
         }
 	},
 	{
