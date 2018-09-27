@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const app = require('../../server');
 const Program = require('../../backend/models/program');
 const Analytic = require('../../backend/models/analytic');
 const Focus_Item = require('../../backend/models/focus_item');
@@ -230,6 +230,10 @@ for (var i = 0; i < number_of_analytics; i++) {
         }
     });;
 }
+
+/**
+ * EXITS THE APP
+ */
 
 /**
  * Utility Functions 
