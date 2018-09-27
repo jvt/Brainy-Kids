@@ -32,7 +32,7 @@ module.exports.application = (req, res) => {
         focus_item: req.body.focus_item,
         correct_on: req.body.correct_on,
         time_spent: req.body.time_spent
-    })  
+    })
         .then(analytic => {
         if (req.body.created_at) { 
             analytic.created_at = req.body.created_at;

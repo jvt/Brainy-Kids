@@ -2,19 +2,19 @@ const chai = require('chai');
 const mongoose = require('mongoose');
 const Analytic = require('../../../backend/models/analytic');
 
-const student_id = 00001;
-const focus_item_id = 00001;
-const program_id = 00001;
+const student_id = '123456789012';
+const focus_item_id = '123456789012';
+const program_id = '123456789012';
 const correct_on = 3;
 
-
 const valid_app_analytic = {
-	student: student_id,
-	focus_item: focus_item_id,
-	program: program_id,
-	correct_on: correct_on,
+	student: '123456789012',
+	focus_item: '123456789012',
+	program: '123456789012',
+	correct_on: 3,
     time_spent: 10000
 };
+
 const invalid_app_analytic = {
 	student: student_id,
 	focus_item: focus_item_id,
@@ -26,7 +26,6 @@ const invalid_app_analytic = {
 describe('Simple analytic test', () => {
 	it('Create invalid analytic. Should generate an error.', function() {
 		const test_analytic = new Analytic(invalid_app_analytic);
-
 
 		test_analytic.save(function(err, doc) {
 			chai.expect(err).is.not.null;
