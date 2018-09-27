@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const schema = mongoose.Schema(
 	{
-        // reference to the focus item
-		focus_item: {
+        // reference to the student
+		student: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Student',
 			required: true,
