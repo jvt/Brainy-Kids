@@ -6,6 +6,7 @@ const schema = mongoose.Schema(
 		teacher_id: {
 			type: String,
 			required: true,
+            minlength: 3
 		},
 		// Teacher's Full name (First + Last)
 		name: {

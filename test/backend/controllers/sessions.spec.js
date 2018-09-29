@@ -1,15 +1,15 @@
 const chai = require('chai');
 const request = require('supertest');
 const Teacher = require('../../../backend/models/teacher');
+const Student = require('../../../backend/models/student');
 const app = require('../../../server');
 
 describe('Creates new teacher', () => {
     var createdTeacher;
+    Teacher.deleteMany({name:"Luke Senseney"}).exec();
+    Teacher.deleteMany({name:"Not Senseney"}).exec();
 
 	it('creates a teacher', async () => {
-        Teacher.deleteMany({name:"Luke Senseney"}).exec();
-        Teacher.deleteMany({name:"Not Senseney"}).exec();
-
         var teacher_json = {name:"Luke Senseney", email:"lsenseney3@gatech.edu", password:"DefinitlyMyPassword"};
 		const res = await request(app)
 			.post('/api/session/register')
@@ -47,7 +47,18 @@ describe('Creates new teacher', () => {
         chai.expect(createdTeacher2.length).equal(1);
         chai.expect(parseInt(createdTeacher2[0].teacher_id)).equal(parseInt(createdTeacher[0].teacher_id) + 1);
 
-        Teacher.deleteMany({name:"Luke Senseney"}).exec();
-        Teacher.deleteMany({name:"Not Senseney"}).exec();
 	});
+
+    it("Logs in a student", async () => {
+        studentJson = {student_id:"007", teacher:createdTeacher[0]._id};
+        var studentId = "007";
+        var createdStudent = await new Student(studentJson).save();
+        const res = await request(app).post('/api/session/student').send(
+            {student_id:createdTeacher[0].teacher_id + "007"}).expect(200);
+        chai.expect(res.body.student._id).equal(createdStudent._id.toString());
+        Student.deleteMany(studentJson);
+    });
+
+    Teacher.deleteMany({name:"Luke Senseney"}).exec();
+    Teacher.deleteMany({name:"Not Senseney"}).exec();
 });
