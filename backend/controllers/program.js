@@ -43,7 +43,7 @@ module.exports.create = (req, res) => {
 		.save()
 		.then(program => {
 			return res.status(200).json({
-				status: 'success',
+				status: 'ok',
 				program: program,
 			});
 		})
@@ -81,7 +81,7 @@ module.exports.update = (req, res) => {
 				.save()
 				.then(updatedProgram => {
 					return res.status(200).json({
-						status: 'success',
+						status: 'ok',
 						program: updatedProgram,
 					});
 				})
@@ -107,7 +107,7 @@ module.exports.deleteOne = (req, res) => {
 	Program.findByIdAndRemove(req.params.id)
 		.then(program => {
 			return res.status(200).json({
-				status: 'success',
+				status: 'ok',
 			});
 		})
 		.catch(err => {

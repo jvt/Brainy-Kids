@@ -20,10 +20,20 @@ import rootReducer from '../reducers/index';
  * refreshes
  */
 const blacklistSystemActions = createBlacklistFilter('system', ['loading']);
+const blacklistTeacherActions = createBlacklistFilter('teacher', ['data']);
+const blacklistProgramActions = createBlacklistFilter('programs', [
+	'loading',
+	'error',
+	'data',
+]);
 
 const persistConfig = {
 	key: 'root',
-	transforms: [blacklistSystemActions],
+	transforms: [
+		blacklistSystemActions,
+		blacklistTeacherActions,
+		blacklistProgramActions,
+	],
 	storage,
 };
 

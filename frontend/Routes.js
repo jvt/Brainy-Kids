@@ -1,12 +1,16 @@
-import propTypes from "prop-types";
-import React, { Component } from "react";
+import propTypes from 'prop-types';
+import React, { Component } from 'react';
 
-import { Route, Switch, Redirect, withRouter } from "react-router-dom";
+import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 
-import LoginPage from "./containers/LoginPage";
-import Dashboard from "./containers/Dashboard";
-import Users from "./containers/Users";
-import UserShow from './containers/UserShow';
+import AuthGuard from './components/AuthGuard';
+
+import LoginPage from './containers/LoginPage';
+import LogoutPage from './containers/LogoutPage';
+import Dashboard from './containers/Dashboard';
+import Programs from './containers/Programs';
+import Students from './containers/Students';
+import StudentShow from './containers/StudentShow';
 
 import NotFound from './containers/NotFound';
 
@@ -15,13 +19,15 @@ const Routes = () => {
 		<div>
 			<Switch>
 				<Route path="/" exact component={LoginPage} />
-				<Route path="/dashboard" exact component={Dashboard} />
-				<Route path="/users" exact component={Users} />
-				<Route path="/users/:id" exact component={UserShow} />
-				<Route path="*" component={NotFound}/>
+				<AuthGuard path="/dashboard" exact component={Dashboard} />
+				<AuthGuard path="/programs" exact component={Programs} />
+				<AuthGuard path="/students" exact component={Students} />
+				<AuthGuard path="/students/:id" exact component={StudentShow} />
+				<AuthGuard path="/logout" exact component={LogoutPage} />
+				<Route path="*" component={NotFound} />
 			</Switch>
 		</div>
 	);
-}
+};
 
 export default Routes;
