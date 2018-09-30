@@ -44,7 +44,7 @@ async function createNewTeacher(name, email, passwordHash, res){
                     } else {
                         Teacher.findOne({email}).then(teacher => {
                             return res.status(200).json({
-                                status: 'success',
+                                status: 'ok',
                                 teacher,
                                 token:jwt.sign({type:consts.TEACHER, id:teacher.id}, process.env.JWT_SECRET)
                             });

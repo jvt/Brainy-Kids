@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const schema = mongoose.Schema(
 	{
-        // reference to the focus item
+    // reference to the student
 		student: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Student',
@@ -32,27 +32,32 @@ const schema = mongoose.Schema(
         // How many guesses needed until the correct answer was gotten?
         correct_on: {
             type: Number,
-            required: function() {
-                // console.log("time spent: " + this.time_spent);
-                // console.log("time_watching: " + this.time_watching);
-                // console.log("total_video_time: " + this.total_video_time)
-                return (this.time_spent) || (!this.time_watching && !this.total_video_time);
-            },
+            required: function() {return !(this.time_watching && this.total_video_time)},
         },
         //time spent on this item in millis
         time_spent: {
             type: Number,
-            required: function() {return (this.correct_on) || (!this.time_watching && !this.total_video_time)},
+            required: function() {return !(this.time_watching && this.total_video_time)},
         },
         //time watching in millis. applicable to watching videos
         time_watching: {
             type: Number,
-            required: function() {return (this.total_video_time) || (!this.correct_on && !this.time_spent)},
+            required: function() {return !(this.correct_on && this.time_spent)},
         },
         //length of video in millis. applicable to watching videos
         total_video_time: {
             type: Number,
-            required: function() {return (this.time_watching) ||  (!this.correct_on && !this.time_spent)},
+            required: function() {return !(this.correct_on && this.time_spent)},
+        },
+        //optional created_at to pass in previous time (device not connected to internet)
+        created_at: {
+            type: Date,
+            required: false
+        },
+        //optional updated_at to pass in previous time (device not connected to internet)
+        updated_at: {
+            type : Date,
+            required: false
         }
 	},
 	{
