@@ -4,7 +4,6 @@ const controllers = require('./controllers');
 // We disable sessions since we want to validate the token on each request
 const PASSPORT_OPTIONS = { session: false };
 
-
 module.exports = (app, passport) => {
 	/**
 	 * The following code is used on routes which we wish to protect via JWTs.
@@ -37,6 +36,15 @@ module.exports = (app, passport) => {
 	app.post('/api/focusitem', [], controllers.focusitem.create);
 	app.put('/api/focusitem/:id', [], controllers.focusitem.update);
 	app.delete('/api/focusitem/:id', [], controllers.focusitem.deleteOne);
+
+	/**
+	 * Student Routes
+	 */
+	app.get('/api/student', [], controllers.student.getAll);
+	app.get('/api/student/:id', [], controllers.student.getOne);
+	app.post('/api/student', [], controllers.student.create);
+	app.put('/api/student/:id', [], controllers.student.update);
+	app.delete('/api/student/:id', [], controllers.student.deleteOne);
 
 	/**
 	 * Analytics Routes
