@@ -3,3 +3,6 @@ module.exports.system = system;
 
 import * as teacher from './teacher';
 module.exports.teacher = teacher;
+
+import * as programs from './programs';
+module.exports.programs = programs;
