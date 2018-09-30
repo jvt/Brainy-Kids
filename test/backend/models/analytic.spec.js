@@ -23,7 +23,7 @@ const invalid_app_analytic = {
     time_watching: 10000
 }
 
-describe('Simple analytic test', () => {
+describe('Simple analytic test', function() {
 	it('Create invalid analytic. Should generate an error.', function() {
 		const test_analytic = new Analytic(invalid_app_analytic);
 

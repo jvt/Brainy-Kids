@@ -4,7 +4,7 @@ module.exports.getAll = (req, res) => {
     Focusitem.find({})
         .then(focusitems => {
             return res.status(200).json({
-                status: 'success',
+                status: 'ok',
                 focusitems: focusitems ? focusitems : [], // Ensure we always at the bare minimum send back an empty array
             });
         })
@@ -21,7 +21,7 @@ module.exports.getOne = (req, res) => {
     Focusitem.findById(req.params.id)
         .then(focusitem => {
             return res.status(200).json({
-                status: 'success',
+                status: 'ok',
                 focusitem: focusitem,
             });
         })
@@ -44,7 +44,7 @@ module.exports.create = (req, res) => {
         .save()
         .then(focusitem => {
             return res.status(200).json({
-                status: 'success',
+                status: 'ok',
                 focusitem: focusitem,
             });
         })
@@ -85,7 +85,7 @@ module.exports.update = (req, res) => {
                 .save()
                 .then(updatedFocusitem => {
                     return res.status(200).json({
-                        status: 'success',
+                        status: 'ok',
                         focusitem: updatedFocusitem,
                     });
                 })
@@ -111,7 +111,7 @@ module.exports.deleteOne = (req, res) => {
     Focusitem.findByIdAndRemove(req.params.id)
         .then(focusitem => {
             return res.status(200).json({
-                status: 'success',
+                status: 'ok',
             });
         })
         .catch(err => {

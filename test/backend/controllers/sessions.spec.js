@@ -3,7 +3,7 @@ const request = require('supertest');
 const Teacher = require('../../../backend/models/teacher');
 const app = require('../../../server');
 
-describe('Creates new teacher', () => {
+describe('Creates new teacher', function() {
     var createdTeacher;
 
 	it('creates a teacher', async () => {
@@ -19,7 +19,7 @@ describe('Creates new teacher', () => {
 
 		chai.expect(res.body).to.be.an('object');
 		chai.expect(res.body.status).to.be.a('string');
-		chai.expect(res.body.status).to.equal('success');
+		chai.expect(res.body.status).to.equal('ok');
         chai.expect(res.body.teacher.email).equal("lsenseney3@gatech.edu");
         chai.expect(res.body.teacher.name).equal("Luke Senseney");
 

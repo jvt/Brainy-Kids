@@ -1,25 +1,25 @@
 const Analytic = require('mongoose').model('Analytic');
 
 module.exports.hearatale = (req, res) => {
-    new Analytic({
+    const analytic = new Analytic({
         student: req.body.student,
         program: req.body.program,
         focus_item: req.body.focus_item,
         time_watching: req.body.time_watching,
         total_video_time: req.body.total_video_time
-    })  .save()
-        .then(analytic => {
-        if (req.body.created_at) { 
-            analytic.created_at = req.body.created_at;
-        }
-        if (req.body.updated_at) { 
-            analytic.updated_at = req.body.updated_at;
-        }
-        analytic.save();
-    })
+    });
+
+    if (req.body.created_at) { 
+        analytic.created_at = req.body.created_at;
+    }
+    if (req.body.updated_at) { 
+        analytic.updated_at = req.body.updated_at;
+    }
+    analytic
+        .save()
         .then(analytic => {
             return res.status(200).json({
-                status: 'success',
+                status: 'ok',
                 analytic: analytic,
             });
         })

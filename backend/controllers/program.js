@@ -4,7 +4,7 @@ module.exports.getAll = (req, res) => {
 	Program.find({})
 		.then(programs => {
 			return res.status(200).json({
-				status: 'success',
+				status: 'ok',
 				programs: programs ? programs : [], // Ensure we always at the bare minimum send back an empty array
 			});
 		})
@@ -21,7 +21,7 @@ module.exports.getOne = (req, res) => {
 	Program.findById(req.params.id)
 		.then(program => {
 			return res.status(200).json({
-				status: 'success',
+				status: 'ok',
 				program: program,
 			});
 		})
