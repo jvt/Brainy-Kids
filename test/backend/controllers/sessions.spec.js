@@ -6,8 +6,10 @@ const app = require('../../../server');
 
 describe('Creates new teacher', function() {
     var createdTeacher;
-    Teacher.deleteMany({ name: 'Luke Senseney' }).exec();
-    Teacher.deleteMany({ name: 'Not Senseney' }).exec();
+
+    before(function() {
+        Teacher.deleteMany({}).exec();
+    });
 
     it('creates a teacher', async () => {
         var teacher_json = {
@@ -59,6 +61,7 @@ describe('Creates new teacher', function() {
             email: 'lsenseney4@gatech.edu',
         });
         chai.expect(createdTeacher2.length).equal(1);
+
         chai.expect(parseInt(createdTeacher2[0].teacher_id)).equal(
             parseInt(createdTeacher[0].teacher_id) + 1
         );
