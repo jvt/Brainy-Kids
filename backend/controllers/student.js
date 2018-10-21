@@ -52,10 +52,10 @@ module.exports.create = (req, res) => {
                     req.body.deleted !== undefined ? req.body.deleted : false,
             })
                 .save()
-                .then(focusitem => {
+                .then(student => {
                     return res.status(200).json({
                         status: 'ok',
-                        focusitem: focusitem,
+                        student: student,
                     });
                 })
                 .catch(err => {
