@@ -23,7 +23,7 @@ const Routes = () => {
 				<AuthGuard path="/programs" exact component={Programs} />
 				<AuthGuard path="/students" exact component={Students} />
 				<AuthGuard path="/students/:id" exact component={StudentShow} />
-				<AuthGuard path="/logout" exact component={LogoutPage} />
+				<Route path="/logout" exact component={LogoutPage} />
 				<Route path="*" component={NotFound} />
 			</Switch>
 		</div>
