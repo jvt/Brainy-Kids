@@ -56,6 +56,8 @@ module.exports = (app, passport) => {
 		controllers.analytics.application
 	);
 
+	app.get('/api/*', [], controllers.static.apiError);
+
 	// Render React page
 	app.get('/*', [], controllers.static.getAll);
 };
