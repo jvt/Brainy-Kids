@@ -16,6 +16,7 @@ module.exports = (app, passport) => {
 	app.post('/api/session/login', [], controllers.session.login);
 	app.post('/api/session/register', [], controllers.session.newTeacher);
 	app.post('/api/session/student', [], controllers.session.loginStudent);
+    app.get('/api/session', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getInfo);
 
 	app.get('/status', [], controllers.static.status);
 
@@ -45,6 +46,11 @@ module.exports = (app, passport) => {
 	app.post('/api/student', [], controllers.student.create);
 	app.put('/api/student/:id', [], controllers.student.update);
 	app.delete('/api/student/:id', [], controllers.student.deleteOne);
+
+	app.get('/api/teacher', [], controllers.teacher.getAll);
+	app.get('/api/teacher/:id', [], controllers.teacher.getOne);
+	app.put('/api/teacher/:id', [], controllers.teacher.update);
+	app.delete('/api/teacher/:id', [], controllers.teacher.deleteOne);
 
 	/**
 	 * Analytics Routes

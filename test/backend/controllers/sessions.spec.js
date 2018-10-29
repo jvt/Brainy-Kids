@@ -6,18 +6,20 @@ const app = require('../../../server');
 
 describe('Creates new teacher', function() {
     var createdTeacher;
+    var res;
+    var teacher_json = {
+        name: 'Luke Senseney',
+        email: 'lsenseney3@gatech.edu',
+        password: 'DefinitlyMyPassword',
+    };
 
     before(function() {
         Teacher.deleteMany({}).exec();
     });
 
+
     it('creates a teacher', async () => {
-        var teacher_json = {
-            name: 'Luke Senseney',
-            email: 'lsenseney3@gatech.edu',
-            password: 'DefinitlyMyPassword',
-        };
-        const res = await request(app)
+        res = await request(app)
             .post('/api/session/register')
             .send(teacher_json)
             .expect('Content-Type', /json/)
@@ -32,6 +34,16 @@ describe('Creates new teacher', function() {
         createdTeacher = await Teacher.find({ email: 'lsenseney3@gatech.edu' });
         chai.expect(createdTeacher.length).equal(1);
         chai.expect(createdTeacher[0].name).equal('Luke Senseney');
+    });
+
+    it('gets the info for a teacher', async () => {
+        res = await request(app)
+            .get('/api/session')
+            .set('Authorization', 'Bearer ' + res.body.token)
+            .send({})
+            .expect(200);
+        chai.expect(res.body.name).equals(teacher_json.name);
+        chai.expect(res.body.email).equals(teacher_json.email);
     });
 
     it("Doesn't allow duplicates", async () => {
@@ -71,7 +83,7 @@ describe('Creates new teacher', function() {
         studentJson = { student_id: '007', teacher: createdTeacher[0]._id };
         var studentId = '007';
         var createdStudent = await new Student(studentJson).save();
-        const res = await request(app)
+        res = await request(app)
             .post('/api/session/student')
             .send({ student_id: createdTeacher[0].teacher_id + '007' })
             .expect(200);

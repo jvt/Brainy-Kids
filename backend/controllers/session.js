@@ -165,3 +165,7 @@ module.exports.loginStudent = async (req, res) => {
         student: student
     });
 };
+
+module.exports.getInfo = async (req, res) => {
+    return res.status(200).json(await Teacher.findById(req.user._id));
+};
