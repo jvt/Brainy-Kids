@@ -38,7 +38,7 @@ describe('Creates new teacher', function() {
 
     it('gets the info for a teacher', async () => {
         res = await request(app)
-            .get('/api/session/teacherinfo')
+            .get('/api/session/info')
             .set('Authorization', 'Bearer ' + res.body.token)
             .send({})
             .expect(200);
