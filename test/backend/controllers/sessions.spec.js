@@ -42,8 +42,8 @@ describe('Creates new teacher', function() {
             .set('Authorization', 'Bearer ' + res.body.token)
             .send({})
             .expect(200);
-        chai.expect(res.body.name).equals(teacher_json.name);
-        chai.expect(res.body.email).equals(teacher_json.email);
+        chai.expect(res.body.teacher.name).equals(teacher_json.name);
+        chai.expect(res.body.teacher.email).equals(teacher_json.email);
     });
 
     it("Doesn't allow duplicates", async () => {
@@ -97,8 +97,8 @@ describe('Creates new teacher', function() {
             .set('Authorization', 'Bearer ' + res.body.token)
             .send({})
             .expect(200);
-        chai.expect(res.body.student_id).equals(studentJson.student_id);
-        chai.expect(res.body.teacher).equals(studentJson.teacher.toString());
+        chai.expect(res.body.student.student_id).equals(studentJson.student_id);
+        chai.expect(res.body.student.teacher).equals(studentJson.teacher.toString());
     });
 
     Teacher.deleteMany({ name: 'Luke Senseney' }).exec();
