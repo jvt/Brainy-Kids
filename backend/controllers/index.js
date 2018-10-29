@@ -6,3 +6,4 @@ module.exports.static = require('./static');
 module.exports.session = require('./session');
 module.exports.focusitem = require('./focusitem');
 module.exports.student = require('./student');
+module.exports.teacher = require('./teacher');
