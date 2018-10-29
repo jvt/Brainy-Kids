@@ -169,3 +169,7 @@ module.exports.loginStudent = async (req, res) => {
 module.exports.getInfo = async (req, res) => {
     return res.status(200).json(await Teacher.findById(req.user._id));
 };
+
+module.exports.getStudentInfo = async (req, res) => {
+    return res.status(200).json(await Student.findById(req.user._id));
+};

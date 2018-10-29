@@ -38,7 +38,7 @@ describe('Creates new teacher', function() {
 
     it('gets the info for a teacher', async () => {
         res = await request(app)
-            .get('/api/session')
+            .get('/api/session/teacherinfo')
             .set('Authorization', 'Bearer ' + res.body.token)
             .send({})
             .expect(200);
@@ -89,6 +89,16 @@ describe('Creates new teacher', function() {
             .expect(200);
         chai.expect(res.body.student._id).equal(createdStudent._id.toString());
         Student.deleteMany(studentJson);
+    });
+
+    it('Gets the info of a student', async () => {
+        res = await request(app)
+            .get('/api/session/studentinfo')
+            .set('Authorization', 'Bearer ' + res.body.token)
+            .send({})
+            .expect(200);
+        chai.expect(res.body.student_id).equals(studentJson.student_id);
+        chai.expect(res.body.teacher).equals(studentJson.teacher.toString());
     });
 
     Teacher.deleteMany({ name: 'Luke Senseney' }).exec();
