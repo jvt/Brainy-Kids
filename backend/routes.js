@@ -22,37 +22,37 @@ module.exports = (app, passport) => {
 	/**
 	 * Program Routes
 	 */
-	app.get('/api/programs', [], controllers.program.getAll);
-	app.get('/api/program/:id', [], controllers.program.getOne);
-	app.post('/api/program', [], controllers.program.create);
-	app.put('/api/program/:id', [], controllers.program.update);
-	app.delete('/api/program/:id', [], controllers.program.deleteOne);
+	app.get('/api/programs', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getAll);
+	app.get('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getOne);
+	app.post('/api/program', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.create);
+	app.put('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.update);
+	app.delete('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.deleteOne); 
 
 	/**
 	 * Focus Item Routes
 	 */
-	app.get('/api/focusitem', [], controllers.focusitem.getAll);
-	app.get('/api/focusitem/:id', [], controllers.focusitem.getOne);
-	app.post('/api/focusitem', [], controllers.focusitem.create);
-	app.put('/api/focusitem/:id', [], controllers.focusitem.update);
-	app.delete('/api/focusitem/:id', [], controllers.focusitem.deleteOne);
+	app.get('/api/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.focusitem.getAll);
+	app.get('/api/focusitem/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.focusitem.getOne);
+	app.post('/api/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.focusitem.create);
+	app.put('/api/focusitem/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.focusitem.update);
+	app.delete('/api/focusitem/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.focusitem.deleteOne);
 
 	/**
 	 * Student Routes
 	 */
-	app.get('/api/student', [], controllers.student.getAll);
-	app.get('/api/student/:id', [], controllers.student.getOne);
-	app.post('/api/student', [], controllers.student.create);
-	app.put('/api/student/:id', [], controllers.student.update);
-	app.delete('/api/student/:id', [], controllers.student.deleteOne);
+	app.get('/api/student', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.student.getAll);
+	app.get('/api/student/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.student.getOne);
+	app.post('/api/student', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.student.create);
+	app.put('/api/student/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.student.update);
+	app.delete('/api/student/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.student.deleteOne);
 
 	/**
 	 * Analytics Routes
 	 */
-	app.post('/api/analytics/hearatale', [], controllers.analytics.hearatale);
+	app.post('/api/analytics/hearatale', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.hearatale);
 	app.post(
 		'/api/analytics/application',
-		[],
+		[passport.authenticate('jwt', PASSPORT_OPTIONS)],
 		controllers.analytics.application
 	);
 

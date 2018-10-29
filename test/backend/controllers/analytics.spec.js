@@ -1,6 +1,7 @@
 const chai = require('chai');
 const request = require('supertest');
 const Analytic = require('../../../backend/models/analytic');
+const Teacher = require('../../../backend/models/teacher');
 const app = require('../../../server');
 
 var valid_app_analytic = {
@@ -32,9 +33,25 @@ var valid_hearatale_analytic = {
 };
 
 describe('Creates new analytics', () => {
+    var token;
+    it('Creates a teacher to get a JSON token', async () => {
+        var teacher_json = {
+            name: 'Luke Senseney',
+            email: 'lsenseney3@gatech.edu',
+            password: 'DefinitlyMyPassword',
+        };
+        const res = await request(app)
+            .post('/api/session/register')
+            .send(teacher_json)
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        token = res.body.token;
+    });
 	it('hearatale - responds with a status ok', async () => {
 		const res = await request(app)
 			.post('/api/analytics/hearatale')
+            .set('Authorization', 'Bearer ' + token)
 			.send(valid_hearatale_analytic)
 			.expect('Content-Type', /json/)
 			.expect(200);
@@ -42,6 +59,7 @@ describe('Creates new analytics', () => {
 	it('application - responds with a status ok', async () => {
 		const res = await request(app)
 			.post('/api/analytics/application')
+            .set('Authorization', 'Bearer ' + token)
 			.send(valid_app_analytic)
 			.expect('Content-Type', /json/)
 			.expect(200);
@@ -49,6 +67,7 @@ describe('Creates new analytics', () => {
 	it('hearatale - invalid', async () => {
 		const res = await request(app)
 			.post('/api/analytics/hearatale')
+            .set('Authorization', 'Bearer ' + token)
 			.send(invalid_app_analytic)
 			.expect('Content-Type', /json/)
 			.expect(500);
@@ -56,8 +75,11 @@ describe('Creates new analytics', () => {
 	it('application - invalid', async () => {
 		const res = await request(app)
 			.post('/api/analytics/application')
+            .set('Authorization', 'Bearer ' + token)
 			.send(invalid_app_analytic)
 			.expect('Content-Type', /json/)
 			.expect(500);
 	});
+
+    Teacher.deleteMany({ name: 'Luke Senseney' }).exec();
 });
