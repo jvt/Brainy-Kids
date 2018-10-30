@@ -57,15 +57,16 @@ class LoginPage extends Component {
 	}
 
 	onSubmit() {
-		console.log(this.props);
 		const { email, password } = this.state;
 		const { login } = this.props;
 		if (email.length === 0 || password.length === 0) {
+			this.invalidUsernamePasswordAlert();
 			this.setState({ loading: false, buttonDisabled: true });
 			return;
 		}
 
 		this.setState({ loading: true });
+
 		fetch(`/api/session/login`, {
 			method: 'POST',
 			headers: {
@@ -90,7 +91,7 @@ class LoginPage extends Component {
 			})
 			.catch(err => {
 				console.error(err);
-				this.setState({ loading: false });
+				this.setState({ loading: false, password: '' });
 				this.invalidUsernamePasswordAlert();
 			});
 	}
@@ -116,6 +117,7 @@ class LoginPage extends Component {
 								type="email"
 								style={{ marginTop: 20 }}
 								onChange={this.onEmailChange.bind(this)}
+								onPressEnter={this.onSubmit}
 							/>
 							<Input
 								placeholder="•••••••"
@@ -129,6 +131,7 @@ class LoginPage extends Component {
 								value={password}
 								type="password"
 								style={{ marginTop: 20 }}
+								onPressEnter={this.onSubmit}
 								onChange={this.onPasswordChange.bind(this)}
 							/>
 							<Button
