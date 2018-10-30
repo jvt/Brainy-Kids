@@ -45,6 +45,11 @@ class SideNav extends Component {
 							<Icon type="user" />Students
 						</Link>
 					</Menu.Item>
+					<Menu.Item key="account">
+						<Link to="/account">
+							<Icon type="idcard" />My Account
+						</Link>
+					</Menu.Item>
 					<Menu.Item key="logout">
 						<Link to="/logout">
 							<Icon type="logout" />Logout
