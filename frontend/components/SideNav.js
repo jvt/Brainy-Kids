@@ -10,11 +10,16 @@ class SideNav extends Component {
 	}
 
 	render() {
+		let selectedKey = this.props.active || 'dashboard';
+		if (selectedKey === 'home') {
+			selectedKey = 'dashboard';
+		}
+
 		return (
 			<Col xs={0} sm={0} md={5} style={{ height: '100vh' }}>
 				<Menu
 					style={{ width: '100%', height: '100vh' }}
-					defaultSelectedKeys={[this.props.active || 'dashboard']}
+					defaultSelectedKeys={[selectedKey]}
 					mode="inline">
 					<Menu.Item
 						key="home"
