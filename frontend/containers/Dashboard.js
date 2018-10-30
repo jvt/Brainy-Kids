@@ -15,16 +15,30 @@ class Dashboard extends Component {
 			<PageFormat page="dashboard">
 				<Row type="flex" justify="">
 					<Col span={4}>
-						<Link to="/users">
-							<div className="clearfix" style={{textAlign: 'center', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 4, padding: 20}}>
+						<Link to="/students">
+							<div
+								className="clearfix"
+								style={{
+									textAlign: 'center',
+									border: '1px solid rgba(0,0,0,0.1)',
+									borderRadius: 4,
+									padding: 20,
+								}}>
 								<h2>5</h2>
 								<p>Students</p>
 							</div>
 						</Link>
 					</Col>
 					<Col span={4} offset={1}>
-						<Link to="/users">
-							<div className="clearfix" style={{textAlign: 'center', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 4, padding: 20}}>
+						<Link to="/students">
+							<div
+								className="clearfix"
+								style={{
+									textAlign: 'center',
+									border: '1px solid rgba(0,0,0,0.1)',
+									borderRadius: 4,
+									padding: 20,
+								}}>
 								<h2>84%</h2>
 								<p>Completed</p>
 							</div>
@@ -32,7 +46,7 @@ class Dashboard extends Component {
 					</Col>
 				</Row>
 			</PageFormat>
-		)
+		);
 	}
 }
 
