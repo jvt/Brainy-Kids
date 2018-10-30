@@ -1,14 +1,44 @@
 const Program = require('mongoose').model('Program');
+const FocusItem = require('mongoose').model('Focus_Item');
 
 module.exports.getAll = (req, res) => {
 	Program.find({})
-		.then(programs => {
-			return res.status(200).json({
-				status: 'ok',
-				programs: programs ? programs : [], // Ensure we always at the bare minimum send back an empty array
-			});
+		.then(async programs => {
+			// Short circuit the code below
+			if (!programs) {
+				return res.status(200).json({
+					status: 'ok',
+					programs: [],
+				});
+			}
+
+			// Adds a ?focus_items=true query parameter to automatically return all associated focus_items too in a single API call
+			if (req.query.focus_items === 'true') {
+				const populatedPrograms = await Promise.all(
+					programs.map(async p => {
+						const focus_items = await FocusItem.find({
+							program: p._id,
+						});
+
+						const pJSON = p.toJSON(); // We have to cast to a JSON object first before modifying
+						pJSON.focus_items = focus_items;
+						return pJSON;
+					})
+				);
+
+				return res.status(200).json({
+					status: 'ok',
+					programs: populatedPrograms ? populatedPrograms : [],
+				});
+			} else {
+				return res.status(200).json({
+					status: 'ok',
+					programs: programs ? programs : [], // Ensure we always at the bare minimum send back an empty array
+				});
+			}
 		})
 		.catch(err => {
+			console.error(err);
 			return res.status(500).json({
 				status: 'error',
 				error: err,
