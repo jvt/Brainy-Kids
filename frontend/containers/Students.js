@@ -1,60 +1,56 @@
 import React, { Component } from 'react';
 import { Row, Col, Card, List } from 'antd';
+import { Link, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import PageFormat from '../components/PageFormat';
 
-import { Link, withRouter } from 'react-router-dom';
-
-const users = [
-	{
-		_id: '21349',
-		name: 'Joe Torraca',
-		lastEvent: new Date('04/02/2018'),
-	},
-	{
-		_id: '1042890',
-		name: 'Paul Dorsch',
-		lastEvent: new Date('03/28/2018'),
-	},
-	{
-		_id: '1038392',
-		name: 'Eric Sheen',
-		lastEvent: new Date('04/01/2018'),
-	},
-	{
-		_id: '32174890',
-		name: 'Luke Senseney',
-		lastEvent: new Date('04/04/2018'),
-	},
-	{
-		_id: '1234125',
-		name: 'Asher Kenerly',
-		lastEvent: new Date('02/20/2018'),
-	},
-];
+import actions from '../actions';
 
 class Students extends Component {
 	constructor(props) {
 		super(props);
 	}
 
+	componentWillMount() {
+		const { students, loadStudents } = this.props;
+		if (!students) {
+			loadStudents();
+		}
+	}
+
 	render() {
+		const { students, loading, error } = this.props;
+
+		console.log(error);
+		console.log(students);
+		console.log(loading);
+
+		if (error) {
+			return (
+				<PageFormat page="students" loading={loading}>
+					<p>{error}</p>
+				</PageFormat>
+			);
+		}
+
 		return (
-			<PageFormat page="students">
+			<PageFormat page="students" loading={loading}>
 				<List
 					itemLayout="horizontal"
-					dataSource={users}
-					renderItem={user => (
+					dataSource={students}
+					renderItem={student => (
 						<List.Item
 							actions={[
-								<Link to={`/users/${user._id}`}>
+								<Link to={`/students/${student._id}`}>
 									View Student
 								</Link>,
 							]}>
 							<List.Item.Meta
 								title={
-									<Link to={`/users/${user._id}`}>
-										{user.name}
+									<Link to={`/students/${student._id}`}>
+										{student.student_id}
 									</Link>
 								}
 								description=""
@@ -67,4 +63,21 @@ class Students extends Component {
 	}
 }
 
-export default withRouter(Students);
+const mapStateToProps = state => {
+	return {
+		students: state.students.data,
+		loading: state.students.loading,
+		error: state.students.error,
+	};
+};
+
+const mapDispatchToProps = dispatch => {
+	return bindActionCreators({ ...actions.students }, dispatch);
+};
+
+export default withRouter(
+	connect(
+		mapStateToProps,
+		mapDispatchToProps
+	)(Students)
+);

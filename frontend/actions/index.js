@@ -6,3 +6,6 @@ module.exports.teacher = teacher;
 
 import * as programs from './programs';
 module.exports.programs = programs;
+
+import * as students from './students';
+module.exports.students = students;
