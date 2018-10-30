@@ -17,7 +17,7 @@ const AuthGuard = ({
 	token,
 	history,
 	adminCheck,
-	reloadUserData,
+	reloadTeacherData,
 	...rest
 }) => {
 	if (token && !teacher) {
