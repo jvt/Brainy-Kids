@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/jvt/Brainy-Kidz.svg?style=svg)](https://circleci.com/gh/jvt/Brainy-Kidz)
+[![CircleCI](https://circleci.com/gh/jvt/Brainy-Kids.svg?style=svg)](https://circleci.com/gh/jvt/Brainy-Kids)
 
 # 8108 - Brainy Kids Administration panel and Analytics Platform
 
