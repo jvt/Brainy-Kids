@@ -1,106 +1,137 @@
-const chai = require('chai');
+const expect = require('chai').expect;
 const request = require('supertest');
 const Teacher = require('../../../backend/models/teacher');
 const Student = require('../../../backend/models/student');
 const app = require('../../../server');
 
-describe('Creates new teacher', function() {
-    var createdTeacher;
-    var res;
-    var teacher_json = {
-        name: 'Luke Senseney',
-        email: 'lsenseney3@gatech.edu',
-        password: 'DefinitlyMyPassword',
-    };
+const PRE_ALL_TEST_USER = {
+    name: 'George Burdell',
+    email: 'gburdell3@gatech.edu',
+    password: '123456789',
+    teacher_id: '102',
+};
 
-    before(function() {
-        Teacher.deleteMany({}).exec();
+const GOOD_TEACHER_JSON_1 = {
+    name: 'Luke Senseney',
+    email: 'lsenseney3@gatech.edu',
+    password: 'DefinitlyMyPassword',
+};
+
+const MISSING_EMAIL = {
+    name: 'Luke Senseney',
+    email: '',
+    password: 'DefinitlyMyPassword',
+};
+
+describe('Teacher Controller', function() {
+    let token;
+
+    before(async function() {
+        await Teacher.deleteMany({}).exec();
+
+        const tokenUser = await request(app)
+            .post('/api/session/register')
+            .send(PRE_ALL_TEST_USER)
+            .expect('Content-Type', /json/)
+            .expect(200);
+        token = tokenUser.body.token;
     });
 
+    after(async function() {
+        await Teacher.deleteMany({}).exec();
+    });
 
-    it('creates a teacher', async () => {
-        res = await request(app)
+    it('creates a teacher', async function() {
+        const res = await request(app)
             .post('/api/session/register')
-            .send(teacher_json)
+            .send(GOOD_TEACHER_JSON_1)
             .expect('Content-Type', /json/)
             .expect(200);
 
-        chai.expect(res.body).to.be.an('object');
-        chai.expect(res.body.status).to.be.a('string');
-        chai.expect(res.body.status).to.equal('ok');
-        chai.expect(res.body.teacher.email).equal('lsenseney3@gatech.edu');
-        chai.expect(res.body.teacher.name).equal('Luke Senseney');
+        expect(res.body).to.be.an('object');
+        expect(res.body.status).to.be.a('string');
+        expect(res.body.status).to.equal('ok');
+        expect(res.body.teacher._id).be.a('string');
+        expect(res.body.teacher.email).equal(GOOD_TEACHER_JSON_1.email);
+        expect(res.body.teacher.name).equal(GOOD_TEACHER_JSON_1.name);
+        expect(res.body.teacher.password).to.be.undefined;
+        expect(res.body.token).to.be.a('string');
 
-        createdTeacher = await Teacher.find({ email: 'lsenseney3@gatech.edu' });
-        chai.expect(createdTeacher.length).equal(1);
-        chai.expect(createdTeacher[0].name).equal('Luke Senseney');
+        const createdTeacher = await Teacher.findById(res.body.teacher._id);
+        expect(createdTeacher).to.be.an('object');
+        expect(createdTeacher.name).equal(GOOD_TEACHER_JSON_1.name);
     });
 
-    it('gets the info for a teacher', async () => {
-        res = await request(app)
-            .get('/api/session/teacherinfo')
-            .set('Authorization', 'Bearer ' + res.body.token)
-            .send({})
+    it('gets the info the logged in teacher', async function() {
+        const res = await request(app)
+            .get('/api/session/info')
+            .set('Authorization', 'Bearer ' + token)
             .expect(200);
-        chai.expect(res.body.teacher.name).equals(teacher_json.name);
-        chai.expect(res.body.teacher.email).equals(teacher_json.email);
+        expect(res.body).to.be.an('object');
+        expect(res.body.status).to.be.a('string');
+        expect(res.body.status).to.equal('ok');
+        expect(res.body.teacher).to.be.an('object');
+        expect(res.body.teacher.name).equals(PRE_ALL_TEST_USER.name);
+        expect(res.body.teacher.email).equals(PRE_ALL_TEST_USER.email);
     });
 
-    it("Doesn't allow duplicates", async () => {
-        var teacher_json2 = {
+    it("Doesn't allow duplicates", async function() {
+        const res = await request(app)
+            .post('/api/session/register')
+            .send(GOOD_TEACHER_JSON_1)
+            .expect(409);
+
+        expect(res.body.status).to.be.a('string');
+        expect(res.body.status).to.equal('error');
+        expect(res.body.message).to.be.a('string');
+    });
+
+    it('Increments ids', async function() {
+        const teacher_A = {
             name: 'Not Senseney',
-            email: 'LSEnseney3@gatech.edu',
+            email: 'lsenseney4@gatech.edu',
             password: 'DefinitlyMyPasswordblah',
         };
+        const teacher_B = {
+            name: 'Not Senseney',
+            email: 'lsenseney5@gatech.edu',
+            password: 'ShhhhSecret',
+        };
+        const res = await request(app)
+            .post('/api/session/register')
+            .send(teacher_A)
+            .expect(200);
+
         const res2 = await request(app)
             .post('/api/session/register')
-            .send(teacher_json2)
-            .expect(409);
-    });
-
-    it('Increments ids', async () => {
-        var teacher_json3 = {
-            name: 'Not Senseney',
-            email: 'lsenseney4@gatech.edu',
-            password: 'DefinitlyMyPasswordblah',
-        };
-        const res3 = await request(app)
-            .post('/api/session/register')
-            .send(teacher_json3)
+            .send(teacher_B)
             .expect(200);
 
-        var createdTeacher2 = await Teacher.find({
-            email: 'lsenseney4@gatech.edu',
-        });
-        chai.expect(createdTeacher2.length).equal(1);
+        const A_ID = parseInt(res.body.teacher.teacher_id);
+        const B_ID = parseInt(res2.body.teacher.teacher_id);
 
-        chai.expect(parseInt(createdTeacher2[0].teacher_id)).equal(
-            parseInt(createdTeacher[0].teacher_id) + 1
-        );
+        expect(A_ID).equal(B_ID - 1);
     });
 
-    it('Logs in a student', async () => {
-        studentJson = { student_id: '007', teacher: createdTeacher[0]._id };
-        var studentId = '007';
-        var createdStudent = await new Student(studentJson).save();
-        res = await request(app)
-            .post('/api/session/student')
-            .send({ student_id: createdTeacher[0].teacher_id + '007' })
-            .expect(200);
-        chai.expect(res.body.student._id).equal(createdStudent._id.toString());
-        Student.deleteMany(studentJson);
-    });
+    // it('Logs in a student', async function() {
+    //     studentJson = { student_id: '007', teacher: createdTeacher[0]._id };
+    //     var studentId = '007';
+    //     var createdStudent = await new Student(studentJson).save();
+    //     const res = await request(app)
+    //         .post('/api/session/student')
+    //         .send({ student_id: createdTeacher[0].teacher_id + '007' })
+    //         .expect(200);
+    //     expect(res.body.student._id).equal(createdStudent._id.toString());
+    //     Student.deleteMany(studentJson);
+    // });
 
-    it('Gets the info of a student', async () => {
-        res = await request(app)
-            .get('/api/session/studentinfo')
-            .set('Authorization', 'Bearer ' + res.body.token)
-            .send({})
-            .expect(200);
-        chai.expect(res.body.student.student_id).equals(studentJson.student_id);
-        chai.expect(res.body.student.teacher).equals(studentJson.teacher.toString());
-    });
-
-    Teacher.deleteMany({ name: 'Luke Senseney' }).exec();
-    Teacher.deleteMany({ name: 'Not Senseney' }).exec();
+    // it('Gets the info of a student', async function() {
+    //     const res = await request(app)
+    //         .get('/api/session/studentinfo')
+    //         .set('Authorization', 'Bearer ' + token)
+    //         .send({})
+    //         .expect(200);
+    //     expect(res.body.student.student_id).equals(studentJson.student_id);
+    //     expect(res.body.student.teacher).equals(studentJson.teacher.toString());
+    // });
 });
