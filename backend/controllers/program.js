@@ -148,3 +148,20 @@ module.exports.deleteOne = (req, res) => {
 			});
 		});
 };
+
+module.exports.getFocusItemByProgram = (req, res) => {
+	FocusItem.find({program: req.params.id})
+	.then(focus_items => {
+		return res.status(200).json({
+			status: 'ok',
+			focus_items: focus_items,
+		});
+	})
+	.catch(err => {
+		return res.status(404).json({
+			status: 'error',
+			error: err,
+			message: 'Unable to find a program by id: ' + req.params.id,
+		});
+	});
+};
