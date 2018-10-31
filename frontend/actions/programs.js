@@ -24,7 +24,7 @@ const loadProgramsLoading = () => {
 module.exports.loadPrograms = () => {
 	return (dispatch, getState) => {
 		dispatch(loadProgramsLoading());
-		fetch(`/api/programs`, {
+		fetch(`/api/programs?focus_items=true`, {
 			method: 'GET',
 			headers: util.generateAPIHeaders(getState),
 		})
