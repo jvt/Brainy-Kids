@@ -17,7 +17,8 @@ module.exports = (app, passport) => {
 	app.post('/api/session/register', [], controllers.session.newTeacher);
 	app.post('/api/session/student', [], controllers.session.loginStudent);
     app.get('/api/session/info', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getInfo);
-    app.get('/api/session/studentinfo', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getStudentInfo);
+	app.get('/api/session/studentinfo', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getStudentInfo);
+	app.get('/api/session/resetpassword', [], controllers.session.resetPassword);
 
 	app.get('/status', [], controllers.static.status);
 

@@ -100,16 +100,7 @@ module.exports.login = async (req, res) => {
         });
     }
 
-    const payload = {
-        id: teacher._id,
-        type: consts.TEACHER,
-    };
-
-    const jwtToken = jwt.sign(payload, process.env.JWT_SECRET);
-
-    const cleanTeacher = await Teacher.findById(teacher._id).catch(error =>
-        unexpectedError(error, res)
-    );
+    teacher.password = req.
 
     return res.json({
         status: 'ok',
@@ -166,51 +157,45 @@ module.exports.loginStudent = async (req, res) => {
     });
 };
 
-module.exports.loginStudent = async (req, res) => {
-    const INCORRECT_MESSAGE = 'Your id / password combination is incorrect.';
+module.exports.resetPassword = async (req, res) => {
 
-    const teacher = await Teacher.findOne({
-        teacher_id: req.body.student_id.substring(0, 3)
-    });
-    
+    const teacher = await Teacher.findById(req.user._id);
+
     if (!teacher) {
         // We have a random delay to prevent time-attacks
         setTimeout(() => {
-            if(!teacher){
-                return res.status(403).json({
-                    status: 'error',
-                    message: INCORRECT_MESSAGE,
-                });
-            }
-        }, Math.random() * 100);
-        return;
-    }
-
-    const student = await Student.findOne({teacher:teacher._id, student_id:req.body.student_id.substring(3)});
-
-    if (!student) {
-        // We have a random delay to prevent time-attacks
-        console.log("Bad student");
-        setTimeout(() => {
             return res.status(403).json({
                 status: 'error',
-                message: INCORRECT_MESSAGE,
+                message: 'You are not signed in as a Teacher.',
             });
         }, Math.random() * 100);
         return;
     }
 
-    const payload = {
-        id: student._id,
-        type: consts.STUDENT,
-    };
+    if(req.body.password.length <= 7) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Unable to change password. New password too short.',
+        });
+    }
 
-    const jwtToken = jwt.sign(payload, process.env.JWT_SECRET);
+    // const passwordsEqual = await bcrypt.compare(
+    //     req.body.password,
+    //     req.body.confirm_password
+    // );
+
+    if (req.body.password !== req.body.confirm_password) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Unable to change password. New password does not match confirm password.',
+        });
+    }
+
+    teacher.password = hash(req.body.password);
+    teacher.save();
 
     return res.json({
-        status: 'ok',
-        token: jwtToken,
-        student: student
+        status: 'ok'
     });
 };
 
