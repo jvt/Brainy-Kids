@@ -6,6 +6,7 @@ import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import AuthGuard from './components/AuthGuard';
 
 import LoginPage from './containers/LoginPage';
+import Register from './containers/Register';
 import LogoutPage from './containers/LogoutPage';
 import Dashboard from './containers/Dashboard';
 import Programs from './containers/Programs';
@@ -21,6 +22,7 @@ const Routes = () => {
 		<div>
 			<Switch>
 				<Route path="/" exact component={LoginPage} />
+				<Route path="/register" exact component={Register} />
 				<AuthGuard path="/dashboard" exact component={Dashboard} />
 				<AuthGuard path="/programs" exact component={Programs} />
 				<AuthGuard
