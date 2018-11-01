@@ -100,8 +100,6 @@ module.exports.login = async (req, res) => {
         });
     }
 
-    teacher.password = req.
-
     return res.json({
         status: 'ok',
         token: jwtToken,
