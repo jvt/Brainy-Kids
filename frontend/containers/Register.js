@@ -8,16 +8,19 @@ import { connect } from 'react-redux';
 import actions from '../actions';
 import { bindActionCreators } from 'redux';
 
-class LoginPage extends Component {
+class Register extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			buttonDisabled: true,
 			loading: false,
+			name: '',
 			email: '',
 			password: '',
+			confirmPassword: '',
 		};
 		this.onSubmit = this.onSubmit.bind(this);
+		this.onFieldChange = this.onFieldChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -30,58 +33,82 @@ class LoginPage extends Component {
 		}
 	}
 
-	onEmailChange(e) {
-		let buttonDisabled = true;
-		if (e.target.value.length > 0 && this.state.password.length > 0) {
-			buttonDisabled = false;
-		}
-
-		this.setState({ email: e.target.value, buttonDisabled });
+	onFieldChange(name, e) {
+		console.log(e.target.value);
+		this.setState({ [name]: e.target.value }, () => {
+			this.calculateButtonStatus();
+		});
 	}
 
-	onPasswordChange(e) {
-		let buttonDisabled = true;
-		if (e.target.value.length > 0 && this.state.email.length > 0) {
-			buttonDisabled = false;
+	calculateButtonStatus() {
+		const { email, password, confirmPassword, name } = this.state;
+		if (!email || !password || !confirmPassword || !name) {
+			return this.setState({ buttonDisabled: true });
 		}
 
-		this.setState({ password: e.target.value, buttonDisabled });
+		return this.setState({ buttonDisabled: false });
 	}
 
-	invalidUsernamePasswordAlert() {
+	invalidUsernamePasswordAlert(description) {
 		notification['error']({
-			message: 'Invalid email / password',
-			description:
-				'The email and password combination you have entered is not correct.',
+			message: 'An error occurred!',
+			description,
 		});
 	}
 
 	onSubmit() {
-		const { email, password } = this.state;
+		const { name, email, password, confirmPassword } = this.state;
 		const { login } = this.props;
-		if (email.length === 0 || password.length === 0) {
-			this.invalidUsernamePasswordAlert();
+		if (
+			name.length === 0 ||
+			email.length === 0 ||
+			password.length === 0 ||
+			confirmPassword.length === 0
+		) {
+			this.invalidUsernamePasswordAlert(
+				`You're missing a required field.`
+			);
+			this.setState({ loading: false, buttonDisabled: true });
+			return;
+		}
+
+		if (password.length <= 7) {
+			this.invalidUsernamePasswordAlert(
+				`Your password must be longer than 7 characters`
+			);
+			this.setState({ loading: false, buttonDisabled: true });
+			return;
+		}
+
+		if (password !== confirmPassword) {
+			this.invalidUsernamePasswordAlert(`Your passwords do not match`);
 			this.setState({ loading: false, buttonDisabled: true });
 			return;
 		}
 
 		this.setState({ loading: true });
 
-		fetch(`/api/session/login`, {
+		fetch(`/api/session/register`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
+				name,
 				email,
+				confirmPassword,
 				password,
 			}),
 		})
 			.then(res => res.json())
 			.then(json => {
 				if (json.status !== 'ok') {
-					this.setState({ loading: false, password: '' });
-					this.invalidUsernamePasswordAlert();
+					this.setState({
+						loading: false,
+						password: '',
+						confirmPassword: '',
+					});
+					this.invalidUsernamePasswordAlert(json.message);
 				} else {
 					login(json.token, json.teacher);
 					setTimeout(() => {
@@ -91,13 +118,26 @@ class LoginPage extends Component {
 			})
 			.catch(err => {
 				console.error(err);
-				this.setState({ loading: false, password: '' });
-				this.invalidUsernamePasswordAlert();
+				this.setState({
+					loading: false,
+					password: '',
+					confirmPassword: '',
+				});
+				this.invalidUsernamePasswordAlert(
+					'An internal server error has occurred.'
+				);
 			});
 	}
 
 	render() {
-		const { email, password, loading, buttonDisabled } = this.state;
+		const {
+			name,
+			email,
+			password,
+			confirmPassword,
+			loading,
+			buttonDisabled,
+		} = this.state;
 
 		return (
 			<Row type="flex" justify="center" style={{ marginTop: 50 }}>
@@ -108,10 +148,10 @@ class LoginPage extends Component {
 						</h1>
 						<h3 style={{ textAlign: 'center' }}>Teacher Portal</h3>
 					</div>
-					<Card title="Login to Portal">
+					<Card title="Create Your Teacher Account">
 						<div style={{ textAlign: 'right' }}>
 							<Input
-								placeholder="Email"
+								placeholder="Name"
 								prefix={
 									<Icon
 										type="user"
@@ -119,15 +159,30 @@ class LoginPage extends Component {
 									/>
 								}
 								disabled={loading}
-								value={email}
-								type="email"
+								value={name}
+								type="text"
 								autoFocus
 								style={{ marginTop: 20 }}
-								onChange={this.onEmailChange.bind(this)}
+								onChange={e => this.onFieldChange('name', e)}
 								onPressEnter={this.onSubmit}
 							/>
 							<Input
-								placeholder="•••••••"
+								placeholder="Email"
+								prefix={
+									<Icon
+										type="mail"
+										style={{ color: 'rgba(0,0,0,.25)' }}
+									/>
+								}
+								disabled={loading}
+								value={email}
+								type="email"
+								style={{ marginTop: 20 }}
+								onChange={e => this.onFieldChange('email', e)}
+								onPressEnter={this.onSubmit}
+							/>
+							<Input
+								placeholder="Password"
 								prefix={
 									<Icon
 										type="key"
@@ -139,7 +194,26 @@ class LoginPage extends Component {
 								type="password"
 								style={{ marginTop: 20 }}
 								onPressEnter={this.onSubmit}
-								onChange={this.onPasswordChange.bind(this)}
+								onChange={e =>
+									this.onFieldChange('password', e)
+								}
+							/>
+							<Input
+								placeholder="Confirm Password"
+								prefix={
+									<Icon
+										type="key"
+										style={{ color: 'rgba(0,0,0,.25)' }}
+									/>
+								}
+								disabled={loading}
+								value={confirmPassword}
+								type="password"
+								style={{ marginTop: 20 }}
+								onPressEnter={this.onSubmit}
+								onChange={e =>
+									this.onFieldChange('confirmPassword', e)
+								}
 							/>
 							<Button
 								style={{
@@ -150,12 +224,12 @@ class LoginPage extends Component {
 								disabled={loading || buttonDisabled}
 								onClick={this.onSubmit}
 								type="primary">
-								Login
+								Create Your Account
 							</Button>
 						</div>
 					</Card>
 					<div style={{ paddingTop: 20 }}>
-						<Link to="/register">
+						<Link to="/">
 							<Card>
 								<h4
 									style={{
@@ -163,7 +237,7 @@ class LoginPage extends Component {
 										color: '#40a9ff',
 										textAlign: 'right',
 									}}>
-									Create your teacher account now
+									Already have an account?
 									<Icon type="caret-right" />
 								</h4>
 							</Card>
@@ -190,5 +264,5 @@ export default withRouter(
 	connect(
 		mapStateToProps,
 		mapDispatchToProps
-	)(LoginPage)
+	)(Register)
 );

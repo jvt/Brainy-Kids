@@ -45,7 +45,7 @@ describe('Creates new analytics', function() {
 		await Teacher.deleteMany({}).exec();
 	});
 
-	it('Creates a teacher to get a JSON token', async () => {
+	it('Creates a teacher to get a JSON token', async function() {
 		var teacher_json = {
 			name: 'Luke Senseney',
 			email: 'lsenseney3@gatech.edu',
@@ -59,7 +59,7 @@ describe('Creates new analytics', function() {
 
 		token = res.body.token;
 	});
-	it('hearatale - responds with a status ok', async () => {
+	it('hearatale - responds with a status ok', async function() {
 		const res = await request(app)
 			.post('/api/analytics/hearatale')
 			.set('Authorization', 'Bearer ' + token)
@@ -67,7 +67,7 @@ describe('Creates new analytics', function() {
 			.expect('Content-Type', /json/)
 			.expect(200);
 	});
-	it('application - responds with a status ok', async () => {
+	it('application - responds with a status ok', async function() {
 		const res = await request(app)
 			.post('/api/analytics/application')
 			.set('Authorization', 'Bearer ' + token)
@@ -75,7 +75,7 @@ describe('Creates new analytics', function() {
 			.expect('Content-Type', /json/)
 			.expect(200);
 	});
-	it('hearatale - invalid', async () => {
+	it('hearatale - invalid', async function() {
 		const res = await request(app)
 			.post('/api/analytics/hearatale')
 			.set('Authorization', 'Bearer ' + token)
@@ -83,7 +83,7 @@ describe('Creates new analytics', function() {
 			.expect('Content-Type', /json/)
 			.expect(500);
 	});
-	it('application - invalid', async () => {
+	it('application - invalid', async function() {
 		const res = await request(app)
 			.post('/api/analytics/application')
 			.set('Authorization', 'Bearer ' + token)
@@ -91,6 +91,4 @@ describe('Creates new analytics', function() {
 			.expect('Content-Type', /json/)
 			.expect(500);
 	});
-
-	Teacher.deleteMany({ name: 'Luke Senseney' }).exec();
 });
