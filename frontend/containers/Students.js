@@ -1,10 +1,21 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, List, Icon, Button, Popover, Upload } from 'antd';
+import {
+	Button,
+	Modal,
+	Row,
+	Col,
+	Card,
+	List,
+	Popover,
+	Upload,
+	Icon,
+} from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import PageFormat from '../components/PageFormat';
+import NewStudentModal from '../components/NewStudentModal';
 
 import actions from '../actions';
 
@@ -25,6 +36,12 @@ const PopoverComponent = () => {
 class Students extends Component {
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			modalVisibility: false,
+		};
+
+		this.setModalVisibility = this.setModalVisibility.bind(this);
 	}
 
 	componentWillMount() {
@@ -32,6 +49,10 @@ class Students extends Component {
 		if (!students) {
 			loadStudents();
 		}
+	}
+
+	setModalVisibility(value) {
+		this.setState({ modalVisibility: value });
 	}
 
 	onChange(e) {
@@ -50,19 +71,26 @@ class Students extends Component {
 	render() {
 		const { teacher, students, loading, error } = this.props;
 
-		if (error) {
-			return (
-				<PageFormat page="students" loading={loading}>
-					<p>{error}</p>
-				</PageFormat>
-			);
-		}
+		// if (error) {
+		// 	return (
+		// 		<PageFormat page="students" loading={loading}>
+		// 			<p>{error}</p>
+		// 		</PageFormat>
+		// 	);
+		// }
 
 		return (
 			<PageFormat
 				page="students"
 				loading={loading}
-				popover={<PopoverComponent />}>
+				popover={<PopoverComponent />}
+				extra={
+					<Button
+						type="primary"
+						onClick={() => this.setModalVisibility(true)}>
+						New Student
+					</Button>
+				}>
 				<div
 					style={{
 						width: '100%',
@@ -80,29 +108,36 @@ class Students extends Component {
 						<Button>Upload Excel File</Button>
 					</Upload>
 				</div>
-				<List
-					itemLayout="horizontal"
-					dataSource={students}
-					renderItem={student => (
-						<List.Item
-							actions={[
-								<Link to={`/students/${student._id}`}>
-									View Student
-								</Link>,
-							]}>
-							<List.Item.Meta
-								title={
-									<Link to={`/students/${student._id}`}>
-										<b>{`${teacher.teacher_id}${
-											student.student_id
-										}`}</b>
-									</Link>
-								}
-								description=""
-							/>
-						</List.Item>
-					)}
+				<NewStudentModal
+					visible={this.state.modalVisibility}
+					onOk={() => this.setModalVisibility(false)}
+					onCancel={() => this.setModalVisibility(false)}
 				/>
+				{!students || students.length === 0 ? (
+					<p>You have no students in your classes yet.</p>
+				) : (
+					<List
+						itemLayout="horizontal"
+						dataSource={students}
+						renderItem={student => (
+							<List.Item
+								actions={[
+									<Link to={`/students/${student._id}`}>
+										View Student
+									</Link>,
+								]}>
+								<List.Item.Meta
+									title={
+										<Link to={`/students/${student._id}`}>
+											{student.student_id}
+										</Link>
+									}
+									description=""
+								/>
+							</List.Item>
+						)}
+					/>
+				)}
 			</PageFormat>
 		);
 	}
