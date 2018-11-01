@@ -100,8 +100,14 @@ class LoginPage extends Component {
 		const { email, password, loading, buttonDisabled } = this.state;
 
 		return (
-			<Row type="flex" justify="center" style={{ marginTop: 100 }}>
+			<Row type="flex" justify="center" style={{ marginTop: 50 }}>
 				<Col xs={24} sm={24} md={12} lg={8}>
+					<div style={{ marginBottom: 40 }}>
+						<h1 style={{ textAlign: 'center', fontWeight: 'bold' }}>
+							Brainy Kids
+						</h1>
+						<h3 style={{ textAlign: 'center' }}>Teacher Portal</h3>
+					</div>
 					<Card title="Login to Portal">
 						<div style={{ textAlign: 'right' }}>
 							<Input
@@ -115,6 +121,7 @@ class LoginPage extends Component {
 								disabled={loading}
 								value={email}
 								type="email"
+								autoFocus
 								style={{ marginTop: 20 }}
 								onChange={this.onEmailChange.bind(this)}
 								onPressEnter={this.onSubmit}
@@ -147,6 +154,21 @@ class LoginPage extends Component {
 							</Button>
 						</div>
 					</Card>
+					<div style={{ paddingTop: 20 }}>
+						<Link to="/register">
+							<Card>
+								<h4
+									style={{
+										margin: 0,
+										color: '#40a9ff',
+										textAlign: 'right',
+									}}>
+									Create your teacher account now
+									<Icon type="caret-right" />
+								</h4>
+							</Card>
+						</Link>
+					</div>
 				</Col>
 			</Row>
 		);
