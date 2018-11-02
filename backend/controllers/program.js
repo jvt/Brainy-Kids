@@ -150,7 +150,7 @@ module.exports.deleteOne = (req, res) => {
 };
 
 module.exports.getFocusItemByProgram = (req, res) => {
-	Program.count({id: req.params.id}, function (err, count) {
+	Program.countDocuments({id: req.params.id}, function (err, count) {
 		if (err) {
 			return res.status(500).json({
 				status: 'error',
@@ -164,20 +164,22 @@ module.exports.getFocusItemByProgram = (req, res) => {
 				message: 'Unable to find program ' + req.params.id,
 			});
 		}
+
+		FocusItem.find({program: req.params.id})
+		.then(focus_items => {
+			return res.status(200).json({
+				status: 'ok',
+				focus_items: focus_items ? focus_items : [], // Ensure we always at the bare minimum send back an empty array
+			});
+		})
+		.catch(err => {
+			return res.status(404).json({
+				status: 'error',
+				error: err,
+				message: 'Unable to find program ' + req.params.id,
+			});
+		});
 	});
 
-	FocusItem.find({program: req.params.id})
-	.then(focus_items => {
-		return res.status(200).json({
-			status: 'ok',
-			focus_items: focus_items ? focus_items : [], // Ensure we always at the bare minimum send back an empty array
-		});
-	})
-	.catch(err => {
-		return res.status(404).json({
-			status: 'error',
-			error: err,
-			message: 'Unable to find a program by id: ' + req.params.id,
-		});
-	});
+
 };
