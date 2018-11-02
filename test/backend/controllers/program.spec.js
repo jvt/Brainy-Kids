@@ -7,11 +7,18 @@ const Analytic = require('../../../backend/models/analytic');
 const FocusItem = require('../../../backend/models/focus_item');
 const Program = require('../../../backend/models/program');
 const app = require('../../../server');
+const ingest = require('../ingest');
 
 const GOOD_TEACHER_JSON_1 = {
     name: 'Luke Senseney',
     email: 'lsenseney3@gatech.edu',
     password: 'DefinitlyMyPassword',
+};
+
+const GOOD_TEACHER_JSON_2 = {
+    name: 'Asher Kenerly',
+    email: 'akenerly3@gatech.edu',
+    password: 'ButActuallyThisReallyIsMyPassword',
 };
 
 const program_jsons = [
@@ -32,80 +39,184 @@ const program_jsons = [
     }
 ];
 
-describe('Tests the /api/program routes', function() {
-    var teacher;
-    var token;
-
-	before(async function() {
+describe('Program Controller', function () {
+    before(async function () {
         this.timeout(15000);
-		await Analytic.deleteMany({}).exec();
+        await Analytic.deleteMany({}).exec();
         await Teacher.deleteMany({}).exec();
         await FocusItem.deleteMany({}).exec();
         await Program.deleteMany({}).exec();
         await Student.deleteMany({}).exec();
+    });
 
-        res = await request(app)
-                    .post('/api/session/register')
-                    .send(GOOD_TEACHER_JSON_1)
-                    
-        
-        expect(res.body).to.be.an('object');
-        expect(res.body.status).to.be.a('string');
-        expect(res.body.status).to.equal('ok');
-        expect(res.body.teacher._id).be.a('string');
-        expect(res.body.teacher.email).equal(GOOD_TEACHER_JSON_1.email);
-        expect(res.body.teacher.name).equal(GOOD_TEACHER_JSON_1.name);
-        expect(res.body.teacher.password).to.be.undefined;
-        expect(res.body.token).to.be.a('string');   
-        res = await request(app)
-            .post('/api/session/login')
-            .send({
-                email: GOOD_TEACHER_JSON_1.email,
-                password: GOOD_TEACHER_JSON_1.password
-            });
-        
-        teacher = res.body.teacher
-        token = res.body.token
-        teacher_ref = res.body.cleanTeacher;
-        
-        for (prog in program_jsons) {
-            prog = program_jsons[prog]
+    after(async function () {
+        this.timeout(15000);
+        await Analytic.deleteMany({}).exec();
+        await Teacher.deleteMany({}).exec();
+        await FocusItem.deleteMany({}).exec();
+        await Program.deleteMany({}).exec();
+        await Student.deleteMany({}).exec();
+    });
+
+    describe('Tests with empty DB', async function () {
+        var token;
+        it('Registers a single teacher', async function () {
+            res = await request(app)
+                .post('/api/session/register')
+                .send(GOOD_TEACHER_JSON_1);
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.status).to.equal('ok');
+            expect(res.body.teacher._id).be.a('string');
+            expect(res.body.teacher.email).equal(GOOD_TEACHER_JSON_1.email);
+            expect(res.body.teacher.name).equal(GOOD_TEACHER_JSON_1.name);
+            expect(res.body.teacher.password).to.be.undefined;
+            expect(res.body.token).to.be.a('string');
+
+            token = res.body.token
+        });
+
+        it('GETs /api/programs', async function () {
+            res = await request(app)
+                .get('/api/programs')
+                .set('Authorization', 'Bearer ' + token)
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.status).to.equal('ok');
+            expect(res.body.programs).to.be.a('array');
+            expect(res.body.programs).to.have.lengthOf(0);
+        });
+
+        it('GETs /api/program/:id', async function () {
+            res = await request(app)
+                .get('/api/program/12345abcdef')
+                .set('Authorization', 'Bearer ' + token)
+                .expect(500)
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.status).to.equal('error');
+        });
+
+        it('GETs /api/programs/:id/focusitem', async function () {
+            res = await request(app)
+                .get('/api/program/12345abcdef/focusitem')
+                .set('Authorization', 'Bearer ' + token)
+                .expect(500);
+
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.status).to.equal('error');
+        });
+
+        it('POSTs an invalid program to /api/program', async function () {
             res = await request(app)
                 .post('/api/program')
                 .set('Authorization', 'Bearer ' + token)
-                .send(prog)
-                .expect(200)
-                
-            
-            
+                .send({
+                    name: 'invalid',
+                    description: 'yeah idk',
+                    type: 'this is the invalid part that I just made up'
+                })
+                .expect(500);
+        });
 
-        }
+        it('PUTs an updated program to a program that does not exist', async function () {
+            res = await request(app)
+                .put('/api/program/12345abcdef')
+                .set('Authorization', 'Bearer ' + token)
+                .send({
+                    name: 'invalid',
+                    description: 'yeah idk',
+                    type: 'this is the invalid part that I just made up'
+                })
+                .expect(500);
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.status).to.equal('error');
+        });
+
+        it('DELETEs a program that does not exist', async function () {
+            res = await request(app)
+                .put('/api/program/12345abcdef')
+                .set('Authorization', 'Bearer ' + token)
+                .expect(500);
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.status).to.equal('error');
+        });
     });
 
-    after(async function() {
-        this.timeout(15000);
-		await Analytic.deleteMany({}).exec();
-        await Teacher.deleteMany({}).exec();
-        await FocusItem.deleteMany({}).exec();
-        await Program.deleteMany({}).exec();
-        await Student.deleteMany({}).exec();
-        return;
-        
-	});
 
-	it('get /api/programs', async function() {
-        const res = await request(app)
-            .get('/api/programs')
-            .set('Authorization', 'Bearer ' + token)
-            .expect('Content-Type', /json/)
-            .expect(200);
+
+    describe('Tests with sample db', async function () {
+        before(function () {
+            ingest.ingest(80, 750, 10);
+        });
+
+        var token;
+        it('Registers a single teacher', async function () {
+            res = await request(app)
+                .post('/api/session/register')
+                .send(GOOD_TEACHER_JSON_2);
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.status).to.equal('ok');
+            expect(res.body.teacher._id).be.a('string');
+            expect(res.body.teacher.email).equal(GOOD_TEACHER_JSON_2.email);
+            expect(res.body.teacher.name).equal(GOOD_TEACHER_JSON_2.name);
+            expect(res.body.teacher.password).to.be.undefined;
+            expect(res.body.token).to.be.a('string');
+
+            token = res.body.token
+        });
+
+        it('GETs /api/programs', async function () {
+            res = await request(app)
+                .get('/api/programs')
+                .set('Authorization', 'Bearer ' + token)
 
             expect(res.body).to.be.an('object');
             expect(res.body.status).to.be.a('string');
             expect(res.body.status).to.equal('ok');
             expect(res.body.programs).to.be.a('array');
-            expect(res.body.programs.length).to.equal(program_jsons.length);
-        
-        
-	});
+            expect(res.body.programs).to.have.lengthOf(3);
+        });
+
+        var valid_program;
+        it('GETs /api/programs', async function () {
+            res = await request(app)
+                .get('/api/programs')
+                .set('Authorization', 'Bearer ' + token)
+
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.status).to.equal('ok');
+            expect(res.body.programs).to.be.a('array');
+            expect(res.body.programs).to.have.lengthOf(3);
+            valid_program = res.body.programs[1]
+
+        });
+
+        it('GETs /api/program/:id', async function () {
+            res = await request(app)
+                .get('/api/program/' + valid_program._id)
+                .set('Authorization', 'Bearer ' + token)
+                .expect(200)
+            expect(res.body.program).is.an('object')
+            expect(res.body.program._id).is.equal(valid_program._id)
+            expect(res.body.program.name).is.equal(valid_program.name)
+            expect(res.body.program.type).is.equal(valid_program.type)
+        });
+
+        it('GETs /api/programs/:id/focusitem', async function () {
+            res = await request(app)
+                .get('/api/program/' + valid_program._id + '/focusitem')
+                .set('Authorization', 'Bearer ' + token)
+                .expect(200)
+            expect(res.body).to.be.an('object');
+            expect(res.body.status).to.be.a('string');
+            expect(res.body.focus_items).to.be.an('array');
+
+        });
+    });
 });
