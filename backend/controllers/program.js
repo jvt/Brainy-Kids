@@ -159,7 +159,7 @@ module.exports.analytics = (req, res) => {
 
 	var program_id;
 	try {
-		program_id = Mongoose.Types.ObjectId(req.body.program);
+		program_id = Mongoose.Types.ObjectId(req.params.id);
 	}
 	catch (err) {
 		return res.status(500).json({
@@ -169,7 +169,7 @@ module.exports.analytics = (req, res) => {
 		});
 	}
 
-	Program.countDocuments({ _id: program_id }, function (err, count) {
+	Program.countDocuments({ _id: req.params.id }, function (err, count) {
 		if (err) {
 			return res.status(500).json({
 				status: 'error',
