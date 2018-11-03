@@ -29,6 +29,7 @@ module.exports = (app, passport) => {
 	app.post('/api/program', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.create);
 	app.put('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.update);
 	app.delete('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.deleteOne); 
+	app.get('/api/program/:id/analytics', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.analytics); 
 
 	/**
 	 * Focus Item Routes
