@@ -26,6 +26,7 @@ module.exports = (app, passport) => {
 	 */
 	app.get('/api/programs', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getAll);
 	app.get('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getOne);
+	app.get('/api/program/:id/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getFocusItemByProgram);
 	app.post('/api/program', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.create);
 	app.put('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.update);
 	app.delete('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.deleteOne); 
