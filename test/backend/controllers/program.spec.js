@@ -137,12 +137,27 @@ describe('Program Controller', function () {
 
         it('DELETEs a program that does not exist', async function () {
             res = await request(app)
-                .put('/api/program/12345abcdef')
+                .delete('/api/program/12345abcdef')
                 .set('Authorization', 'Bearer ' + token)
                 .expect(500);
             expect(res.body).to.be.an('object');
             expect(res.body.status).to.be.a('string');
             expect(res.body.status).to.equal('error');
+        });
+
+        it('GETs program analytics by focus item', async function() {
+            res = await request(app)
+                .get('/api/program/12345abcdef/analytics')
+                .set('Authorization', 'Bearer ' + token)
+            
+        });
+
+        it('GETs program analytics by focus item with no token', async function() {
+            res = await request(app)
+                .get('/api/program/12345abcdef/analytics')
+                .expect(401)
+            expect(res.error)
+            expect(res.error.text).is.equal('Unauthorized');
         });
     });
 
