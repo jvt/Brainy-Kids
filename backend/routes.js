@@ -53,6 +53,7 @@ module.exports = (app, passport) => {
 	app.get('/api/teacher/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.getOne);
 	app.put('/api/teacher/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.update);
 	app.delete('/api/teacher/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.deleteOne);
+	app.get('/api/teacher/:id/students', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.getStudents)
 
 	/**
 	 * Analytics Routes
