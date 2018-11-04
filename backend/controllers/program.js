@@ -154,6 +154,7 @@ module.exports.deleteOne = (req, res) => {
 module.exports.analytics = (req, res) => {
 	// If the request was made with a student's token
 	if (req.user.student_id) {
+		console.log('Student tried to login as teacher')
 		return res.status(401).json();
 	}
 
@@ -168,6 +169,7 @@ module.exports.analytics = (req, res) => {
 			message: 'An unexpected internal server error has occurred!',
 		});
 	}
+	// console.log(program_id == req.params.id)
 
 	Program.countDocuments({ _id: req.params.id }, function (err, count) {
 		if (err) {
@@ -229,12 +231,20 @@ module.exports.analytics = (req, res) => {
 				});
 		} else {
 			Analytic.find()
-				.populate('program')
-				.where('program._id').equals(program_id)
+				// .populate('program')
+				.where('program').equals(req.params.id)
+				//.where({program : req.params.id})
 				.populate('student')
-				.where('student.teacher').equals(req.user._id)
+				// .where('student.teacher').equals(req.user._id)
 				.populate('focus_item')
 				.then(function (analytics) {
+					console.log(req.user);
+					for (i in analytics) {
+						if (analytics[i].student.teacher == req.user._id) {
+							console.log(analytics[i])
+						}
+					}
+					console.log(analytics.length);
 					return res.status(200).json({
 						status: 'ok',
 						focus_items: sortAnalyticsIntoFocusItemStructure(analytics)
