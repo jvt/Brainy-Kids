@@ -168,7 +168,7 @@ describe('Program Controller', function () {
             ingest.ingest(80, 750, 10);
         });
 
-        var token;
+        var asher_token;
         it('Registers a single teacher', async function () {
             res = await request(app)
                 .post('/api/session/register')
@@ -181,14 +181,31 @@ describe('Program Controller', function () {
             expect(res.body.teacher.name).equal(GOOD_TEACHER_JSON_2.name);
             expect(res.body.teacher.password).to.be.undefined;
             expect(res.body.token).to.be.a('string');
+            // console.log(res.body.token)
+            asher_token = res.body.token
+        });
 
-            token = res.body.token
+        var random_token;
+        it('Logs in with a random teachers credentials', async function() {
+            Teacher.findOne({})
+                .skip(15)
+                .then(async function(teacher) {
+                    res = await request(app)
+                        .post('/api/session/login')
+                        .send({
+                            email: teacher.email,
+                            password: '123456'
+                        });
+                    // console.log(res.body.token)
+                    random_token = res.body.token
+                        
+                });
         });
 
         it('GETs /api/programs', async function () {
             res = await request(app)
                 .get('/api/programs')
-                .set('Authorization', 'Bearer ' + token)
+                .set('Authorization', 'Bearer ' + asher_token)
 
             expect(res.body).to.be.an('object');
             expect(res.body.status).to.be.a('string');
@@ -201,7 +218,7 @@ describe('Program Controller', function () {
         it('GETs /api/programs', async function () {
             res = await request(app)
                 .get('/api/programs')
-                .set('Authorization', 'Bearer ' + token)
+                .set('Authorization', 'Bearer ' + asher_token)
 
             expect(res.body).to.be.an('object');
             expect(res.body.status).to.be.a('string');
@@ -215,7 +232,7 @@ describe('Program Controller', function () {
         it('GETs /api/program/:id', async function () {
             res = await request(app)
                 .get('/api/program/' + valid_program._id)
-                .set('Authorization', 'Bearer ' + token)
+                .set('Authorization', 'Bearer ' + asher_token)
                 .expect(200)
             expect(res.body.program).is.an('object')
             expect(res.body.program._id).is.equal(valid_program._id)
@@ -226,12 +243,21 @@ describe('Program Controller', function () {
         it('GETs /api/programs/:id/focusitem', async function () {
             res = await request(app)
                 .get('/api/program/' + valid_program._id + '/focusitem')
-                .set('Authorization', 'Bearer ' + token)
+                .set('Authorization', 'Bearer ' + asher_token)
                 .expect(200)
             expect(res.body).to.be.an('object');
             expect(res.body.status).to.be.a('string');
             expect(res.body.focus_items).to.be.an('array');
 
+        });
+
+        it('GETs /api/programs/:id/analytics', async function() {
+            res = await request(app)
+                .get('/api/program/' + valid_program._id + '/analytics')
+                .set('Authorization', 'Bearer ' + random_token)
+                .expect(200)
+            // console.log(res.body)
+            // console.log(res.error)
         });
     });
 });
