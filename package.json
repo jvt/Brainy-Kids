@@ -12,6 +12,8 @@
 		"test": "nyc mocha --exit --recursive test/**/*.spec.js",
 		"testUnix":
 			"NODE_ENV=testing nyc mocha --exit --recursive $(find test -name *.spec.js)",
+		"cross-platform":
+			"nyc mocha --exit --recursive \"./test/**/*.spec.js\"",
 		"ingest": "node test/backend/ingest.js"
 	},
 	"repository": {
