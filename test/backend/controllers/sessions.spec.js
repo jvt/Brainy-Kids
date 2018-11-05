@@ -25,6 +25,7 @@ const MISSING_EMAIL = {
 
 describe('Teacher Controller', function() {
     let token;
+    var createdTeacher;
 
     before(async function() {
         await Teacher.deleteMany({}).exec();
@@ -57,7 +58,7 @@ describe('Teacher Controller', function() {
         expect(res.body.teacher.password).to.be.undefined;
         expect(res.body.token).to.be.a('string');
 
-        const createdTeacher = await Teacher.findById(res.body.teacher._id);
+        createdTeacher = await Teacher.findById(res.body.teacher._id);
         expect(createdTeacher).to.be.an('object');
         expect(createdTeacher.name).equal(GOOD_TEACHER_JSON_1.name);
     });
@@ -113,25 +114,27 @@ describe('Teacher Controller', function() {
         expect(A_ID).equal(B_ID - 1);
     });
 
+    var studentToken;
      it('Logs in a student', async function() {
-         studentJson = { student_id: '007', teacher: createdTeacher[0]._id };
+         studentJson = { student_id: '007', teacher: createdTeacher._id };
          var studentId = '007';
          var createdStudent = await new Student(studentJson).save();
          const res = await request(app)
              .post('/api/session/student')
-             .send({ student_id: createdTeacher[0].teacher_id + '007' })
+             .send({ student_id: createdTeacher.teacher_id + '007' })
              .expect(200);
          expect(res.body.student._id).equal(createdStudent._id.toString());
-         Student.deleteMany(studentJson);
+         studentToken = res.body.token;
      });
 
      it('Gets the info of a student', async function() {
          const res = await request(app)
              .get('/api/session/studentinfo')
-             .set('Authorization', 'Bearer ' + token)
+             .set('Authorization', 'Bearer ' + studentToken)
              .send({})
              .expect(200);
          expect(res.body.student.student_id).equals(studentJson.student_id);
          expect(res.body.student.teacher).equals(studentJson.teacher.toString());
+         Student.deleteMany(studentJson);
      });
 });

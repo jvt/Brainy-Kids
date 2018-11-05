@@ -153,5 +153,44 @@ describe('Creates new analytics', function() {
     });
 
     it('fetches analytics for two out of three students', async function() {
+        const res = await request(app)
+            .get('/api/analytics/focusitem')
+			.set('Authorization', 'Bearer ' + token)
+            .send({students:createdStudents.slice(0,2).map((student) => student._id), focus_item:focusItemId})
+            .expect('Content-Type', /json/)
+            .expect(200);
+        for(var i = 0; i < 2; i++){
+            var analytic = res.body.analytics[createdStudents[i]._id.toString()];
+            expect(analytic.correct_on).equal(analytics[i].correct_on);
+            expect(analytic.focus_item).equal(analytics[i].focus_item.toString());
+            expect(analytic.student).equal(analytics[i].student.toString());
+            expect(analytic.time_spent).equal(analytics[i].time_spent);
+        }
+    });
+
+    it('fetches analytics for all students of a teacher', async function(){
+        const res = await request(app)
+            .get('/api/analytics/focusitem')
+			.set('Authorization', 'Bearer ' + token)
+            .send({focus_item:focusItemId})
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        for(var i = 0; i < 3; i++){
+            var analytic = res.body.analytics[createdStudents[i]._id.toString()];
+            expect(analytic.correct_on).equal(analytics[i].correct_on);
+            expect(analytic.focus_item).equal(analytics[i].focus_item.toString());
+            expect(analytic.student).equal(analytics[i].student.toString());
+            expect(analytic.time_spent).equal(analytics[i].time_spent);
+        }
+    });
+
+    it("returns error for a student from a different teacher", async function(){
+        const res = await request(app)
+            .get('/api/analytics/focusitem')
+			.set('Authorization', 'Bearer ' + token)
+            .send({student:createdStudents[3]._id, focus_item:focusItemId})
+            .expect('Content-Type', /json/)
+            .expect(401);
     });
 });

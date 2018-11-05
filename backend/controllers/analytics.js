@@ -109,7 +109,7 @@ module.exports.focusItem = async (req, res) => {
     var analyticsArray = await Analytic.find({student:{$in:students}, focus_item:req.body.focus_item});
     for(i in analyticsArray){
         var analytic = analyticsArray[i];
-        analytics[student._id.toString()] = analytic;
+        analytics[analytic.student] = analytic;
     }
     return res.status(200).json({
         status: 'success',
