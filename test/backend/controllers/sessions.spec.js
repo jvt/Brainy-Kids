@@ -113,25 +113,25 @@ describe('Teacher Controller', function() {
         expect(A_ID).equal(B_ID - 1);
     });
 
-    // it('Logs in a student', async function() {
-    //     studentJson = { student_id: '007', teacher: createdTeacher[0]._id };
-    //     var studentId = '007';
-    //     var createdStudent = await new Student(studentJson).save();
-    //     const res = await request(app)
-    //         .post('/api/session/student')
-    //         .send({ student_id: createdTeacher[0].teacher_id + '007' })
-    //         .expect(200);
-    //     expect(res.body.student._id).equal(createdStudent._id.toString());
-    //     Student.deleteMany(studentJson);
-    // });
+     it('Logs in a student', async function() {
+         studentJson = { student_id: '007', teacher: createdTeacher[0]._id };
+         var studentId = '007';
+         var createdStudent = await new Student(studentJson).save();
+         const res = await request(app)
+             .post('/api/session/student')
+             .send({ student_id: createdTeacher[0].teacher_id + '007' })
+             .expect(200);
+         expect(res.body.student._id).equal(createdStudent._id.toString());
+         Student.deleteMany(studentJson);
+     });
 
-    // it('Gets the info of a student', async function() {
-    //     const res = await request(app)
-    //         .get('/api/session/studentinfo')
-    //         .set('Authorization', 'Bearer ' + token)
-    //         .send({})
-    //         .expect(200);
-    //     expect(res.body.student.student_id).equals(studentJson.student_id);
-    //     expect(res.body.student.teacher).equals(studentJson.teacher.toString());
-    // });
+     it('Gets the info of a student', async function() {
+         const res = await request(app)
+             .get('/api/session/studentinfo')
+             .set('Authorization', 'Bearer ' + token)
+             .send({})
+             .expect(200);
+         expect(res.body.student.student_id).equals(studentJson.student_id);
+         expect(res.body.student.teacher).equals(studentJson.teacher.toString());
+     });
 });

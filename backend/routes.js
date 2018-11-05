@@ -62,6 +62,7 @@ module.exports = (app, passport) => {
 		[passport.authenticate('jwt', PASSPORT_OPTIONS)],
 		controllers.analytics.application
 	);
+    app.get('/api/analytics/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.focusItem);
 
 	app.get('/api/*', [], controllers.static.apiError);
 
