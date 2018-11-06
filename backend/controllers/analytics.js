@@ -110,7 +110,6 @@ module.exports.focusItem = async (req, res) => {
     for(analytic of analyticsArray){
         analytics[analytic.student] = analytic;
     }
-    console.log(analytics);
     return res.status(200).json({
         status: 'success',
         analytics: analytics

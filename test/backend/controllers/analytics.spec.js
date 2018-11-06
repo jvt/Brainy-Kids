@@ -56,8 +56,8 @@ describe('Creates new analytics', function() {
             { student_id: '012', teacher: res.body.teacher._id },
             { student_id: '023', teacher: res2.body.teacher._id }];
 
-        for(i in studentJsons)
-            createdStudents.push(await new Student(studentJsons[i]).save());
+        for(studentJson of studentJsons)
+            createdStudents.push(await new Student(studentJson).save());
 
 
         focusItem = {
