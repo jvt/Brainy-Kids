@@ -190,7 +190,7 @@ module.exports.resetPassword = async (req, res) => {
     }
 
     teacher.password = hash(req.body.password);
-    teacher.save();
+    await teacher.save();
 
     return res.json({
         status: 'ok'
