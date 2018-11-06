@@ -174,8 +174,8 @@ module.exports.getInfo = async (req, res) => {
 };
 
 module.exports.getStudentInfo = async (req, res) => {
-    return res.status(200).json({
+    var toRet = {
         status: 'ok',
-        student: await Student.findById(req.user._id)}
-    );
+        student: await Student.findById(req.user._id)};
+    return res.status(200).json(toRet);
 };
