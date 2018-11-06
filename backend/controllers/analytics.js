@@ -72,21 +72,20 @@ module.exports.application = (req, res) => {
 
 module.exports.focusItem = async (req, res) => {
     var students = [];
-    if(req.user.teacher_id == undefined){
+    if(!req.user.teacher_id){
         return res.status(401).json({
             status: 'error',
             message: "You don't have permission for this"
         });
     }
     var analytics = {};
-    if(req.body.student != undefined || req.body.students != undefined){
-        if(req.body.student != undefined){
+    if(req.body.student || req.body.students){
+        if(req.body.student){
             students.push(mongoose.Types.ObjectId(req.body.student));
         }else{
             students = req.body.students.map(mongoose.Types.ObjectId);
         }
-        for(index in students){
-            var student = students[index];
+        for(student of students){
             var studentObject = await Student.findById(student);
             if(studentObject){
                 if(req.user._id.toString() != studentObject.teacher.toString()){
@@ -96,21 +95,22 @@ module.exports.focusItem = async (req, res) => {
                     });
                 }
                 analytics[student.toString()] = null;
-            }else
+            }else{
                 analytics[student.toString()] = {error: "Student not found"};
+            }
         }
     }else {
         students = (await Student.find({teacher:req.user._id})).map((student) => student._id);
-        for(student in students){
-            analytics[student.toString()] = null;
+        for(student of students){
+            analytics[student] = null;
         }
     }
 
     var analyticsArray = await Analytic.find({student:{$in:students}, focus_item:req.body.focus_item});
-    for(i in analyticsArray){
-        var analytic = analyticsArray[i];
+    for(analytic of analyticsArray){
         analytics[analytic.student] = analytic;
     }
+    console.log(analytics);
     return res.status(200).json({
         status: 'success',
         analytics: analytics
