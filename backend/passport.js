@@ -38,7 +38,10 @@ module.exports.initialize = app => {
 				 If this token is for a teacher, we query the Teacher model for that _id
 				 **/
 				Teacher.findById(payload.id)
-					.then(teacher => next(null, teacher ? teacher : false))
+					.then(teacher => {
+						console.log(teacher);
+						return next(null, teacher ? teacher : false);
+					})
 					.catch(err => {
 						console.error(err);
 						return next(err, false);
