@@ -76,7 +76,7 @@ module.exports.login = async (req, res) => {
         .select('+password')
         .exec()
         .catch(error => unexpectedError(error, res));
-    console.log(teacher.name);
+
     if (!teacher) {
         // We have a random delay to prevent time-attacks
         setTimeout(() => {
@@ -87,7 +87,7 @@ module.exports.login = async (req, res) => {
         }, Math.random() * 100);
         return;
     }
-    console.log(req.body.password);
+
     const passwordsEqual = await bcrypt.compare(
         req.body.password,
         teacher.password
@@ -99,6 +99,17 @@ module.exports.login = async (req, res) => {
             message: INCORRECT_MESSAGE,
         });
     }
+
+    const payload = {
+        id: teacher._id,
+        type: consts.TEACHER,
+    };
+
+    const jwtToken = jwt.sign(payload, process.env.JWT_SECRET);
+
+    const cleanTeacher = await Teacher.findById(teacher._id).catch(error =>
+        unexpectedError(error, res)
+    );
 
     return res.json({
         status: 'ok',
