@@ -156,7 +156,12 @@ module.exports.loginStudent = async (req, res) => {
 };
 
 module.exports.resetPassword = async (req, res) => {
-
+    if (!req.user) {
+        return res.status(403).json({
+            status: 'error',
+            message: 'You are not signed in.',
+        });
+    }
     const teacher = await Teacher.findById(req.user._id);
 
     if (!teacher) {
