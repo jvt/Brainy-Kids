@@ -1,66 +1,147 @@
-const chai = require('chai');
+const expect = require('chai').expect;
 const mongoose = require('mongoose');
 const Analytic = require('../../../backend/models/analytic');
 
-const util = require('../helpers/util');
-
-const student_id = '123456789012';
-const focus_item_id = '123456789012';
-const program_id = '123456789012';
-const correct_on = 3;
-
-const valid_app_analytic = {
-	student: '123456789012',
-	focus_item: '123456789012',
-	program: '123456789012',
-	correct_on: 3,
-	time_spent: 10000,
-};
-
-const invalid_app_analytic = {
-	student: student_id,
-	focus_item: focus_item_id,
-	program: program_id,
-	correct_on: correct_on,
-	time_watching: 10000,
-};
-
 describe('backend/models/analytic', function() {
-	beforeEach(async function() {
-		// Start with a clean slate each test
-		await Analytic.deleteMany(valid_app_analytic).exec();
-	});
-
-	after(async function() {
-		// Clean up
-		await Analytic.deleteMany(valid_app_analytic).exec();
-	});
-
-	it('Create invalid analytic. Should generate an error.', async function() {
-		const test_analytic = new Analytic(invalid_app_analytic);
-
-		test_analytic.save(function(err, doc) {
-			chai.expect(err).is.not.null;
+	it('should be invalid if student is empty', function(done) {
+		const a = new Analytic();
+		a.validate(function(err) {
+			expect(err.errors.student).to.exist;
+			done();
 		});
 	});
-	it('Create a valid analytic in mongoose', async function() {
-		const test_analytic = new Analytic(valid_app_analytic);
-		const saved = await test_analytic.save();
-
-		if (!saved) {
-			chai.assert.fail();
-		}
-
-		chai.expect(saved).to.be.an('object');
+	it('should be valid if student is an ObjectID', function(done) {
+		const a = new Analytic({
+			student: mongoose.Types.ObjectId(),
+		});
+		a.validate(function(err) {
+			expect(err.errors.student).to.not.exist;
+			done();
+		});
 	});
-	it('Query the database for the created analytic', async function() {
-		const generated = await util.generateAndStoreModel('analytic');
-
-		console.log(await new Analytic(valid_app_analytic).save());
-
-		const analytics = await Analytic.find(valid_app_analytic);
-
-		chai.expect(analytics).to.have.lengthOf(1);
-		chai.expect(docs[0].correct_on).to.equal(correct_on);
+	it('should be valid if student is not an ObjectID', function(done) {
+		const a = new Analytic({
+			student: 'test',
+		});
+		a.validate(function(err) {
+			expect(err.errors.student).to.exist;
+			done();
+		});
+	});
+	it('should be invalid if focus_item is empty', function(done) {
+		const a = new Analytic();
+		a.validate(function(err) {
+			expect(err.errors.focus_item).to.exist;
+			done();
+		});
+	});
+	it('should be valid if focus_item is an ObjectID', function(done) {
+		const a = new Analytic({
+			focus_item: mongoose.Types.ObjectId(),
+		});
+		a.validate(function(err) {
+			expect(err.errors.focus_item).to.not.exist;
+			done();
+		});
+	});
+	it('should be valid if focus_item is not an ObjectID', function(done) {
+		const a = new Analytic({
+			focus_item: 'test',
+		});
+		a.validate(function(err) {
+			expect(err.errors.focus_item).to.exist;
+			done();
+		});
+	});
+	it('should be invalid if program is empty', function(done) {
+		const a = new Analytic();
+		a.validate(function(err) {
+			expect(err.errors.program).to.exist;
+			done();
+		});
+	});
+	it('should be valid if program is an ObjectID', function(done) {
+		const a = new Analytic({
+			program: mongoose.Types.ObjectId(),
+		});
+		a.validate(function(err) {
+			expect(err.errors.program).to.not.exist;
+			done();
+		});
+	});
+	it('should be valid if program is not an ObjectID', function(done) {
+		const a = new Analytic({
+			program: 'test',
+		});
+		a.validate(function(err) {
+			expect(err.errors.program).to.exist;
+			done();
+		});
+	});
+	it('should require time_spent if time_watching and total_video_time is null', function(done) {
+		const a = new Analytic({
+			correct_on: 3,
+		});
+		a.validate(function(err) {
+			expect(err.errors.time_spent).to.exist;
+			done();
+		});
+	});
+	it('should require correct_on if time_watching and total_video_time is null', function(done) {
+		const a = new Analytic({
+			time_spent: 3,
+		});
+		a.validate(function(err) {
+			expect(err.errors.correct_on).to.exist;
+			done();
+		});
+	});
+	it('should require time_watching if time_spent and correct_on is null', function(done) {
+		const a = new Analytic({
+			total_video_time: 3,
+		});
+		a.validate(function(err) {
+			expect(err.errors.time_spent).to.exist;
+			done();
+		});
+	});
+	it('should require total_video_time if time_spent and correct_on is null', function(done) {
+		const a = new Analytic({
+			time_watching: 3,
+		});
+		a.validate(function(err) {
+			expect(err.errors.total_video_time).to.exist;
+			done();
+		});
+	});
+	it('all analytic fields should be valid if theyre given numbers', function(done) {
+		const a = new Analytic({
+			time_watching: 3,
+			total_video_time: 3,
+			time_spent: 3,
+			correct_on: 3,
+		});
+		a.validate(function(err) {
+			expect(err.errors.time_watching).to.not.exist;
+			expect(err.errors.total_video_time).to.not.exist;
+			expect(err.errors.time_spent).to.not.exist;
+			expect(err.errors.correct_on).to.not.exist;
+			done();
+		});
+	});
+	it('all analytic fields should be invalid if theyre not given numbers', function(done) {
+		const a = new Analytic({
+			time_watching: {},
+			total_video_time: {},
+			time_spent: {},
+			correct_on: {},
+		});
+		a.validate(function(err) {
+			expect(err.errors.time_watching).to.exist;
+			expect(err.errors.total_video_time).to.exist;
+			expect(err.errors.time_spent).to.exist;
+			expect(err.errors.correct_on).to.exist;
+			done();
+		});
 	});
 });
