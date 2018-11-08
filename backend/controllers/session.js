@@ -167,23 +167,14 @@ module.exports.loginStudent = async (req, res) => {
 };
 
 module.exports.resetPassword = async (req, res) => {
-    if (!req.user) {
-        return res.status(403).json({
-            status: 'error',
-            message: 'You are not signed in.',
-        });
-    }
+    
     const teacher = await Teacher.findById(req.user._id);
 
     if (!teacher) {
-        // We have a random delay to prevent time-attacks
-        setTimeout(() => {
-            return res.status(403).json({
-                status: 'error',
-                message: 'You are not signed in as a Teacher.',
-            });
-        }, Math.random() * 100);
-        return;
+        return res.status(403).json({
+            status: 'error',
+            message: 'You are not signed in as a Teacher.',
+        });
     }
 
     if(!req.body.password || !req.body.confirm_password) {
