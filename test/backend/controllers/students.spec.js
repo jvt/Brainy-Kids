@@ -95,6 +95,7 @@ describe('GET /api/student/:id', function() {
 			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
 			.expect(function(res) {
+				console.log(res);
 				expect(res.body).to.be.an('object');
 				expect(res.body.status).to.be.a('string');
 				expect(res.body.status).to.equal('ok');
