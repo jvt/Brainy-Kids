@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, List } from 'antd';
+import { Row, Col, Card, List, Icon, Button, Popover, Upload } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -7,6 +7,20 @@ import { bindActionCreators } from 'redux';
 import PageFormat from '../components/PageFormat';
 
 import actions from '../actions';
+
+const PopoverComponent = () => {
+	return (
+		<Popover
+			style={{ width: 400, display: 'inline-block' }}
+			content="To ensure student privacy, we do not store student names in our database. To view the student names on this page, you'll need to upload the Excel sheet which will correlate the student IDs to their respective names. This spreadsheet will never be uploaded to our servers."
+			title="Why are there no names?">
+			<Icon
+				type="info-circle"
+				style={{ marginLeft: 10, position: 'relative', top: -5 }}
+			/>
+		</Popover>
+	);
+};
 
 class Students extends Component {
 	constructor(props) {
@@ -20,12 +34,21 @@ class Students extends Component {
 		}
 	}
 
-	render() {
-		const { students, loading, error } = this.props;
+	onChange(e) {
+		console.log(e);
+		const reader = new FileReader();
 
-		console.log(error);
-		console.log(students);
-		console.log(loading);
+		reader.onload = (input => {
+			return function(e) {
+				console.log(e);
+			};
+		})(e.file);
+
+		reader.readAsDataURL(e.file);
+	}
+
+	render() {
+		const { teacher, students, loading, error } = this.props;
 
 		if (error) {
 			return (
@@ -36,7 +59,28 @@ class Students extends Component {
 		}
 
 		return (
-			<PageFormat page="students" loading={loading}>
+			<PageFormat
+				page="students"
+				loading={loading}
+				popover={<PopoverComponent />}>
+				<div
+					style={{
+						width: '100%',
+						backgroundColor: 'rgb(245, 245, 245)',
+						paddingTop: 10,
+						paddingBottom: 10,
+						textAlign: 'center',
+					}}>
+					<input type="file" id="files" name="files" />
+					<Upload
+						data={e => console.log(e)}
+						onChange={this.onChange}
+						beforeUpload={file => {
+							return false;
+						}}>
+						<Button>Upload Excel File</Button>
+					</Upload>
+				</div>
 				<List
 					itemLayout="horizontal"
 					dataSource={students}
@@ -50,7 +94,9 @@ class Students extends Component {
 							<List.Item.Meta
 								title={
 									<Link to={`/students/${student._id}`}>
-										{student.student_id}
+										<b>{`${teacher.teacher_id}${
+											student.student_id
+										}`}</b>
 									</Link>
 								}
 								description=""
@@ -65,6 +111,7 @@ class Students extends Component {
 
 const mapStateToProps = state => {
 	return {
+		teacher: state.teacher.data,
 		students: state.students.data,
 		loading: state.students.loading,
 		error: state.students.error,
