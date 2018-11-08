@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 
 const mongoDB =
-	process.env.NODE_ENV === 'testing'
-		? 'mongodb://127.0.0.1/brainykids_testing'
-		: process.env.MONGODB_URI;
+	process.env.NODE_ENV === 'testing' ? null : process.env.MONGODB_URI;
 
 if (!mongoDB) {
 	console.error('No MONGODB_URI found in environment');
