@@ -6,7 +6,7 @@ module.exports.getAll = (req, res) => {
         .then(student => {
             return res.status(200).json({
                 status: 'ok',
-                student: student ? student : [], // Ensure we always at the bare minimum send back an empty array
+                students: student ? student : [], // Ensure we always at the bare minimum send back an empty array
             });
         })
         .catch(err => {
