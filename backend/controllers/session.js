@@ -76,7 +76,7 @@ module.exports.login = async (req, res) => {
         .select('+password')
         .exec()
         .catch(error => unexpectedError(error, res));
-
+    console.log(teacher.name);
     if (!teacher) {
         // We have a random delay to prevent time-attacks
         setTimeout(() => {
@@ -87,7 +87,7 @@ module.exports.login = async (req, res) => {
         }, Math.random() * 100);
         return;
     }
-
+    console.log(req.body.password);
     const passwordsEqual = await bcrypt.compare(
         req.body.password,
         teacher.password
