@@ -186,6 +186,13 @@ module.exports.resetPassword = async (req, res) => {
         return;
     }
 
+    if(!req.body.password || !req.body.confirm_password) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Invalid request.',
+        });
+    }
+
     if(req.body.password.length <= 7) {
         return res.status(400).json({
             status: 'error',
