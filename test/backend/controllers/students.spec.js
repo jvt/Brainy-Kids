@@ -93,9 +93,8 @@ describe('GET /api/student/:id', function() {
 			.get('/api/student/5bb1495f63240ad534d40c2d')
 			.set('Authorization', `Bearer ${sessionFixtures.TEACHER_TOKEN}`)
 			.set('Accept', 'application/json')
-			// .expect('Content-Type', /json/)
+			.expect('Content-Type', /json/)
 			.expect(function(res) {
-				console.log(res);
 				expect(res.body).to.be.an('object');
 				expect(res.body.status).to.be.a('string');
 				expect(res.body.status).to.equal('ok');
