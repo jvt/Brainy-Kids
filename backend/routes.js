@@ -92,6 +92,9 @@ module.exports = (app, passport) => {
 	app.post(
 		'/api/program',
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
+		check('name', 'Must contain a name.').exists(),
+		check('description', 'Must contain a description.').exists(),
+		check('type', 'Must contain a type.').exists(),
 		validation.validate(validationResult)],
 		controllers.program.create
 	);
