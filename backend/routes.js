@@ -126,6 +126,10 @@ module.exports = (app, passport) => {
 	app.post(
 		'/api/focusitem',
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
+		check('name', 'Must contain a name.').exists(),
+		check('program', 'Must contain a program.').exists(),
+		check('unit', 'Must contain a unit.').exists(),
+		check('subunit', 'Student ID must be subunit.').exists(),
 		validation.validate(validationResult)],
 		controllers.focusitem.create
 	);
@@ -162,6 +166,7 @@ module.exports = (app, passport) => {
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
 		check('teacher', 'Must contain an teacher.').exists(),
 		check('student_id', 'Must contain an student_id.').exists(),
+		check('student_id', 'Student ID must be numeric.').isNumeric(),
 		validation.validate(validationResult)],
 		controllers.student.create
 	);
