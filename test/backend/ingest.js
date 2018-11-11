@@ -5,201 +5,163 @@ const Focus_Item = require('../../backend/models/focus_item');
 const Student = require('../../backend/models/student');
 const Teacher = require('../../backend/models/teacher');
 const bcrypt = require('bcrypt');
+const request = require('supertest');
+const Async = require('async');
 
 /**
- * This script does not use the API routes to ingest data
- * At time of creation, several CRUD routes have not been
- * developed yet. Perhaps a parallel script doing ingest via
- * API routes will be needed.
+ * This script has been updated to use CRUD routes for all database interaction
  * 
  * Author: Asher Kenerly
  */
 
-module.exports.ingest = function (number_of_students, number_of_analytics, number_of_focus_items) {
+const teacher_names = [
+    "Waldo Simcox",
+    "Lorrine Kellam",
+    "Duane Helgeson",
+    "Donovan Gagliardo",
+    "Orville Bruso",
+    "Anibal Ager",
+    "Karine Stayer",
+    "Granville Mcdonough",
+    "Bobbi Bartley",
+    "Raul Kupiec",
+    "Agnus Manes",
+    "Claude Navarra",
+    "Ellis Kintner",
+    "Tammi Provenza",
+    "Shanita Cully",
+    "Danuta Mccullah",
+    "Joslyn Dehn",
+    "Zora Koester",
+    "Mafalda Chauvin",
+    "Asa Klumpp",
+    "Hulda Oriley",
+    "Bryce Markell",
+    "Mariam Mahler",
+    "Cherie Flakes",
+    "Evelyn Bogdan",
+    "Daphine Vandegrift",
+    "Willa Nicholas",
+    "Garfield Heyward",
+    "Jude Didion",
+    "Celena Florian"
+];
+
+const program_jsons = [
+    {
+        name: "Test Program 1",
+        description: "First program for database testing",
+        type: 'mobile game'
+    },
+    {
+        name: "Test Program 2",
+        description: "Second program for database testing",
+        type: 'website'
+    },
+    {
+        name: "Test Program 3",
+        description: "Third program for database testing",
+        type: 'mobile game'
+    }
+];
+
+const passwords = [
+    "123456",
+]
+
+module.exports.ingest = async function (number_of_students, number_of_analytics, number_of_focus_items) {
     // Non vairables: 3 programs, 30 teachers
 
-    //  const number_of_students = 800;
-    //  const number_of_analytics = 7500;
-    //  const number_of_focus_items = 100;
+    /**
+     * Creates and saves teachers
+     */
 
+    const teacher_tokens = [];
+    const teachers = [];
 
+    teacher_names.forEach(async function (name) {
+        const email = name.toLowerCase().replace(" ", ".") + "@school.edu";
+        const password = random_item(passwords);
+        res = await request(app)
+            .post('/api/session/register')
+            .send({
+                name: name,
+                email: email,
+                password: password
+            });
+        teacher_tokens.push(res.body.token);
+        teachers.push(res.body.teacher);
+    });
 
 
     /**
      * Creates and saves programs
      */
 
-    const program_jsons = [
-        {
-            name: "Test Program 1",
-            description: "First program for database testing",
-            type: 'mobile game'
-        },
-        {
-            name: "Test Program 2",
-            description: "Second program for database testing",
-            type: 'website'
-        },
-        {
-            name: "Test Program 3",
-            description: "Third program for database testing",
-            type: 'mobile game'
-        }
-    ];
+    let programs = [];
+    
+    program_jsons.forEach(async function (program_json) {
+        res = await request(app)
+            .post('/api/program/create')
+            .send(program_json)
+            .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
 
-    program_docs = [];
-
-    program_jsons.forEach(function (program_json) {
-        const saved_program = new Program(program_json);
-        program_docs.push(saved_program);
-        saved_program.save(function (err, doc) {
-            if (err) {
-                console.log(err);
-            }
-        });
+        programs.push(res.body.program);
     });
 
-    /**
-     * Creates and saves teachers
-     */
+    while (programs.length < program_jsons.length) {
 
-    const passwords = [
-        "123456",
-    ]
-
-
-
-    const password_hashes = [];
-    passwords.forEach(function (password) {
-        const pwd_hash = hash(password);
-        password_hashes.push(pwd_hash);
-
-    });
-
-    const teacher_names = [
-        "Waldo Simcox",
-        "Lorrine Kellam",
-        "Duane Helgeson",
-        "Donovan Gagliardo",
-        "Orville Bruso",
-        "Anibal Ager",
-        "Karine Stayer",
-        "Granville Mcdonough",
-        "Bobbi Bartley",
-        "Raul Kupiec",
-        "Agnus Manes",
-        "Claude Navarra",
-        "Ellis Kintner",
-        "Tammi Provenza",
-        "Shanita Cully",
-        "Danuta Mccullah",
-        "Joslyn Dehn",
-        "Zora Koester",
-        "Mafalda Chauvin",
-        "Asa Klumpp",
-        "Hulda Oriley",
-        "Bryce Markell",
-        "Mariam Mahler",
-        "Cherie Flakes",
-        "Evelyn Bogdan",
-        "Daphine Vandegrift",
-        "Willa Nicholas",
-        "Garfield Heyward",
-        "Jude Didion",
-        "Celena Florian"
-    ];
-
-    const teacher_jsons = [];
-    var teacher_id = 0;
-    teacher_names.forEach(function (name) {
-        const email = name.toLowerCase().replace(" ", ".") + "@school.edu";
-        const id = pad(teacher_id, 3)
-        teacher_id++;
-        // Gets a random password hash out of the passwords
-        const pass_index = Math.floor(Math.random() * password_hashes.length);
-        const password_hash = password_hashes[pass_index];
-
-        const teacher_json = {
-            teacher_id: id,
-            name: name,
-            email: email,
-            password: password_hash
-        };
-
-        teacher_jsons.push(teacher_json);
-
-    });
-
-    teacher_docs = [];
-
-    teacher_jsons.forEach(function (teacher_json) {
-        const saved_teacher = new Teacher(teacher_json);
-        teacher_docs.push(saved_teacher);
-        saved_teacher.save(function (err, doc) {
-            if (err) {
-                console.log(err)
-            }
-        });
-    });
-
+    }
 
     /**
      * Creates and saves students
      */
 
-    student_docs = [];
+    const students = [];
 
     for (var i = 0; i < number_of_students; i++) {
-        // console.log(teacher_docs);
-        // random_teacher_doc = teacher_docs[Math.floor(Math.random() * teacher_docs.length)];
-
         const student_json = {
             student_id: pad(i, 3),
-            teacher: random_item(teacher_docs)._id,
+            teacher: random_item(teachers)._id,
             deleted: Math.random() > .95
         }
+        res = await request(app)
+            .post('/api/student/create')
+            .send(student_json)
+            .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
 
-        const saved_student = new Student(student_json);
-        student_docs.push(saved_student);
-        saved_student.save(function (err, doc) {
-            if (err) {
-                console.log(err)
-            }
-        });
+        students.push(res.student);
     }
-
 
     /**
      * Creates and saves focus items.
      * Currently these do not generate units/ subunits
      */
 
-    var focus_item_docs = [];
+    const focus_items = [];
 
     for (var i = 0; i < number_of_focus_items; i++) {
         const name = "focus_item_" + i.toString();
         const focus_item_json = {
             name: name,
-            program: random_item(program_docs)._id
+            program: random_item(programs)._id
         };
-        var saved_focus_item = new Focus_Item(focus_item_json);
-        focus_item_docs.push(saved_focus_item);
-        saved_focus_item.save(function (err, doc) {
-            if (err) {
-                console.log(err)
-            }
-        });
-    }
+        res = await request(app)
+            .post('/api/focusitem/create')
+            .send(focus_item_json)
+            .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
+        focus_items.push(res.body.focusitem);
 
+    }
 
     /**
      * Creates and saves analytics
      */
 
-    var analytic_docs = [];
+    const analytics = [];
 
     for (var i = 0; i < number_of_analytics; i++) {
-        focus_item = random_item(focus_item_docs);
+        focus_item = random_item(focus_items);
         var analytic_json = {
             focus_item: focus_item._id,
             student: random_item(student_docs)._id,
@@ -217,13 +179,13 @@ module.exports.ingest = function (number_of_students, number_of_analytics, numbe
             analytic_json.time_watching = time_watching;
             analytic_json.total_video_time = total_video_time;
         }
-        const saved_analytic = new Analytic(analytic_json);
-        analytic_docs.push(saved_analytic);
-        saved_analytic.save(function (err, doc) {
-            if (err) {
-                console.log(err)
-            }
-        });
+        res = await request(app)
+            .post('/api/focusitem/create')
+            .send(focus_item_json)
+            .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
+
+        analytics.push(res.body.analytic);
+
     }
 };
 

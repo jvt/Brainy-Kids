@@ -150,6 +150,7 @@ describe('Program Controller', function () {
 
     describe('Tests with sample db', async function () {
         before(function () {
+            this.timeout(15000);
             ingest.ingest(80, 750, 10);
         });
 
