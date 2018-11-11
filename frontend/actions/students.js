@@ -26,7 +26,7 @@ const loadStudentsLoading = () => {
 module.exports.loadStudents = () => {
 	return (dispatch, getState) => {
 		dispatch(loadStudentsLoading());
-		fetch(`/api/students`, {
+		fetch(`/api/teacher/${getState().teacher.data._id}/students`, {
 			method: 'GET',
 			headers: util.generateAPIHeaders(getState),
 		})
@@ -36,7 +36,7 @@ module.exports.loadStudents = () => {
 					console.log(json.message);
 					return dispatch(loadStudentsError(json.message));
 				}
-				return dispatch(loadStudentsSuccess(json.programs));
+				return dispatch(loadStudentsSuccess(json.students));
 			})
 			.catch(err => {
 				console.error(err);
