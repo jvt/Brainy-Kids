@@ -22,7 +22,7 @@ module.exports = (app, passport) => {
 	app.post(
 		'/api/session/resetpassword',
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
-		check('password', 'Password must be at least 7 characters long').isLength({ min: 7 }),
+		check('password', 'Password must be at least 7 characters long').isLength({ min: 8 }),
 		validation.validate(validationResult)],
 		controllers.session.resetPassword
 	);
