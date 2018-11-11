@@ -9,6 +9,8 @@ const Teacher = require('../../../backend/models/teacher');
 const fixtures = require('../../fixtures/student');
 
 const sessionFixtures = require('../../fixtures/session');
+const studentFixtures = require('../../fixtures/student');
+const teacherFixtures = require('../../fixtures/teacher');
 
 describe('GET /api/students', function() {
 	beforeEach(function() {
@@ -205,6 +207,85 @@ describe('POST /api/student', function() {
 				expect(res.body.message).to.be.a('string');
 			})
 			.expect(404, done);
+	});
+});
+
+describe('PUT /api/student/:id', function() {
+	beforeEach(function() {
+		sinon.stub(Teacher, 'findById'); // For the auth token
+		Teacher.findById
+			.withArgs('5bdf58e7b9bfebb9ee3848d9') // Authorization ID
+			.resolves(sessionFixtures.TEACHER_MODEL);
+
+		sinon.stub(Student, 'findById');
+		sinon.stub(Student.prototype, 'save');
+	});
+	afterEach(function() {
+		Teacher.findById.restore();
+		Student.findById.restore();
+		Student.prototype.save.restore();
+	});
+	it('responds with an unauthroized if theres no auth token', function(done) {
+		request(app)
+			.put('/api/student/test')
+			.set('Accept', 'application/json')
+			.expect(function(res) {
+				expect(res.text).to.be.a('string');
+				expect(res.text).to.equal('Unauthorized');
+			})
+			.expect(401, done);
+	});
+	it('responds with a 404 if the teacher is not found', function(done) {
+		Student.findById.withArgs('test').resolves(studentFixtures.valid);
+		Teacher.findById.withArgs('badID').resolves(null);
+
+		request(app)
+			.put('/api/student/test')
+			.set('Authorization', `Bearer ${sessionFixtures.TEACHER_TOKEN}`)
+			.set('Accept', 'application/json')
+			.send({ teacher: 'badID' })
+			.expect('Content-Type', /json/)
+			.expect(function(res) {
+				expect(res.body).to.be.an('object');
+				expect(res.body.status).to.be.a('string');
+				expect(res.body.status).to.equal('error');
+				expect(res.body.message).to.be.a('string');
+			})
+			.expect(404, done);
+	});
+	it('responds with a 200 if the teacher is found and valid data is sent', function(done) {
+		Student.findById
+			.withArgs('test')
+			.resolves(new Student(studentFixtures.valid));
+		Teacher.findById.withArgs('goodID').resolves(teacherFixtures.valid);
+
+		Student.prototype.save.resolves({
+			_id: studentFixtures.valid._id,
+			teacher: 'goodID',
+			student_id: '500',
+			deleted: true,
+		});
+
+		request(app)
+			.put('/api/student/test')
+			.set('Authorization', `Bearer ${sessionFixtures.TEACHER_TOKEN}`)
+			.set('Accept', 'application/json')
+			.send({ teacher: 'goodID', student_id: '500', deleted: true })
+			.expect('Content-Type', /json/)
+			.expect(function(res) {
+				expect(res.body).to.be.an('object');
+				expect(res.body.status).to.be.a('string');
+				expect(res.body.status).to.equal('ok');
+				expect(res.body.student).to.be.an('object');
+				expect(res.body.student._id).to.equal(
+					studentFixtures.valid._id
+				);
+				expect(res.body.student.student_id).to.equal('500');
+				expect(res.body.student.deleted).to.be.true;
+				expect(res.body.student.teacher).to.equal('goodID');
+				expect(Student.prototype.save.called).to.be.true;
+			})
+			.expect(200, done);
 	});
 });
 
