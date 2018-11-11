@@ -207,3 +207,43 @@ describe('POST /api/student', function() {
 			.expect(404, done);
 	});
 });
+
+describe('DELETE /api/student/:id', function() {
+	beforeEach(function() {
+		sinon.stub(Teacher, 'findById'); // For the auth token
+		Teacher.findById
+			.withArgs('5bdf58e7b9bfebb9ee3848d9') // Authorization ID
+			.resolves(sessionFixtures.TEACHER_MODEL);
+
+		sinon.stub(Student, 'findByIdAndRemove');
+	});
+	afterEach(function() {
+		Teacher.findById.restore();
+		Student.findByIdAndRemove.restore();
+	});
+	it('responds with an unauthroized if theres no auth token', function(done) {
+		request(app)
+			.delete('/api/student/test')
+			.set('Accept', 'application/json')
+			.expect(function(res) {
+				expect(res.text).to.be.a('string');
+				expect(res.text).to.equal('Unauthorized');
+			})
+			.expect(401, done);
+	});
+	it('responds with a 200 and student object if the student is created successfully', function(done) {
+		Student.findByIdAndRemove.resolves(true);
+
+		request(app)
+			.delete('/api/student/test')
+			.set('Authorization', `Bearer ${sessionFixtures.TEACHER_TOKEN}`)
+			.set('Accept', 'application/json')
+			.expect('Content-Type', /json/)
+			.expect(function(res) {
+				expect(res.body).to.be.an('object');
+				expect(res.body.status).to.be.a('string');
+				expect(res.body.status).to.equal('ok');
+			})
+			.expect(200, done);
+	});
+});
