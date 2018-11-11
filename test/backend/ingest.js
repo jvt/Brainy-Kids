@@ -69,57 +69,61 @@ const passwords = [
     "123456",
 ]
 
-module.exports.ingest = async function (number_of_students, number_of_analytics, number_of_focus_items) {
+module.exports.ingest = function (number_of_students, number_of_analytics, number_of_focus_items) {
     // Non vairables: 3 programs, 30 teachers
+    createTeachers(teacher_names)
+    .then(function(teacher_results) {
+        tokens = teacher_results[0];
+        token = tokens[0];
+        teachers_docs = teacher_results[1];
+        createPrograms(program_jsons, token)
+        .then(function(programs) {
+            createStudents(number_of_students, teacher_docs, tokens)
+            .then(function(students) {
+                createFocusItems(number_of_focus_items, programs, token)
+                .then(function(focus_items) {
+                    createAnalytics(number_of_analytics, students, focus_items, teacher_tokens).then(console.log("done"))
+                })
+            }) 
+        })
+    })
+};
 
-    /**
-     * Creates and saves teachers
-     */
 
+async function createTeachers(teachers) {
     const teacher_tokens = [];
-    const teachers = [];
-
-    teacher_names.forEach(async function (name) {
-        const email = name.toLowerCase().replace(" ", ".") + "@school.edu";
-        const password = random_item(passwords);
+    const teacher_docs = [];
+    for (teacher of teachers) {
         res = await request(app)
             .post('/api/session/register')
             .send({
-                name: name,
-                email: email,
-                password: password
+                name: teacher.name,
+                email: teacher.email,
+                password: random_item(passwords)
             });
         teacher_tokens.push(res.body.token);
-        teachers.push(res.body.teacher);
-    });
-
-
-    /**
-     * Creates and saves programs
-     */
-
-    let programs = [];
-    
-    program_jsons.forEach(async function (program_json) {
-        res = await request(app)
-            .post('/api/program/create')
-            .send(program_json)
-            .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
-
-        programs.push(res.body.program);
-    });
-
-    while (programs.length < program_jsons.length) {
-
+        teacher_docs.push(res.body.teacher);
     }
+    return [teacher_tokens, teacher_docs];
+}
 
-    /**
-     * Creates and saves students
-     */
+async function createPrograms(program_jsons, token) {
+    let programs = [];
+    for (json of program_jsons) {
+        res = await request(app)
+        .post('/api/program/create')
+        .send(program_json)
+        .set('Authorization', 'Bearer ' + random_item(tokens));
 
-    const students = [];
+    programs.push(res.body.program);
+    }
+    return programs;
+}
 
-    for (var i = 0; i < number_of_students; i++) {
+async function createStudents(students, teachers, teacher_tokens) {
+    const students_arr = [];
+
+    for (var i = 0; i < students; i++) {
         const student_json = {
             student_id: pad(i, 3),
             teacher: random_item(teachers)._id,
@@ -132,12 +136,10 @@ module.exports.ingest = async function (number_of_students, number_of_analytics,
 
         students.push(res.student);
     }
+    return students_arr;
+}
 
-    /**
-     * Creates and saves focus items.
-     * Currently these do not generate units/ subunits
-     */
-
+async function createFocusItems(number_of_focus_items, programs, token) {
     const focus_items = [];
 
     for (var i = 0; i < number_of_focus_items; i++) {
@@ -149,15 +151,14 @@ module.exports.ingest = async function (number_of_students, number_of_analytics,
         res = await request(app)
             .post('/api/focusitem/create')
             .send(focus_item_json)
-            .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
+            .set('Authorization', 'Bearer ' + token);
         focus_items.push(res.body.focusitem);
 
     }
+    return focus_items;
+}
 
-    /**
-     * Creates and saves analytics
-     */
-
+async function createAnalytics(number_of_analytics, student_docs, focus_item_docs, teacher_tokens) {
     const analytics = [];
 
     for (var i = 0; i < number_of_analytics; i++) {
@@ -187,8 +188,7 @@ module.exports.ingest = async function (number_of_students, number_of_analytics,
         analytics.push(res.body.analytic);
 
     }
-};
-
+}
 
 /**
  * Utility Functions 
