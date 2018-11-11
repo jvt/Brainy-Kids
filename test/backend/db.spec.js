@@ -18,7 +18,7 @@ const invalid_program_json = {
 	description: desc,
 };
 
-describe('Simple database test', function() {
+describe('backend/db', function() {
 	it('Create invalid program. Should generate an error.', function() {
 		const did_fail = false;
 		const test_program = new Program(invalid_program_json);

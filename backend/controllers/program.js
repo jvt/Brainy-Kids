@@ -151,7 +151,7 @@ module.exports.deleteOne = (req, res) => {
 		});
 };
 
-module.exports.getAnalyticByProgram = (req, res) => {
+module.exports.getFocusItemByProgram = (req, res) => {
 	Program.countDocuments({_id: req.params.id}, function (err, count) {
 		if (err) {
 			return res.status(500).json({

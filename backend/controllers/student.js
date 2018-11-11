@@ -6,7 +6,7 @@ module.exports.getAll = (req, res) => {
         .then(student => {
             return res.status(200).json({
                 status: 'ok',
-                student: student ? student : [], // Ensure we always at the bare minimum send back an empty array
+                students: student ? student : [], // Ensure we always at the bare minimum send back an empty array
             });
         })
         .catch(err => {
@@ -112,24 +112,15 @@ module.exports.update = (req, res) => {
                 ? req.body.teacher
                 : student.teacher;
 
-            student
-                .save()
-                .then(updatedStudent => {
-                    return res.status(200).json({
-                        status: 'ok',
-                        student: updatedStudent,
-                    });
-                })
-                .catch(err => {
-                    return res.status(500).json({
-                        status: 'error',
-                        error: err,
-                        message:
-                            'An unexpected internal server error has occurred!',
-                    });
-                });
+            const updated = await student.save();
+
+            return res.status(200).json({
+                status: 'ok',
+                student: updated,
+            });
         })
         .catch(err => {
+            console.log(err);
             return res.status(500).json({
                 status: 'error',
                 error: err,
