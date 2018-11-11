@@ -31,7 +31,7 @@ module.exports = (app, passport) => {
 	app.post('/api/program', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.create);
 	app.put('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.update);
 	app.delete('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.deleteOne); 
-	app.get('/api/program/:id/analytics', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.analytics); 
+	
 
 	/**
 	 * Focus Item Routes
@@ -67,6 +67,7 @@ module.exports = (app, passport) => {
 		controllers.analytics.application
 	);
     app.get('/api/analytics/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.focusItem);
+	app.get('/api/program/analytics', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.getAnalyticByProgram); 
 
 	app.get('/api/*', [], controllers.static.apiError);
 
