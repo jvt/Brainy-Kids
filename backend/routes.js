@@ -4,7 +4,7 @@ const controllers = require('./controllers');
 var validation = require('./helpers/validation');
 // We disable sessions since we want to validate the token on each request
 const PASSPORT_OPTIONS = { session: false };
-const { check, validationResult } = require('express-validator/check');
+const { check, oneOf, validationResult } = require('express-validator/check');
 
 module.exports = (app, passport) => {
 	/**
@@ -160,6 +160,8 @@ module.exports = (app, passport) => {
 	app.post(
 		'/api/student',
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
+		check('teacher', 'Must contain an teacher.').exists(),
+		check('student_id', 'Must contain an student_id.').exists(),
 		validation.validate(validationResult)],
 		controllers.student.create
 	);
@@ -213,18 +215,29 @@ module.exports = (app, passport) => {
 	app.post(
 		'/api/analytics/hearatale',
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
+		check('student', 'Must contain an student.').exists(),
+		check('program', 'Must contain an program.').exists(),
+		check('focus_item', 'Must contain an focus_item.').exists(),
+		check('time_watching', 'Must contain an time_watching.').exists(),
+		check('total_video_time', 'Must contain an total_video_time.').exists(),
 		validation.validate(validationResult)],
 		controllers.analytics.hearatale
 	);
 	app.post(
 		'/api/analytics/application',
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
+		check('student', 'Must contain an student.').exists(),
+		check('program', 'Must contain an program.').exists(),
+		check('focus_item', 'Must contain an focus_item.').exists(),
+		check('correct_on', 'Must contain an correct_on.').exists(),
+		check('time_spent', 'Must contain an time_spent.').exists(),
 		validation.validate(validationResult)],
 		controllers.analytics.application
 	);
 	app.get(
 		'/api/analytics/focusitem',
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
+		check('focus_item', 'Must contain an focus_item.').exists(),
 		validation.validate(validationResult)],
 		controllers.analytics.focusItem
 	);
