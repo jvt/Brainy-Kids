@@ -27,7 +27,7 @@ module.exports = (app, passport) => {
 	 */
 	app.get('/api/programs', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getAll);
 	app.get('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getOne);
-	app.get('/api/program/:id/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getFocusItemByProgram);
+	app.get('/api/program/:id/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.getAnalyticByProgram);
 	app.post('/api/program', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.create);
 	app.put('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.update);
 	app.delete('/api/program/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.program.deleteOne); 
@@ -66,8 +66,9 @@ module.exports = (app, passport) => {
 		[passport.authenticate('jwt', PASSPORT_OPTIONS)],
 		controllers.analytics.application
 	);
-    app.get('/api/analytics/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.focusItem);
-	app.get('/api/program/analytics', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.getAnalyticByProgram); 
+	app.get('/api/analytics/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.focusItem);
+	app.get('/api/program/analytics', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.analytics); 
+	
 
 	app.get('/api/*', [], controllers.static.apiError);
 

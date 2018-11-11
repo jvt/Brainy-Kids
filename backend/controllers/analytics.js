@@ -226,38 +226,6 @@ module.exports.analytics = (req, res) => {
 	});
 };
 
-module.exports.getAnalyticByProgram = (req, res) => {
-	Program.countDocuments({_id: req.body.program}, function (err, count) {
-		if (err) {
-			return res.status(500).json({
-				status: 'error',
-				error: err,
-				message: 'An unexpected internal server error has occurred!',
-			});
-		}
-		if (count == 0) {
-			return res.status(404).json({
-				status: 'error',
-				message: 'Unable to find program ' + req.body.program,
-			});
-		}
- 		FocusItem.find({program: req.body.program})
-		.then(focus_items => {
-			return res.status(200).json({
-				status: 'ok',
-				focus_items: focus_items ? focus_items : [], // Ensure we always at the bare minimum send back an empty array
-			});
-		})
-		.catch(err => {
-			return res.status(404).json({
-				status: 'error',
-				error: err,
-				message: 'Unable to find program ' + req.body.program,
-			});
-		});
-	});
- }
-
 function sortAnalyticsIntoFocusItemStructure(analytics) {
 	const focus_items_set = new Set();
 	for (i in analytics) {
