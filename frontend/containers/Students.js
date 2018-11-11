@@ -71,7 +71,6 @@ class Students extends Component {
 						paddingBottom: 10,
 						textAlign: 'center',
 					}}>
-					<input type="file" id="files" name="files" />
 					<Upload
 						data={e => console.log(e)}
 						onChange={this.onChange}
