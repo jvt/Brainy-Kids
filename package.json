@@ -10,10 +10,8 @@
 		"backend": "nodemon server.js",
 		"production": "NODE_ENV=production node server.js",
 		"test": "nyc mocha --exit --recursive test/**/*.spec.js",
-		"testUnix":
-			"NODE_ENV=testing nyc mocha --exit --recursive $(find test -name *.spec.js)",
-		"cross-platform":
-			"nyc mocha --exit --recursive \"./test/**/*.spec.js\"",
+		"testUnix": "NODE_ENV=testing nyc mocha --exit --recursive $(find test -name *.spec.js)",
+		"cross-platform": "nyc mocha --exit --recursive \"./test/**/*.spec.js\"",
 		"ingest": "node test/backend/ingest.js"
 	},
 	"repository": {
@@ -49,7 +47,7 @@
 		"lodash": "^4.17.10",
 		"moment": "^2.22.0",
 		"mongoose": "^5.2.13",
-		"morgan": "^1.9.0",
+		"morgan": "^1.9.1",
 		"node-sass": "^4.9.3",
 		"passport": "^0.4.0",
 		"passport-jwt": "^4.0.0",
