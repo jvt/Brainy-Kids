@@ -1,8 +1,10 @@
 'use strict';
 const controllers = require('./controllers');
 
+var validation = require('./helpers/validation');
 // We disable sessions since we want to validate the token on each request
 const PASSPORT_OPTIONS = { session: false };
+const { check, validationResult } = require('express-validator/check');
 
 module.exports = (app, passport) => {
 	/**
@@ -16,7 +18,9 @@ module.exports = (app, passport) => {
 	app.post('/api/session/login', [], controllers.session.login);
 	app.post('/api/session/register', [], controllers.session.newTeacher);
 	app.post('/api/session/student', [], controllers.session.loginStudent);
-	app.post('/api/session/resetpassword', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.resetPassword);
+	app.post('/api/session/resetpassword', [passport.authenticate('jwt', PASSPORT_OPTIONS),
+		check('password', 'Password must be at least 7 characters long').isLength({ min: 7 }),
+		validation.validate(validationResult)], controllers.session.resetPassword);
     app.get('/api/session/info', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getInfo);
 	app.get('/api/session/studentinfo', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getStudentInfo);
 
