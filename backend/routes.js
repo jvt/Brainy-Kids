@@ -15,14 +15,34 @@ module.exports = (app, passport) => {
 	 *
 	 * Middleware: passport.authenticate('jwt', PASSPORT_OPTIONS)
 	 */
-	app.post('/api/session/login', [], controllers.session.login);
-	app.post('/api/session/register', [], controllers.session.newTeacher);
-	app.post('/api/session/student', [], controllers.session.loginStudent);
+	app.post('/api/session/login', [
+		check('email').isEmail(),
+		check('password', 'Password must be at least 7 characters long').isLength({ min: 8 }),
+		validation.validate(validationResult)
+	], controllers.session.login);
+
+	app.post('/api/session/register', [
+		check('email').isEmail(),
+		check('password', 'Password must be at least 7 characters long').isLength({ min: 8 }),
+		validation.validate(validationResult)
+	], controllers.session.newTeacher);
+
+	app.post('/api/session/student', [
+		validation.validate(validationResult)
+	], controllers.session.loginStudent);
 
 	app.post(
 		'/api/session/resetpassword',
 		[passport.authenticate('jwt', PASSPORT_OPTIONS),
-		check('password', 'Password must be at least 7 characters long').isLength({ min: 8 }),
+		check('password', 'Password must be at least 7 characters long').isLength({ min: 8 })
+			.custom((value,{req, loc, path}) => {
+				if (value !== req.body.confirm_password) {
+					// trow error if passwords do not match
+					throw new Error("Passwords don't match");
+				} else {
+					return value;
+				}
+        	}),
 		validation.validate(validationResult)],
 		controllers.session.resetPassword
 	);
