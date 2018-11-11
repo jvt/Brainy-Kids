@@ -16,8 +16,9 @@ module.exports = (app, passport) => {
 	app.post('/api/session/login', [], controllers.session.login);
 	app.post('/api/session/register', [], controllers.session.newTeacher);
 	app.post('/api/session/student', [], controllers.session.loginStudent);
+	app.post('/api/session/resetpassword', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.resetPassword);
     app.get('/api/session/info', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getInfo);
-    app.get('/api/session/studentinfo', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getStudentInfo);
+	app.get('/api/session/studentinfo', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.session.getStudentInfo);
 
 	app.get('/status', [], controllers.static.status);
 
@@ -50,10 +51,11 @@ module.exports = (app, passport) => {
 	app.put('/api/student/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.student.update);
 	app.delete('/api/student/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.student.deleteOne);
 
-	app.get('/api/teacher', [], controllers.teacher.getAll);
-	app.get('/api/teacher/:id', [], controllers.teacher.getOne);
-	app.put('/api/teacher/:id', [], controllers.teacher.update);
-	app.delete('/api/teacher/:id', [], controllers.teacher.deleteOne);
+	app.get('/api/teacher', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.getAll);
+	app.get('/api/teacher/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.getOne);
+	app.put('/api/teacher/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.update);
+	app.delete('/api/teacher/:id', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.deleteOne);
+	app.get('/api/teacher/:id/students', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.teacher.getStudents)
 
 	/**
 	 * Analytics Routes
@@ -64,6 +66,7 @@ module.exports = (app, passport) => {
 		[passport.authenticate('jwt', PASSPORT_OPTIONS)],
 		controllers.analytics.application
 	);
+    app.get('/api/analytics/focusitem', [passport.authenticate('jwt', PASSPORT_OPTIONS)], controllers.analytics.focusItem);
 
 	app.get('/api/*', [], controllers.static.apiError);
 

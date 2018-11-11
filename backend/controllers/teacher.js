@@ -1,4 +1,5 @@
 const Teacher = require('mongoose').model('Teacher');
+const Student = require('mongoose').model('Student');
 
 module.exports.getAll = (req, res) => {
     Teacher.find({})
@@ -45,21 +46,19 @@ module.exports.update = (req, res) => {
             }
 
             // Update the student_id if the body request contains a student_id
-            if(req.body.teacher_id){
+            if (req.body.teacher_id) {
                 teacher.teacher_id = req.body.teacher_id;
             }
 
             // Update the student if the body request contains deleted
-            if(req.body.name){
+            if (req.body.name) {
                 teacher.deleted = req.body.deleted;
             }
 
             // Update the unit if the body request contains a unit
-            if(req.body.email)
-                teacher.email = req.body.email;
+            if (req.body.email) teacher.email = req.body.email;
 
-            if(req.body.password)
-                teacher.password = req.body.password;
+            if (req.body.password) teacher.password = req.body.password;
 
             teacher
                 .save()
@@ -88,7 +87,7 @@ module.exports.update = (req, res) => {
 };
 
 module.exports.deleteOne = (req, res) => {
-    Student.findByIdAndRemove(req.params.id)
+    Teacher.findByIdAndRemove(req.params.id)
         .then(student => {
             return res.status(200).json({
                 status: 'ok',
@@ -101,4 +100,24 @@ module.exports.deleteOne = (req, res) => {
                 message: 'An unexpected internal server error has occurred!',
             });
         });
-}
+};
+
+module.exports.getStudents = async (req, res) => {
+    const { id } = req.params;
+
+    if (id !== req.user._id.toString()) {
+        return res.status(403).json({
+            status: 'error',
+            message: 'Unauthorized request',
+        });
+    }
+
+    const students = await Student.find({
+        teacher: id,
+    });
+
+    return res.status(200).json({
+        status: 'ok',
+        students: students,
+    });
+};

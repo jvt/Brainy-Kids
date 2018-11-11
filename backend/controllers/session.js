@@ -166,6 +166,51 @@ module.exports.loginStudent = async (req, res) => {
     });
 };
 
+module.exports.resetPassword = async (req, res) => {
+    
+    const teacher = await Teacher.findById(req.user._id);
+
+    if (!teacher) {
+        return res.status(403).json({
+            status: 'error',
+            message: 'You are not signed in as a Teacher.',
+        });
+    }
+
+    if(!req.body.password || !req.body.confirm_password) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Invalid request.',
+        });
+    }
+
+    if(req.body.password.length <= 7) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Unable to change password. New password too short.',
+        });
+    }
+
+    // const passwordsEqual = await bcrypt.compare(
+    //     req.body.password,
+    //     req.body.confirm_password
+    // );
+
+    if (req.body.password !== req.body.confirm_password) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Unable to change password. New password does not match confirm password.',
+        });
+    }
+
+    teacher.password = hash(req.body.password);
+    await teacher.save();
+
+    return res.json({
+        status: 'ok'
+    });
+};
+
 module.exports.getInfo = async (req, res) => {
     return res.status(200).json({
         status: 'ok',
@@ -174,8 +219,8 @@ module.exports.getInfo = async (req, res) => {
 };
 
 module.exports.getStudentInfo = async (req, res) => {
-    return res.status(200).json({
+    var toRet = {
         status: 'ok',
-        student: await Student.findById(req.user._id)}
-    );
+        student: await Student.findById(req.user._id)};
+    return res.status(200).json(toRet);
 };
