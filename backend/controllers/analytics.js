@@ -125,7 +125,7 @@ module.exports.analytics = (req, res) => {
 
 	var program_id;
 	try {
-		program_id = Mongoose.Types.ObjectId(req.params.id);
+		program_id = Mongoose.Types.ObjectId(req.body.program);
 	}
 	catch (err) {
 		return res.status(500).json({
@@ -134,9 +134,9 @@ module.exports.analytics = (req, res) => {
 			message: 'An unexpected internal server error has occurred!',
 		});
 	}
-	// console.log(program_id == req.params.id)
+	// console.log(program_id == req.body.program)
 
-	Program.countDocuments({ _id: req.params.id }, function (err, count) {
+	Program.countDocuments({ _id: req.body.program }, function (err, count) {
 		if (err) {
 			return res.status(500).json({
 				status: 'error',
@@ -148,7 +148,7 @@ module.exports.analytics = (req, res) => {
 		if (count == 0) {
 			return res.status(404).json({
 				status: 'error',
-				message: 'Unable to find program ' + req.params.id,
+				message: 'Unable to find program ' + req.body.program,
 			});
 		}
 
@@ -197,8 +197,8 @@ module.exports.analytics = (req, res) => {
 		} else {
 			Analytic.find()
 				// .populate('program')
-				.where('program').equals(req.params.id)
-				//.where({program : req.params.id})
+				.where('program').equals(req.body.program)
+				//.where({program : req.body.program})
 				.populate('student')
 				// .where('student.teacher').equals(req.user._id)
 				.populate('focus_item')
