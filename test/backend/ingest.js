@@ -76,35 +76,44 @@ module.exports.ingest = function (number_of_students, number_of_analytics, numbe
         tokens = teacher_results[0];
         token = tokens[0];
         teachers_docs = teacher_results[1];
+        console.log('hi!!' + tokens);
+        console.log(teacher_docs);
         createPrograms(program_jsons, token)
         .then(function(programs) {
             createStudents(number_of_students, teacher_docs, tokens)
             .then(function(students) {
                 createFocusItems(number_of_focus_items, programs, token)
                 .then(function(focus_items) {
-                    createAnalytics(number_of_analytics, students, focus_items, teacher_tokens).then(console.log("done"))
-                })
-            }) 
-        })
-    })
+                    createAnalytics(number_of_analytics, students, focus_items, teacher_tokens).then(console.log("done"));
+                });
+            });
+        });
+    });
 };
 
 
 async function createTeachers(teachers) {
+    
     const teacher_tokens = [];
     const teacher_docs = [];
+
     for (teacher of teachers) {
+        
+        const email = teacher.replace(' ', '.').toLowerCase() + '@school.edu'
         res = await request(app)
             .post('/api/session/register')
             .send({
-                name: teacher.name,
-                email: teacher.email,
+                name: teacher,
+                email: email,
                 password: random_item(passwords)
             });
+        // console.log(res.body)
         teacher_tokens.push(res.body.token);
         teacher_docs.push(res.body.teacher);
     }
+    console.log([teacher_tokens, teacher_docs]);
     return [teacher_tokens, teacher_docs];
+    
 }
 
 async function createPrograms(program_jsons, token) {
