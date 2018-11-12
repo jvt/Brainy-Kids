@@ -55,7 +55,7 @@ async function createNewTeacher(name, email, passwordHash, res) {
                         status: 'ok',
                         teacher,
                         token: jwt.sign(
-                            { type: consts.TEACHER, id: teacher.id },
+                            { type: consts.TEACHER, id: teacher._id },
                             process.env.JWT_SECRET
                         ),
                     });
