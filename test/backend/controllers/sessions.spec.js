@@ -244,4 +244,14 @@ describe('GET /api/session/info', function() {
             })
             .expect(200, done);
     });
+    it('responds with an unauthroized if theres no auth token', function(done) {
+        request(app)
+            .get('/api/session/info')
+            .set('Accept', 'application/json')
+            .expect(function(res) {
+                expect(res.text).to.be.a('string');
+                expect(res.text).to.equal('Unauthorized');
+            })
+            .expect(401, done);
+    });
 });
