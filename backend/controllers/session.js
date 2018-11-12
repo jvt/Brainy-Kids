@@ -146,6 +146,13 @@ module.exports.login = async (req, res) => {
 module.exports.loginStudent = async (req, res) => {
     const INCORRECT_MESSAGE = 'Your id / password combination is incorrect.';
 
+    if (!req.body.student_id) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Missing required body parameter `student_id`',
+        });
+    }
+
     const teacher = await Teacher.findOne({
         teacher_id: req.body.student_id.substring(0, 3),
     });
@@ -170,7 +177,6 @@ module.exports.loginStudent = async (req, res) => {
 
     if (!student) {
         // We have a random delay to prevent time-attacks
-        console.log('Bad student');
         setTimeout(() => {
             return res.status(403).json({
                 status: 'error',
