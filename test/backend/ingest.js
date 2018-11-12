@@ -66,7 +66,7 @@ const program_jsons = [
 ];
 
 const passwords = [
-    "123456",
+    "12345678",
 ]
 
 module.exports.ingest = function (number_of_students, number_of_analytics, number_of_focus_items, done_function) {
@@ -85,9 +85,10 @@ module.exports.ingest = function (number_of_students, number_of_analytics, numbe
             .then(function(students) {
                 createFocusItems(number_of_focus_items, programs, token)
                 .then(function(focus_items) {
-                    createAnalytics(number_of_analytics, students, focus_items, programs, tokens)
-                    .then(done_function())
-                    .catch(function(err) {console.log(err)});
+                    createAnalytics(number_of_analytics, students, focus_items, tokens)
+                    .then(function() {
+                        done_function()
+                    }).catch(function(err) {console.log(err)});
                 }).catch(function(err) {console.log(err)});
             }).catch(function(err) {console.log(err)});
         }).catch(function(err) {console.log(err)});
@@ -111,6 +112,7 @@ async function createTeachers(teachers) {
                 password: random_item(passwords)
             });
         // console.log(res.body)
+        // console.log(res.error)
         teacher_tokens.push(res.body.token);
         teacher_docs.push(res.body.teacher);
         // console.log("Finished the loop.")
@@ -127,7 +129,7 @@ async function createPrograms(program_jsons, token) {
             .post('/api/program')
             .send(program_json)
             .set('Authorization', 'Bearer ' + token);
-        console.log(res.error)
+        // console.log(res.error)
         programs.push(res.body.program);
     }
     return programs;
@@ -154,57 +156,50 @@ async function createStudents(students, teachers, teacher_tokens) {
 
 async function createFocusItems(number_of_focus_items, programs, token) {
     const focus_items = [];
-    console.log(programs)
+    // console.log(programs)
     for (var i = 0; i < number_of_focus_items; i++) {
         const name = "focus_item_" + i.toString();
         const focus_item_json = {
             name: name,
-            program: random_item(programs)._id
+            program: random_item(programs)._id,
+            unit: 'test_unit',
+            subunit: 'test_sub_unit'
         };
         res = await request(app)
             .post('/api/focusitem')
             .send(focus_item_json)
             .set('Authorization', 'Bearer ' + token);
+        // console.log(res.body)
         focus_items.push(res.body.focusitem);
 
     }
     return focus_items;
 }
 
-async function createAnalytics(number_of_analytics, student_docs, focus_item_docs, program_docs, teacher_tokens) {
+async function createAnalytics(number_of_analytics, student_docs, focus_item_docs, teacher_tokens) {
     const analytics = [];
 
     for (var i = 0; i < number_of_analytics; i++) {
         focus_item = random_item(focus_item_docs);
+        let correct_on = Math.floor(Math.random() * 15) + 1
         var analytic_json = {
             focus_item: focus_item._id,
             student: random_item(student_docs)._id,
-            program: focus_item.program._id,
-            correct_on: Math.floor(Math.random() * 15) + 1,
-            time_spent: this.correct_on * Math.floor(Math.random() * 61000) + 1000
+            program: focus_item.program,
+            correct_on: correct_on,
+            time_spent: correct_on * Math.floor(Math.random() * 61000) + 1000
 
         };
-        // if (Math.random() > .5) {
-        // const correct_on = 
-        // const time_spent = ;
-        // analytic_json.correct_on = correct_on;
-        // analytic_json.time_spent = time_spent;
 
-        // } else {
-        //     const total_video_time = Math.floor(Math.random() * 61000) + 15000;
-        //     const time_watching = Math.random() * total_video_time;
-        //     analytic_json.time_watching = time_watching;
-        //     analytic_json.total_video_time = total_video_time;
-        // }
         res = await request(app)
             .post('/api/analytics/application')
             .send(analytic_json)
             .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
-        console.log(res.body)
-        console.log(res.error)
+        console.log("Got analytic response!")
         analytics.push(res.body.analytic);
-
     }
+    console.log(analytics);
+    return analytics;
 }
 
 /**
