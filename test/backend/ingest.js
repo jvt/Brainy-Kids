@@ -14,6 +14,24 @@ const Async = require('async');
  * Author: Asher Kenerly
  */
 
+ /**
+  * Example code for running this script:
+  *     before(function(done) {
+        this.timeout(15000);
+        Analytic.deleteMany({}).then(function() {
+            Teacher.deleteMany({}).then(function() {
+                Student.deleteMany({}).then(function() {
+                    Focus_Item.deleteMany({}).then(function() {
+                        Program.deleteMany({}).then(function() {
+                            ingest.ingest(300, 900, 25, done);
+                        });
+                    });
+                });
+            });
+        });
+    });
+  */
+
 const teacher_names = [
     "Waldo Simcox",
     "Lorrine Kellam",
@@ -73,12 +91,9 @@ module.exports.ingest = function (number_of_students, number_of_analytics, numbe
     // Non vairables: 3 programs, 30 teachers
     createTeachers(teacher_names)
     .then(function(teacher_results) {
-        // console.log("Now inside teacher then.")
         tokens = teacher_results[0];
         token = tokens[0];
         teacher_docs = teacher_results[1];
-        // console.log(tokens);
-        // console.log(teacher_docs);
         createPrograms(program_jsons, token)
         .then(function(programs) {
             createStudents(number_of_students, teacher_docs, tokens)
@@ -111,13 +126,9 @@ async function createTeachers(teachers) {
                 email: email,
                 password: random_item(passwords)
             });
-        // console.log(res.body)
-        // console.log(res.error)
         teacher_tokens.push(res.body.token);
         teacher_docs.push(res.body.teacher);
-        // console.log("Finished the loop.")
     }
-    // console.log([teacher_tokens, teacher_docs]);
     return [teacher_tokens, teacher_docs];
     
 }
@@ -129,7 +140,6 @@ async function createPrograms(program_jsons, token) {
             .post('/api/program')
             .send(program_json)
             .set('Authorization', 'Bearer ' + token);
-        // console.log(res.error)
         programs.push(res.body.program);
     }
     return programs;
@@ -156,7 +166,6 @@ async function createStudents(students, teachers, teacher_tokens) {
 
 async function createFocusItems(number_of_focus_items, programs, token) {
     const focus_items = [];
-    // console.log(programs)
     for (var i = 0; i < number_of_focus_items; i++) {
         const name = "focus_item_" + i.toString();
         const focus_item_json = {
@@ -169,7 +178,6 @@ async function createFocusItems(number_of_focus_items, programs, token) {
             .post('/api/focusitem')
             .send(focus_item_json)
             .set('Authorization', 'Bearer ' + token);
-        // console.log(res.body)
         focus_items.push(res.body.focusitem);
 
     }
@@ -195,10 +203,8 @@ async function createAnalytics(number_of_analytics, student_docs, focus_item_doc
             .post('/api/analytics/application')
             .send(analytic_json)
             .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
-        console.log("Got analytic response!")
         analytics.push(res.body.analytic);
     }
-    console.log(analytics);
     return analytics;
 }
 
