@@ -18,7 +18,7 @@ export default function reducer(state = initialState, action) {
 			return {
 				...state,
 				loading: false,
-				data: action.programs,
+				data: action.students,
 				error: null,
 			};
 

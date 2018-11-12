@@ -7,6 +7,7 @@ import SideNav from './SideNav';
 export default function PageFormat({
 	page,
 	title,
+	popover,
 	children,
 	loading,
 	breadcrumb,
@@ -19,11 +20,12 @@ export default function PageFormat({
 					<Card style={{ marginBottom: 10 }}>{breadcrumb}</Card>
 				) : null}
 				<Card>
-					<h1>
+					<h1 style={{ display: 'inline-block' }}>
 						{title
 							? title
 							: page.charAt(0).toUpperCase() + page.slice(1)}
 					</h1>
+					{popover ? popover : null}
 					{loading ? (
 						<div style={{ width: '100%', textAlign: 'center' }}>
 							<Icon
