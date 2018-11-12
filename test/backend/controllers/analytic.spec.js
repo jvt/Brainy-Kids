@@ -13,8 +13,9 @@ describe('Runs ingest script', function() {
                 Student.deleteMany({}).then(function() {
                     Focus_Item.deleteMany({}).then(function() {
                         Program.deleteMany({}).then(function() {
-                            ingest.ingest(45,100,15);
-                            done();
+                            ingest.ingest(45,100,15, done);
+                            // console.log("done")
+                            // done();
                         });
                     });
                 });
