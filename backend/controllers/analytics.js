@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
-const Analytic = require('mongoose').model('Analytic');
-const Student = require('mongoose').model('Student');
-const Teacher = require('mongoose').model('Teacher');
+const Teacher = require('../models/teacher');
+const Student = require('../models/student');
+const Analytic = require('../models/analytic');
+const Focus_Item = require('../models/teacher');
+const Program = require('../models/program');
 
 module.exports.hearatale = (req, res) => {
     const analytic = new Analytic({
@@ -117,17 +119,19 @@ module.exports.focusItem = async (req, res) => {
 }
 
 module.exports.analytics = (req, res) => {
+	
 	// If the request was made with a student's token
 	if (req.user.student_id) {
 		console.log('Student tried to login as teacher')
 		return res.status(401).json();
 	}
-
+	console.log(req.body)
 	var program_id;
 	try {
-		program_id = Mongoose.Types.ObjectId(req.body.program);
+		program_id = mongoose.Types.ObjectId(req.body.program);
 	}
 	catch (err) {
+		console.log(err)
 		return res.status(500).json({
 			status: 'error',
 			error: err,
@@ -135,7 +139,7 @@ module.exports.analytics = (req, res) => {
 		});
 	}
 	// console.log(program_id == req.body.program)
-
+	console.log("I ran!")
 	Program.countDocuments({ _id: req.body.program }, function (err, count) {
 		if (err) {
 			return res.status(500).json({
@@ -196,26 +200,37 @@ module.exports.analytics = (req, res) => {
 				});
 		} else {
 			Analytic.find()
-				// .populate('program')
 				.where('program').equals(req.body.program)
-				//.where({program : req.body.program})
 				.populate('student')
+				
+				// .populate('student.teacher')
+				//.where('student.teacher')
+				// .exists('student')
 				// .where('student.teacher').equals(req.user._id)
 				.populate('focus_item')
+				// .where('focus_item.unit', 'test_unit')
+				// .lean()
 				.then(function (analytics) {
-					console.log(req.user);
-					for (i in analytics) {
-						if (analytics[i].student.teacher == req.user._id) {
-							console.log(analytics[i])
+					//console.log(analytics);
+					//console.log(req.user._id);
+					let cleansed_analytics = [];
+					for (a of analytics) {
+
+
+						if (mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id)){
+							cleansed_analytics.push(a)
+							// console.log('1: ' + mongoose.Types.ObjectId(a.student.teacher).equals(mongoose.Types.ObjectId(req.user._id)))
+							// console.log('2: ' + mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id))
 						}
 					}
-					console.log(analytics.length);
+					// console.log(analytics.length);
 					return res.status(200).json({
 						status: 'ok',
-						focus_items: sortAnalyticsIntoFocusItemStructure(analytics)
+						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
 					});
 				})
 				.catch(err => {
+					console.log(err)
 					return res.status(500).json({
 						status: 'error',
 						error: err,
@@ -227,23 +242,64 @@ module.exports.analytics = (req, res) => {
 };
 
 function sortAnalyticsIntoFocusItemStructure(analytics) {
+	// console.log(analytics)
+	// const focus_items_set = new Set();
+	// for (a of analytics) {
+	// 	focus_items_set.add(a.focus_item);
+	// }
+
+	// const focus_items_list = Array.from(focus_items_set);
+	// const focus_items_return_list = new Array();
+	// for (i in focus_items_set.values()) {
+	// 	var focus_item = focus_items_list[i];
+	// 	focus_item['analytics'] = [];
+	// 	for (j in analytics) {
+	// 		var analytic = analytics[j];
+	// 		if (analytic.focus_item._id == focus_item._id) {
+	// 			analytic.focus_item = analytic.focus_item._id;
+	// 			focus_item.analytics.push(analytic);
+	// 		}
+	// 	}
+	// 	focus_items_return_list.push(focus_item)
+	// }
+	// return focus_items_list;
+
 	const focus_items_set = new Set();
-	for (i in analytics) {
-		analytic = analytics[i];
-		focus_items_set.add(analytic.focus_item);
+	for (a of analytics) {
+		if (!focus_item_list_contains(a.focus_item, focus_items_set)) {
+			fc = a.focus_item.toObject()
+			fc['analytics'] = [];
+			focus_items_set.add(fc);
+		}
+		
 	}
 
 	const focus_items_list = Array.from(focus_items_set);
-	for (i in focus_items_set.values()) {
-		var focus_item = focus_items_list[i];
-		focus_item.analytics = [];
-		for (j in analytics) {
-			var analytic = analytics[j];
-			if (analytic.focus_item._id == focus_item._id) {
-				analytic.focus_item = analytic.focus_item._id;
-				focus_item.analytics.put(analytic);
+	const focus_items_return_list = new Array();
+	for (fc of focus_items_list) {
+		// console.log(fc)
+		// fc['analytics'] = [];
+		for (an of analytics) {
+			// console.log(an.focus_item._id + ' : ' + focus_item._id + ' : '+  mongoose.Types.ObjectId(an.focus_item._id).equals(focus_item._id))
+			if (mongoose.Types.ObjectId(an.focus_item._id).equals(focus_item._id)) {
+				console.log("Pushing: " + an)
+				an.focus_item = an.focus_item._id;
+				fc.analytics.push(an);
+
 			}
-		} 
+		}
+
+		focus_items_return_list.push(fc);
 	}
-	return focus_items_list;
+
+	return focus_items_return_list
+}
+
+function focus_item_list_contains(fc, fc_list) {
+	for (f of fc_list) {
+		if (mongoose.Types.ObjectId(fc._id).equals(f._id)) {
+			return true
+		}
+	}
+	return false
 }

@@ -250,7 +250,7 @@ module.exports = (app, passport) => {
 		controllers.analytics.focusItem
 	);
 	app.get(
-		'/api/program/analytics', 
+		'/api/analytics/program', 
 		[passport.authenticate('jwt', PASSPORT_OPTIONS)], 
 		controllers.analytics.analytics
 	); 
