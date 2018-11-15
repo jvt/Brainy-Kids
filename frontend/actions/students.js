@@ -44,6 +44,10 @@ module.exports.loadStudents = () => {
 	};
 };
 
+module.exports.loadStudentNames = names => {
+	
+}
+
 module.exports.appendStudent = student => {
 	return {
 		type: types.APPEND_STUDENT,

@@ -146,6 +146,10 @@ class Students extends Component {
 		});
 	}
 
+	printFile(file) {
+		console.log(file);
+	}
+
 	render() {
 		const { teacher, students, loading, error } = this.props;
 
@@ -175,6 +179,7 @@ class Students extends Component {
 						data={e => console.log(e)}
 						onChange={this.onChange}
 						beforeUpload={file => {
+							printFile(file);
 							return false;
 						}}>
 						<Button>Upload Excel File</Button>
