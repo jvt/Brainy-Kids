@@ -17,7 +17,6 @@ const loadStudentsError = error => {
 };
 
 const loadStudentsLoading = () => {
-	console.log('loading students');
 	return {
 		type: types.LOAD_STUDENTS,
 	};
@@ -42,5 +41,12 @@ module.exports.loadStudents = () => {
 				console.error(err);
 				return dispatch(loadStudentsError(err));
 			});
+	};
+};
+
+module.exports.appendStudent = student => {
+	return {
+		type: types.APPEND_STUDENT,
+		student,
 	};
 };

@@ -8,6 +8,7 @@ import {
 	List,
 	Popover,
 	Upload,
+	notification,
 	Icon,
 } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
@@ -39,9 +40,80 @@ class Students extends Component {
 
 		this.state = {
 			modalVisibility: false,
+			createStudentLoading: false,
+			student_id: '',
 		};
 
+		this.createStudent = this.createStudent.bind(this);
+		this.newStudentOnChange = this.newStudentOnChange.bind(this);
 		this.setModalVisibility = this.setModalVisibility.bind(this);
+	}
+
+	createStudent() {
+		const { token, students } = this.props;
+		const { student_id } = this.state;
+		if (!student_id || student_id.length !== 3) {
+			return notification.error({
+				message: 'Uh oh!',
+				description: 'Please enter a 3-digit student ID number',
+			});
+		}
+
+		const alreadyUsedCheck = students.find(s => {
+			return s.student_id === student_id;
+		});
+
+		if (alreadyUsedCheck) {
+			return notification.error({
+				message: 'Uh oh!',
+				description: 'That student ID is already in use.',
+			});
+		}
+
+		this.setState({ createStudentLoading: true });
+
+		fetch(`/api/student`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				teacher: this.props.teacher._id,
+				student_id,
+			}),
+		})
+			.then(res => res.json())
+			.then(json => {
+				this.setState({ createStudentLoading: false });
+				if (json.status === 'ok') {
+					this.props.appendStudent(json.student);
+					notification.success({
+						message: 'Success!',
+						description:
+							'That student has been created successfully!',
+					});
+					this.setModalVisibility(false);
+				} else {
+					notification.error({
+						message: 'Uh oh!',
+						description:
+							json.errors && json.errors.length > 0
+								? json.errors[0].msg
+								: json.message ||
+								  'An unexpected system error has occurred.',
+					});
+				}
+			})
+			.catch(err => {
+				console.error(err);
+				this.setState({ createStudentLoading: true });
+				notification.error({
+					message: 'System error',
+					description:
+						"Uh oh! An unexpected system error has occurred. We're sorry!",
+				});
+			});
 	}
 
 	componentWillMount() {
@@ -52,7 +124,7 @@ class Students extends Component {
 	}
 
 	setModalVisibility(value) {
-		this.setState({ modalVisibility: value });
+		this.setState({ modalVisibility: value, student_id: '' });
 	}
 
 	onChange(e) {
@@ -68,16 +140,16 @@ class Students extends Component {
 		reader.readAsDataURL(e.file);
 	}
 
+	newStudentOnChange(student_id) {
+		this.setState({
+			student_id: `${student_id}`, // We cast it to a string so we can use .length on it
+		});
+	}
+
 	render() {
 		const { teacher, students, loading, error } = this.props;
 
-		// if (error) {
-		// 	return (
-		// 		<PageFormat page="students" loading={loading}>
-		// 			<p>{error}</p>
-		// 		</PageFormat>
-		// 	);
-		// }
+		const { createStudentLoading } = this.state;
 
 		return (
 			<PageFormat
@@ -110,8 +182,10 @@ class Students extends Component {
 				</div>
 				<NewStudentModal
 					visible={this.state.modalVisibility}
-					onOk={() => this.setModalVisibility(false)}
+					loading={createStudentLoading}
+					onOk={this.createStudent}
 					onCancel={() => this.setModalVisibility(false)}
+					onChange={this.newStudentOnChange}
 				/>
 				{!students || students.length === 0 ? (
 					<p>You have no students in your classes yet.</p>
@@ -149,6 +223,7 @@ const mapStateToProps = state => {
 		students: state.students.data,
 		loading: state.students.loading,
 		error: state.students.error,
+		token: state.teacher.token,
 	};
 };
 

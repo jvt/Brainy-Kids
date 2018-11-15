@@ -1,16 +1,26 @@
 import React from 'react';
 import { Modal, Alert, Row, Button, InputNumber } from 'antd';
 
-export default ({ onSave, ...props }) => {
+export default props => {
 	return (
 		<Modal
 			title="Create New Student"
 			centered
+			destroyOnClose
+			closable={!props.loading}
+			maskClosable={!props.loading}
 			footer={[
-				<Button key="back" onClick={props.onCancel}>
+				<Button
+					key="back"
+					disabled={props.loading}
+					onClick={props.onCancel}>
 					Cancel
 				</Button>,
-				<Button key="submit" type="primary" onClick={props.onOk}>
+				<Button
+					key="submit"
+					loading={props.loading}
+					type="primary"
+					onClick={props.onOk}>
 					Save
 				</Button>,
 			]}
@@ -36,11 +46,13 @@ export default ({ onSave, ...props }) => {
 					Student ID
 				</p>
 				<InputNumber
+					disabled={props.loading}
 					style={{ display: 'inline-block' }}
 					placeholder="###"
 					autoFocus
 					max={999}
 					min={0}
+					onChange={props.onChange}
 				/>
 			</Row>
 		</Modal>
