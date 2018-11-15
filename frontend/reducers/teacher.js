@@ -1,6 +1,7 @@
 import * as types from '../types';
 
 const initialState = {
+	loading: false,
 	token: null,
 	data: null,
 	error: null,
@@ -37,6 +38,27 @@ export default function reducer(state = initialState, action) {
 			};
 
 		case types.RELOAD_TEACHER_DATA_ERROR:
+			return {
+				...state,
+				loading: false,
+				error: action.error,
+			};
+
+		case types.UPDATE_TEACHER_DATA_LOADING:
+			return {
+				...state,
+				loading: true,
+			};
+
+		case types.UPDATE_TEACHER_DATA_SUCCESS:
+			return {
+				...state,
+				loading: false,
+				data: action.teacher,
+				error: null,
+			};
+
+		case types.UPDATE_TEACHER_DATA_ERROR:
 			return {
 				...state,
 				loading: false,
