@@ -42,15 +42,15 @@ async function createNewTeacher(name, email, passwordHash, res) {
     })
         .save()
         .then(teacher => {
-            //Duplicate created with same id due to race condition
-            //Removes and retries after random delay
+            // Duplicate created with same id due to race condition
+            // Removes and retries after random delay
             if (Teacher.countDocuments({ teacher_id: id }) > 1) {
                 Teacher.deleteOne({ email: email });
-                setTimeout(function() {
+                return setTimeout(function() {
                     createNewTeacher(name, email, passwordHash, res);
                 }, Math.random() * 5);
             } else {
-                Teacher.findOne({ email }).then(teacher => {
+                return Teacher.findOne({ email }).then(teacher => {
                     return res.status(200).json({
                         status: 'ok',
                         teacher,
@@ -62,7 +62,7 @@ async function createNewTeacher(name, email, passwordHash, res) {
                 });
             }
         })
-        .catch(unexpectedError, res);
+        .catch(error => unexpectedError(error, res));
 }
 
 module.exports.newTeacher = (req, res) => {

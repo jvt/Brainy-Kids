@@ -255,3 +255,172 @@ describe('GET /api/session/info', function() {
             .expect(401, done);
     });
 });
+
+describe('GET /api/session/studentinfo', function() {
+    beforeEach(function() {
+        sinon.stub(Student, 'findById');
+    });
+    afterEach(function() {
+        Student.findById.restore();
+    });
+    it('responds with an unauthroized if theres no auth token', function(done) {
+        request(app)
+            .get('/api/session/studentinfo')
+            .set('Accept', 'application/json')
+            .expect(function(res) {
+                expect(res.text).to.be.a('string');
+                expect(res.text).to.equal('Unauthorized');
+            })
+            .expect(401, done);
+    });
+    it('succeeds with a teacher object if the teacher is found in the database', function(done) {
+        Student.findById.resolves(new Student(sessionFixture.STUDENT_MODEL));
+
+        request(app)
+            .get('/api/session/studentinfo')
+            .set('Authorization', `Bearer ${sessionFixture.STUDENT_TOKEN}`)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+                expect(res.body).to.be.an('object');
+                expect(res.body.status).to.be.a('string');
+                expect(res.body.status).to.equal('ok');
+                expect(res.body.student).to.be.an('object');
+            })
+            .expect(200, done);
+    });
+});
+
+describe('POST /api/session/register', function() {
+    beforeEach(function() {
+        sinon.stub(bcrypt, 'hashSync');
+        sinon.stub(bcrypt, 'genSaltSync');
+    });
+    afterEach(function() {
+        bcrypt.hashSync.restore();
+        bcrypt.genSaltSync.restore();
+    });
+    it('returns an error if a teacher with that email already exists', function(done) {
+        const teacherMock = sinon.mock(Teacher);
+
+        teacherMock
+            .expects('findOne')
+            .withArgs({ email: 'gburdell@gatech.edu' })
+            .resolves(new Teacher(sessionFixture.TEACHER_MODEL));
+
+        request(app)
+            .post('/api/session/register')
+            .send({
+                email: 'gburdell@gatech.edu',
+            })
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+                expect(res.body).to.be.an('object');
+                expect(res.body.status).to.be.a('string');
+                expect(res.body.status).to.equal('error');
+                expect(res.body.teacher).to.be.undefined;
+                expect(res.body.token).to.be.undefined;
+                expect(res.body.message).to.be.a('string');
+                teacherMock.verify();
+                teacherMock.restore();
+            })
+            .expect(409, done);
+    });
+    it('returns an error if a teacher with that email already exists - case insensitve check', function(done) {
+        const teacherMock = sinon.mock(Teacher);
+
+        teacherMock
+            .expects('findOne')
+            .withArgs({ email: 'gburdell@gatech.edu' })
+            .resolves(new Teacher(sessionFixture.TEACHER_MODEL));
+
+        request(app)
+            .post('/api/session/register')
+            .send({
+                email: 'GBURDELL@GATECH.EDU',
+            })
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+                expect(res.body).to.be.an('object');
+                expect(res.body.status).to.be.a('string');
+                expect(res.body.status).to.equal('error');
+                expect(res.body.teacher).to.be.undefined;
+                expect(res.body.token).to.be.undefined;
+                expect(res.body.message).to.be.a('string');
+                teacherMock.verify();
+                teacherMock.restore();
+            })
+            .expect(409, done);
+    });
+    it('creates a teacher successfully - NOT DONE', function(done) {
+        // TODO: RETURN TO THIS TEST
+        done();
+
+        const teacherMock = sinon.mock(Teacher);
+
+        // This should result in the new teacher_id being set to 001 since no
+        // teachers could be found in the database
+        teacherMock
+            .expects('findOne')
+            .withArgs({})
+            .chain('sort')
+            .resolves(null);
+
+        teacherMock
+            .expects('findOne')
+            .withArgs({ email: 'gburdell@gatech.edu' })
+            .onFirstCall()
+            .resolves(null);
+
+        teacherMock
+            .expects('findOne')
+            .withArgs({ email: 'gburdell@gatech.edu' })
+            .onSecondCall()
+            .resolves(new Teacher(sessionFixture.TEACHER_MODEL));
+
+        teacherMock.expects('countDocuments').resolves(0);
+
+        teacherMock
+            .expects('create')
+            .withArgs({
+                email: 'gburdell@gatech.edu',
+                name: 'George Burdell',
+                password: 'SECRET_HASH',
+                teacher_id: '001',
+            })
+            .resolves(sessionFixture.TEACHER_MODEL);
+
+        bcrypt.genSaltSync.returns('SECRET_SALT');
+        bcrypt.hashSync
+            .withArgs('123456789', 'SECRET_SALT')
+            .returns('SECRET_HASH');
+
+        request(app)
+            .post('/api/session/register')
+            .send({
+                name: 'George Burdell',
+                email: 'gburdell@gatech.edu',
+                password: '123456789',
+                confirm_password: '123456789',
+            })
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+                console.log(res.body);
+                expect(res.body).to.be.an('object');
+                expect(res.body.status).to.be.a('string');
+                expect(res.body.status).to.equal('ok');
+                expect(res.body.teacher).to.be.an('object');
+                expect(res.body.token).to.be.a('string');
+                expect(res.body.teacher.password).to.be.undefined;
+
+                expect(Teacher.prototype.save.called).to.be.true;
+
+                teacherMock.verify();
+                teacherMock.restore();
+            })
+            .expect(200, done);
+    });
+});
