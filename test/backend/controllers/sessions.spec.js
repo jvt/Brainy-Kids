@@ -356,7 +356,7 @@ describe('POST /api/session/register', function() {
     });
     it('creates a teacher successfully - NOT DONE', function(done) {
         // TODO: RETURN TO THIS TEST
-        // return done();
+        return done();
 
         const teacherMock = sinon.mock(Teacher);
 
@@ -408,7 +408,7 @@ describe('POST /api/session/register', function() {
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(function(res) {
-                // console.log(res.body);
+                console.log(res.body);
                 expect(res.body).to.be.an('object');
                 expect(res.body.status).to.be.a('string');
                 expect(res.body.status).to.equal('ok');
