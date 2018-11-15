@@ -33,9 +33,9 @@ describe('POST /api/session/login', function() {
                 expect(res.body).to.be.an('object');
                 expect(res.body.status).to.be.a('string');
                 expect(res.body.status).to.equal('error');
-                expect(res.body.message).to.be.a('string');
+                expect(res.body.errors).to.be.an('array');
             })
-            .expect(403, done);
+            .expect(400, done);
     });
     it('errors out if password is not sent', function(done) {
         request(app)
@@ -49,9 +49,9 @@ describe('POST /api/session/login', function() {
                 expect(res.body).to.be.an('object');
                 expect(res.body.status).to.be.a('string');
                 expect(res.body.status).to.equal('error');
-                expect(res.body.message).to.be.a('string');
+                expect(res.body.errors).to.be.an('array');
             })
-            .expect(403, done);
+            .expect(400, done);
     });
     it('errors out if the teacher cant be found', function(done) {
         sinon
@@ -73,9 +73,9 @@ describe('POST /api/session/login', function() {
                 expect(res.body).to.be.an('object');
                 expect(res.body.status).to.be.a('string');
                 expect(res.body.status).to.equal('error');
-                expect(res.body.message).to.be.a('string');
+                expect(res.body.errors).to.be.an('array');
             })
-            .expect(403, done);
+            .expect(400, done);
     });
     it('errors out if the password does not match', function(done) {
         sinon
@@ -97,9 +97,9 @@ describe('POST /api/session/login', function() {
                 expect(res.body).to.be.an('object');
                 expect(res.body.status).to.be.a('string');
                 expect(res.body.status).to.equal('error');
-                expect(res.body.message).to.be.a('string');
+                expect(res.body.errors).to.be.an('array');
             })
-            .expect(403, done);
+            .expect(400, done);
     });
     it('succeeds with a token and the user object if the password is correct', function(done) {
         sinon
@@ -141,7 +141,7 @@ describe('POST /api/session/student', function() {
                 expect(res.body).to.be.an('object');
                 expect(res.body.status).to.be.a('string');
                 expect(res.body.status).to.equal('error');
-                expect(res.body.message).to.be.a('string');
+                expect(res.body.errors).to.be.an('array');
             })
             .expect(400, done);
     });
@@ -312,6 +312,7 @@ describe('POST /api/session/register', function() {
             .post('/api/session/register')
             .send({
                 email: 'gburdell@gatech.edu',
+                password: '123456789',
             })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -339,6 +340,7 @@ describe('POST /api/session/register', function() {
             .post('/api/session/register')
             .send({
                 email: 'GBURDELL@GATECH.EDU',
+                password: '123456789',
             })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
