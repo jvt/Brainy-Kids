@@ -152,7 +152,7 @@ class Students extends Component {
 		fr.onload = function(e) {
 			// e.target.result should contain the text
 			console.log(e.target.result);
-			var names_json = {};
+			var names_json = [];
 			var lines = e.target.result.split('/n');
 			var headers = ['id', 'name'];
 			for(var i=0;i<lines.length;i++){
@@ -161,9 +161,9 @@ class Students extends Component {
 				for(var j=0;j<headers.length;j++){
 					obj[headers[j]] = currentline[j];
 				}
-				result.push(obj);
+				names_json.push(obj);
 			}
-			JSON.stringify(result);
+			JSON.stringify(names_json);
 		};
 		fr.readAsText(file);
 	}	
