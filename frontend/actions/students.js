@@ -22,24 +22,9 @@ const loadStudentsLoading = () => {
 	};
 };
 
-const loadStudentsNamesSuccess = students => {
+const loadStudentsNames = () => {
 	return {
-		type: types.LOAD_STUDENTS_NAMES_SUCCESS,
-		students,
-	};
-};
-
-const loadStudentsNamesError = error => {
-	console.log(error);
-	return {
-		type: types.LOAD_STUDENTS_NAMES_ERROR,
-		error,
-	};
-};
-
-const loadStudentsNamesLoading = () => {
-	return {
-		type: types.LOAD_STUDENTS,
+		type: types.LOAD_STUDENTS_NAMES,
 	};
 };
 
