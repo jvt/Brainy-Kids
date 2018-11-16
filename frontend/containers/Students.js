@@ -34,6 +34,7 @@ const PopoverComponent = () => {
 	);
 };
 
+
 class Students extends Component {
 	constructor(props) {
 		super(props);
@@ -147,8 +148,26 @@ class Students extends Component {
 	}
 
 	printFile(file) {
-		console.log(file);
-	}
+		var fr = new FileReader();
+		fr.onload = function(e) {
+			// e.target.result should contain the text
+			console.log(e.target.result);
+			var names_json = {};
+			var lines = e.target.result.split('/n');
+			var headers = ['id', 'name'];
+			for(var i=0;i<lines.length;i++){
+				var obj = {};
+				var currentline=lines[i].split(",");
+				for(var j=0;j<headers.length;j++){
+					obj[headers[j]] = currentline[j];
+				}
+				result.push(obj);
+			}
+			JSON.stringify(result);
+		};
+		fr.readAsText(file);
+	}	
+
 
 	render() {
 		const { teacher, students, loading, error } = this.props;
@@ -176,10 +195,10 @@ class Students extends Component {
 						textAlign: 'center',
 					}}>
 					<Upload
-						data={e => console.log(e)}
+						//data={e => console.log(e)}
 						onChange={this.onChange}
 						beforeUpload={file => {
-							printFile(file);
+							this.printFile(file);
 							return false;
 						}}>
 						<Button>Upload Excel File</Button>
