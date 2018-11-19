@@ -5,6 +5,8 @@ import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 
 import AuthGuard from './components/AuthGuard';
 
+import Account from './containers/Account';
+import ChangePassword from './containers/ChangePassword';
 import LoginPage from './containers/LoginPage';
 import Register from './containers/Register';
 import LogoutPage from './containers/LogoutPage';
@@ -37,6 +39,12 @@ const Routes = () => {
 				/>
 				<AuthGuard path="/students" exact component={Students} />
 				<AuthGuard path="/students/:id" exact component={StudentShow} />
+				<AuthGuard path="/account" exact component={Account} />
+				<AuthGuard
+					path="/account/password"
+					exact
+					component={ChangePassword}
+				/>
 				<Route path="/logout" exact component={LogoutPage} />
 				<Route path="*" component={NotFound} />
 			</Switch>

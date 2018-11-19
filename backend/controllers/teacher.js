@@ -41,7 +41,7 @@ module.exports.update = (req, res) => {
             if (!teacher) {
                 return res.status(404).json({
                     status: 'error',
-                    message: 'Teacher not found',
+                    message: 'Teacher is not found',
                 });
             }
 
@@ -50,22 +50,18 @@ module.exports.update = (req, res) => {
                 teacher.teacher_id = req.body.teacher_id;
             }
 
-            // Update the student if the body request contains deleted
-            if (req.body.name) {
-                teacher.deleted = req.body.deleted;
-            }
+            // Update the name if the body request contains a name
+            if (req.body.name) teacher.name = req.body.name;
 
-            // Update the unit if the body request contains a unit
+            // Update the email if the body request contains a email
             if (req.body.email) teacher.email = req.body.email;
-
-            if (req.body.password) teacher.password = req.body.password;
 
             teacher
                 .save()
                 .then(updatedTeacher => {
                     return res.status(200).json({
                         status: 'ok',
-                        teacher: updatedStudent,
+                        teacher: updatedTeacher,
                     });
                 })
                 .catch(err => {

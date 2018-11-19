@@ -26,17 +26,17 @@ const MISSING_EMAIL = {
 
 const GOOD_PASS_RESET = {
     password: 'mypassword',
-    confirm_password: 'mypassword'
+    confirm_password: 'mypassword',
 };
 
 const SHORT_PASS_RESET = {
     password: 'mypass',
-    confirm_password: 'mypass'
+    confirm_password: 'mypass',
 };
 
 const BAD_PASS_RESET = {
     password: 'mypassword',
-    confirm_password: 'badpssword'
+    confirm_password: 'badpssword',
 };
 
 describe('Teacher Controller', function() {
@@ -131,34 +131,34 @@ describe('Teacher Controller', function() {
     });
 
     var studentToken;
-     it('Logs in a student', async function() {
-         studentJson = { student_id: '007', teacher: createdTeacher._id };
-         var studentId = '007';
-         var createdStudent = await new Student(studentJson).save();
-         const res = await request(app)
-             .post('/api/session/student')
-             .send({ student_id: createdTeacher.teacher_id + '007' })
-             .expect(200);
-         expect(res.body.student._id).equal(createdStudent._id.toString());
-         studentToken = res.body.token;
-     });
+    it('Logs in a student', async function() {
+        studentJson = { student_id: '007', teacher: createdTeacher._id };
+        var studentId = '007';
+        var createdStudent = await new Student(studentJson).save();
+        const res = await request(app)
+            .post('/api/session/student')
+            .send({ student_id: createdTeacher.teacher_id + '007' })
+            .expect(200);
+        expect(res.body.student._id).equal(createdStudent._id.toString());
+        studentToken = res.body.token;
+    });
 
-     it('Gets the info of a student', async function() {
-         const res = await request(app)
-             .get('/api/session/studentinfo')
-             .set('Authorization', 'Bearer ' + studentToken)
-             .send({})
-             .expect(200);
-         expect(res.body.student.student_id).equals(studentJson.student_id);
-         expect(res.body.student.teacher).equals(studentJson.teacher.toString());
-         Student.deleteMany(studentJson);
-     });
+    it('Gets the info of a student', async function() {
+        const res = await request(app)
+            .get('/api/session/studentinfo')
+            .set('Authorization', 'Bearer ' + studentToken)
+            .send({})
+            .expect(200);
+        expect(res.body.student.student_id).equals(studentJson.student_id);
+        expect(res.body.student.teacher).equals(studentJson.teacher.toString());
+        Student.deleteMany(studentJson);
+    });
     it('Resests Password', async function() {
         const res = await request(app)
             .post('/api/session/register')
             .send(GOOD_PASS_RESET)
             .expect(200);
-        
+
         expect(res.body).to.be.an('object');
         expect(res.body.status).to.be.a('string');
         expect(res.body.status).to.equal('ok');
@@ -174,7 +174,7 @@ describe('Teacher Controller', function() {
             .post('/api/session/register')
             .send(BAD_PASS_RESET)
             .expect(400);
-        
+
         expect(res.body.status).to.be.a('string');
         expect(res.body.status).to.equal('error');
         expect(res.body.message).to.be.a('string');
@@ -188,7 +188,7 @@ describe('Teacher Controller', function() {
             .post('/api/session/register')
             .send(SHORT_PASS_RESET)
             .expect(400);
-        
+
         expect(res.body.status).to.be.a('string');
         expect(res.body.status).to.equal('error');
         expect(res.body.message).to.be.a('string');
@@ -198,28 +198,4 @@ describe('Teacher Controller', function() {
         );
         expect(passwordsEqual).to.be.false;
     });
-
-    
-
-    // it('Logs in a student', async function() {
-    //     studentJson = { student_id: '007', teacher: createdTeacher[0]._id };
-    //     var studentId = '007';
-    //     var createdStudent = await new Student(studentJson).save();
-    //     const res = await request(app)
-    //         .post('/api/session/student')
-    //         .send({ student_id: createdTeacher[0].teacher_id + '007' })
-    //         .expect(200);
-    //     expect(res.body.student._id).equal(createdStudent._id.toString());
-    //     Student.deleteMany(studentJson);
-    // });
-
-    // it('Gets the info of a student', async function() {
-    //     const res = await request(app)
-    //         .get('/api/session/studentinfo')
-    //         .set('Authorization', 'Bearer ' + token)
-    //         .send({})
-    //         .expect(200);
-    //     expect(res.body.student.student_id).equals(studentJson.student_id);
-    //     expect(res.body.student.teacher).equals(studentJson.teacher.toString());
-    // });
 });
