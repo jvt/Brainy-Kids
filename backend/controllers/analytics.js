@@ -170,7 +170,6 @@ module.exports.analytics = (req, res) => {
 		
 						}
 					}
-					
 					return res.status(200).json({
 						status: 'ok',
 						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
@@ -190,14 +189,13 @@ module.exports.analytics = (req, res) => {
 				.where('focus_item').equals(req.body.focus_item)
 				.populate('focus_item')
 				.then(function (analytics) {
-					// console.log(analytics)
 					let cleansed_analytics = [];
 					for (a of analytics) {
 						if (mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id)){
 							cleansed_analytics.push(a)
 						}
 					}
-					// console.log(cleansed_analytics)
+
 					return res.status(200).json({
 						status: 'ok',
 						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
@@ -242,30 +240,6 @@ module.exports.analytics = (req, res) => {
 };
 
 function sortAnalyticsIntoFocusItemStructure(analytics) {
-	// console.log(analytics)
-	// const focus_items_set = new Set();
-	// for (a of analytics) {
-	// 	focus_items_set.add(a.focus_item);
-	// }
-
-	// const focus_items_list = Array.from(focus_items_set);
-	// const focus_items_return_list = new Array();
-	// for (i in focus_items_set.values()) {
-	// 	var focus_item = focus_items_list[i];
-	// 	focus_item['analytics'] = [];
-	// 	for (j in analytics) {
-	// 		var analytic = analytics[j];
-	// 		if (analytic.focus_item._id == focus_item._id) {
-	// 			analytic.focus_item = analytic.focus_item._id;
-	// 			focus_item.analytics.push(analytic);
-	// 		}
-	// 	}
-	// 	focus_items_return_list.push(focus_item)
-	// }
-	// return focus_items_list;
-
-	// console.log(analytics.length)
-
 	const focus_items_set = new Set();
 	for (a of analytics) {
 		if (!focus_item_list_contains(a.focus_item, focus_items_set)) {
