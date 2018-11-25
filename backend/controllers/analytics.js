@@ -126,6 +126,7 @@ module.exports.analytics = (req, res) => {
 		return res.status(401).json();
 	}
 	console.log(req.body)
+	console.log(req.user)
 	var program_id;
 	try {
 		program_id = mongoose.Types.ObjectId(req.body.program);
@@ -138,8 +139,7 @@ module.exports.analytics = (req, res) => {
 			message: 'An unexpected internal server error has occurred!',
 		});
 	}
-	// console.log(program_id == req.body.program)
-	console.log("I ran!")
+
 	Program.countDocuments({ _id: req.body.program }, function (err, count) {
 		if (err) {
 			return res.status(500).json({
@@ -158,16 +158,22 @@ module.exports.analytics = (req, res) => {
 
 		if (req.body.focus_items) {
 			Analytic.find()
-				.populate('program')
-				.where('program._id').equals(program_id)
+				.where('program').equals(req.body.program)
 				.populate('student')
-				.where('student.teacher').equals(req.user._id)
 				.where('focus_item').in(req.body.focus_items)
 				.populate('focus_item')
 				.then(function (analytics) {
+					let cleansed_analytics = [];
+					for (a of analytics) {
+						if (mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id)){
+							cleansed_analytics.push(a)
+		
+						}
+					}
+					
 					return res.status(200).json({
 						status: 'ok',
-						focus_items: sortAnalyticsIntoFocusItemStructure(analytics)
+						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
 					});
 				})
 				.catch(err => {
@@ -179,16 +185,22 @@ module.exports.analytics = (req, res) => {
 				});
 		} else if (req.body.focus_item) {
 			Analytic.find()
-				.populate('program')
-				.where('program._id').equals(program_id)
+				.where('program').equals(req.body.program)
 				.populate('student')
-				.where('student.teacher').equals(req.user._id)
 				.where('focus_item').equals(req.body.focus_item)
 				.populate('focus_item')
 				.then(function (analytics) {
+					// console.log(analytics)
+					let cleansed_analytics = [];
+					for (a of analytics) {
+						if (mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id)){
+							cleansed_analytics.push(a)
+						}
+					}
+					// console.log(cleansed_analytics)
 					return res.status(200).json({
 						status: 'ok',
-						focus_items: sortAnalyticsIntoFocusItemStructure(analytics)
+						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
 					});
 				})
 				.catch(err => {
@@ -202,35 +214,23 @@ module.exports.analytics = (req, res) => {
 			Analytic.find()
 				.where('program').equals(req.body.program)
 				.populate('student')
-				
-				// .populate('student.teacher')
-				//.where('student.teacher')
-				// .exists('student')
-				// .where('student.teacher').equals(req.user._id)
 				.populate('focus_item')
-				// .where('focus_item.unit', 'test_unit')
-				// .lean()
 				.then(function (analytics) {
-					//console.log(analytics);
-					//console.log(req.user._id);
 					let cleansed_analytics = [];
 					for (a of analytics) {
-
-
 						if (mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id)){
 							cleansed_analytics.push(a)
-							// console.log('1: ' + mongoose.Types.ObjectId(a.student.teacher).equals(mongoose.Types.ObjectId(req.user._id)))
-							// console.log('2: ' + mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id))
+		
 						}
 					}
-					// console.log(analytics.length);
+					
 					return res.status(200).json({
 						status: 'ok',
 						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
 					});
 				})
 				.catch(err => {
-					console.log(err)
+					// console.log(err)
 					return res.status(500).json({
 						status: 'error',
 						error: err,
@@ -264,6 +264,8 @@ function sortAnalyticsIntoFocusItemStructure(analytics) {
 	// }
 	// return focus_items_list;
 
+	// console.log(analytics.length)
+
 	const focus_items_set = new Set();
 	for (a of analytics) {
 		if (!focus_item_list_contains(a.focus_item, focus_items_set)) {
@@ -273,16 +275,18 @@ function sortAnalyticsIntoFocusItemStructure(analytics) {
 		}
 		
 	}
+	
 
 	const focus_items_list = Array.from(focus_items_set);
 	const focus_items_return_list = new Array();
+	// console.log(focus_items_list)
 	for (fc of focus_items_list) {
 		// console.log(fc)
 		// fc['analytics'] = [];
 		for (an of analytics) {
 			// console.log(an.focus_item._id + ' : ' + focus_item._id + ' : '+  mongoose.Types.ObjectId(an.focus_item._id).equals(focus_item._id))
 			if (mongoose.Types.ObjectId(an.focus_item._id).equals(focus_item._id)) {
-				console.log("Pushing: " + an)
+				// console.log("Pushing: " + an)
 				an.focus_item = an.focus_item._id;
 				fc.analytics.push(an);
 
@@ -291,7 +295,7 @@ function sortAnalyticsIntoFocusItemStructure(analytics) {
 
 		focus_items_return_list.push(fc);
 	}
-
+	// console.log(focus_items_return_list.length)
 	return focus_items_return_list
 }
 
