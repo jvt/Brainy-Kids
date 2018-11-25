@@ -51,7 +51,7 @@ module.exports.loadStudents = () => {
 };
 
 module.exports.loadStudentNames = names => {
-	
+	return null;
 }
 
 module.exports.appendStudent = student => {

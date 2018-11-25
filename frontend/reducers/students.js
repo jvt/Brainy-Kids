@@ -35,10 +35,10 @@ export default function reducer(state = initialState, action) {
 				data: state.data.concat([action.student]), // Turn this into an array so we can use the .concat() method
 			};
 		
-			case types.LOAD_STUDENTS_NAMES:
+		case types.LOAD_STUDENTS_NAMES:
 			return {
 				...state,
-				loading: true,
+				loading: false,
 			};
 
 		default:
