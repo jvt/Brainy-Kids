@@ -4,7 +4,7 @@ const controllers = require('./controllers');
 var validation = require('./helpers/validation');
 // We disable sessions since we want to validate the token on each request
 const PASSPORT_OPTIONS = { session: false };
-const { check, oneOf, validationResult } = require('express-validator/check');
+const { body, check, oneOf, validationResult } = require('express-validator/check');
 
 module.exports = (app, passport) => {
 	/**
@@ -251,7 +251,15 @@ module.exports = (app, passport) => {
 	);
 	app.get(
 		'/api/analytics/program', 
-		[passport.authenticate('jwt', PASSPORT_OPTIONS)], 
+		[passport.authenticate('jwt', PASSPORT_OPTIONS),
+		check('program').isMongoId(),
+		body().custom(body => {
+			if (body.focus_item && body.focus_items) {
+				throw new Error('Specify only focus_item or focus_items, not both')
+			}
+			return Promise.resolve();
+		}),
+		validation.validate(validationResult)], 
 		controllers.analytics.analytics
 	); 
 

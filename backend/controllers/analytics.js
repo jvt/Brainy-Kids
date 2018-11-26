@@ -120,25 +120,12 @@ module.exports.focusItem = async (req, res) => {
 
 module.exports.analytics = (req, res) => {
 	
-	// If the request was made with a student's token
-	if (req.user.student_id) {
-		console.log('Student tried to login as teacher')
-		return res.status(401).json();
-	}
-	console.log(req.body)
-	console.log(req.user)
-	var program_id;
-	try {
-		program_id = mongoose.Types.ObjectId(req.body.program);
-	}
-	catch (err) {
-		console.log(err)
-		return res.status(500).json({
-			status: 'error',
-			error: err,
-			message: 'An unexpected internal server error has occurred!',
-		});
-	}
+    if(!req.user.teacher_id){
+        return res.status(401).json({
+            status: 'error',
+            message: "You don't have permission for this"
+        });
+    }
 
 	Program.countDocuments({ _id: req.body.program }, function (err, count) {
 		if (err) {
