@@ -18,7 +18,7 @@ const loadStudentsError = error => {
 
 const loadStudentsLoading = () => {
 	return {
-		type: types.LOAD_STUDENTS_NAMES,
+		type: types.LOAD_STUDENTS,
 	};
 };
 
@@ -50,7 +50,7 @@ module.exports.loadStudents = () => {
 	};
 };
 
-module.exports.loadStudentNames = names => {
+module.exports.loadStudentNames = names_json => {
 	return null;
 }
 

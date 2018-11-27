@@ -147,23 +147,27 @@ class Students extends Component {
 		});
 	}
 
-	printFile(file) {
+	fileToJson(file) {
+		const { students } = this.props;
 		var fr = new FileReader();
+
+		var nameMap = new Map();
 		fr.onload = function(e) {
 			// e.target.result should contain the text
-			console.log(e.target.result);
+			// console.log(e.target.result);
 			var names_json = [];
-			var lines = e.target.result.split('/n');
-			var headers = ['id', 'name'];
-			for(var i=0;i<lines.length;i++){
-				var obj = {};
+			var lines = e.target.result.split('\n');
+			for (var i=0; i < lines.length; i++) {
 				var currentline=lines[i].split(",");
-				for(var j=0;j<headers.length;j++){
-					obj[headers[j]] = currentline[j];
-				}
-				names_json.push(obj);
+				var csv_id = currentline[0].substr(currentline[0].length - 3);
+				nameMap.set(csv_id, currentline[1]);
 			}
-			JSON.stringify(names_json);
+			for (var n = 0; n < students.length; n++) {
+				var s = students[n]['student_id'];
+				if (nameMap.get(s) !== null) {
+					students[n]['student_name'] = nameMap.get(s);
+				}
+			}
 		};
 		fr.readAsText(file);
 	}	
@@ -198,7 +202,8 @@ class Students extends Component {
 						//data={e => console.log(e)}
 						onChange={this.onChange}
 						beforeUpload={file => {
-							this.printFile(file);
+							var names_json = this.fileToJson(file);
+							console.log(names_json);
 							return false;
 						}}>
 						<Button>Upload Excel File</Button>
