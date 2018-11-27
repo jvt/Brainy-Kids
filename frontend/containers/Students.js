@@ -158,6 +158,15 @@ class Students extends Component {
 			for (var i=0; i < lines.length; i++) {
 				var currentline=lines[i].split(",");
 				var teacher_id_from_csv = currentline[0].substr(0, 3);
+				if (currentline[0].length === 0 && currentline[1].length <= 1) {
+					continue;
+				} else if (currentline[0].length !== 6) {
+					var error_text = "The line containing " + currentline[1] + 
+					" should be of format 001001 where the first 3" +
+					" digits are the teacher id and the last 3 are student id.";
+					message.error(error_text);
+					continue;
+				}
 				if (teacher_id_from_csv === teacher.teacher_id) {
 					var csv_id = currentline[0].substr(currentline[0].length - 3);
 					nameMap.set(csv_id, currentline[1]);
@@ -203,12 +212,13 @@ class Students extends Component {
 						textAlign: 'center',
 					}}>
 					<Upload
+						accept={'.csv'}
 						onChange={this.onChange}
 						beforeUpload={file => {
 							this.fileToJson(file);
 							return false;
 						}}>
-						<Button>Upload Excel File</Button>
+						<Button>Upload CSV File</Button>
 					</Upload>
 				</div>
 				<NewStudentModal
