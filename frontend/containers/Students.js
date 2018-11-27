@@ -10,6 +10,7 @@ import {
 	Upload,
 	notification,
 	Icon,
+	message,
 } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -148,24 +149,26 @@ class Students extends Component {
 	}
 
 	fileToJson(file) {
-		const { students, loadStudentName } = this.props;
+		const { teacher, students, loadStudentName } = this.props;
 		var fr = new FileReader();
 
 		var nameMap = new Map();
 		fr.onload = function(e) {
-			// e.target.result should contain the text
-			// console.log(e.target.result);
-			var names_json = [];
 			var lines = e.target.result.split('\n');
 			for (var i=0; i < lines.length; i++) {
 				var currentline=lines[i].split(",");
-				var csv_id = currentline[0].substr(currentline[0].length - 3);
-				nameMap.set(csv_id, currentline[1]);
+				var teacher_id_from_csv = currentline[0].substr(0, 3);
+				if (teacher_id_from_csv === teacher.teacher_id) {
+					var csv_id = currentline[0].substr(currentline[0].length - 3);
+					nameMap.set(csv_id, currentline[1]);
+				} else {
+					var error_text = currentline[1] + " does not have the correct 3 digit teacher_id";
+					message.error(error_text);
+				}
 			}
 			for (var n = 0; n < students.length; n++) {
 				var s = students[n]['student_id'];
-				if (nameMap.get(s) !== null && s !== null) {
-					// students[n]['student_name'] = nameMap.get(s);
+				if (nameMap.has(s) && s !== null) {
 					loadStudentName(nameMap.get(s), s);
 				}
 			}
@@ -200,7 +203,6 @@ class Students extends Component {
 						textAlign: 'center',
 					}}>
 					<Upload
-						//data={e => console.log(e)}
 						onChange={this.onChange}
 						beforeUpload={file => {
 							this.fileToJson(file);
@@ -232,7 +234,6 @@ class Students extends Component {
 								<List.Item.Meta
 									
 									title={
-										
 										<Link to={`/students/${student._id}`}>
 										{student.student_name === null || !('student_name' in student) ? 
 											student.student_id : 
