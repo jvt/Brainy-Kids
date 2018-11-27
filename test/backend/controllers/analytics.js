@@ -193,4 +193,6 @@ describe('Creates new analytics', function() {
             .expect('Content-Type', /json/)
             .expect(401);
     });
+
+    
 });

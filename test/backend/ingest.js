@@ -94,13 +94,13 @@ module.exports.ingest = function (number_of_students, number_of_analytics, numbe
         tokens = teacher_results[0];
         token = tokens[0];
         teacher_docs = teacher_results[1];
-        createPrograms(program_jsons, token)
+        createProgramsRandom(program_jsons, token)
         .then(function(programs) {
-            createStudents(number_of_students, teacher_docs, tokens)
+            createStudentsRandom(number_of_students, teacher_docs, tokens)
             .then(function(students) {
-                createFocusItems(number_of_focus_items, programs, token)
+                createFocusItemsRandom(number_of_focus_items, programs, token)
                 .then(function(focus_items) {
-                    createAnalytics(number_of_analytics, students, focus_items, tokens)
+                    createAnalyticsRandom(number_of_analytics, students, focus_items, tokens)
                     .then(function() {
                         done_function()
                     }).catch(function(err) {console.log(err)});
@@ -109,6 +109,32 @@ module.exports.ingest = function (number_of_students, number_of_analytics, numbe
         }).catch(function(err) {console.log(err)});
     }).catch(function(err) {console.log(err)});
 };
+
+module.exports.ingest_custom = async function() {
+
+    const program_json = {
+        name: "Program for test analytics",
+        description: "Analytic tester",
+        type: 'mobile game'
+    }
+
+    const teacher_json = {
+        name: "Testy mcTester",
+        email: "testy.mctester@school.edu",
+        password: "123456789"
+    }
+    teacher_results = await createTeacher(teacher_json);
+    clean_teacher = teacher_results[1];
+    teacher_token = teacher_results[0];
+    program = await createProgram(program_json, teacher_token);
+    students = await createStudents(15, clean_teacher, teacher_token);
+    pg_arr = []
+    pg_arr.push(program)
+    focus_items = await createFocusItemsRandom(5, pg_arr, teacher_token)
+    analytics = await createAnalytics(students, focus_items, teacher_token);
+    return [clean_teacher, focus_items, program, students, analytics, teacher_token];
+    
+}
 
 
 async function createTeachers(teachers) {
@@ -133,7 +159,18 @@ async function createTeachers(teachers) {
     
 }
 
-async function createPrograms(program_jsons, token) {
+async function createTeacher(teacher) {
+    res = await request(app)
+            .post('/api/session/register')
+            .send({
+                name: teacher.name,
+                email: teacher.email,
+                password: teacher.password
+            });
+    return [res.body.token, res.body.teacher]
+}
+
+async function createProgramsRandom(program_jsons, token) {
     let programs = [];
     for (program_json of program_jsons) {
         res = await request(app)
@@ -145,9 +182,17 @@ async function createPrograms(program_jsons, token) {
     return programs;
 }
 
-async function createStudents(students, teachers, teacher_tokens) {
-    const students_arr = [];
+async function createProgram(program_json, token) {
+    res = await request(app)
+            .post('/api/program')
+            .send(program_json)
+            .set('Authorization', 'Bearer ' + token);
+    return res.body.program
+}
 
+async function createStudentsRandom(students, teachers, teacher_tokens) {
+    
+    const students_arr = [];
     for (var i = 0; i < students; i++) {
         const student_json = {
             student_id: pad(i, 3),
@@ -164,7 +209,30 @@ async function createStudents(students, teachers, teacher_tokens) {
     return students_arr;
 }
 
-async function createFocusItems(number_of_focus_items, programs, token) {
+async function createStudents(number_of_students, teacher, token) {
+    const students_arr = [];
+    for (var i = 0; i < number_of_students; i++) {
+        const student_json = {
+            student_id: pad(i, 3),
+            teacher: teacher._id,
+            deleted: Math.random() > .95
+        }
+        res = await request(app)
+            .post('/api/student')
+            .send(student_json)
+            .set('Authorization', 'Bearer ' + token);
+
+        students_arr.push(res.body.student);
+    }
+    return students_arr;
+    
+    
+    
+}
+
+async function createFocusItemsRandom(number_of_focus_items, programs, token) {
+    // console.log(number_of_focus_items + ':' + programs[0] + ':' + token)
+    // console.log(random_item(programs)._id)
     const focus_items = [];
     for (var i = 0; i < number_of_focus_items; i++) {
         const name = "focus_item_" + i.toString();
@@ -174,17 +242,34 @@ async function createFocusItems(number_of_focus_items, programs, token) {
             unit: 'test_unit',
             subunit: 'test_sub_unit'
         };
+        //console.log(focus_item_json)
         res = await request(app)
             .post('/api/focusitem')
             .send(focus_item_json)
             .set('Authorization', 'Bearer ' + token);
+        //console.log(res.error)
         focus_items.push(res.body.focusitem);
 
     }
     return focus_items;
 }
 
-async function createAnalytics(number_of_analytics, student_docs, focus_item_docs, teacher_tokens) {
+async function createFocusItem(program, focus_item_number, token) {
+    
+    const focus_item_json = {
+        name: "focus_item_" + focus_item_number.toString(),
+        program: program._id,
+        unit: 'test_unit',
+        subunit: 'test_sub_unit'
+    };
+    res = await request(app)
+        .post('/api/focusitem')
+        .send(focus_item_json)
+        .set('Authorization', 'Bearer ' + token);
+    return res.body.focusitem;
+}
+
+async function createAnalyticsRandom(number_of_analytics, student_docs, focus_item_docs, teacher_tokens) {
     const analytics = [];
 
     for (var i = 0; i < number_of_analytics; i++) {
@@ -205,6 +290,30 @@ async function createAnalytics(number_of_analytics, student_docs, focus_item_doc
             .set('Authorization', 'Bearer ' + random_item(teacher_tokens));
         analytics.push(res.body.analytic);
     }
+    return analytics;
+}
+
+async function createAnalytics(students, focus_items, token) {
+    const analytics = [];
+
+    for (student of students) {
+        for (focus_item of focus_items) {
+            let correct_on = Math.floor(Math.random() * 15) + 1
+            var analytic_json = {
+                focus_item: focus_item._id,
+                student: student._id,
+                program: focus_item.program,
+                correct_on: correct_on,
+                time_spent: correct_on * Math.floor(Math.random() * 61000) + 1000
+            };
+            res = await request(app)
+                .post('/api/analytics/application')
+                .send(analytic_json)
+                .set('Authorization', 'Bearer ' + token);
+                analytics.push(res.body.analytic);
+        }
+    }
+
     return analytics;
 }
 

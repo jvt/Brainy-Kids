@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
-const Analytic = require('mongoose').model('Analytic');
-const Student = require('mongoose').model('Student');
-const Teacher = require('mongoose').model('Teacher');
+const Teacher = require('../models/teacher');
+const Student = require('../models/student');
+const Analytic = require('../models/analytic');
+const Focus_Item = require('../models/teacher');
+const Program = require('../models/program');
 
 module.exports.hearatale = (req, res) => {
     const analytic = new Analytic({
@@ -114,4 +116,155 @@ module.exports.focusItem = async (req, res) => {
         status: 'success',
         analytics: analytics
     });
+}
+
+module.exports.analytics = (req, res) => {
+	
+    if(!req.user.teacher_id){
+        return res.status(401).json({
+            status: 'error',
+            message: "You don't have permission for this"
+        });
+    }
+
+	Program.countDocuments({ _id: req.body.program }, function (err, count) {
+		if (err) {
+			return res.status(500).json({
+				status: 'error',
+				error: err,
+				message: 'An unexpected internal server error has occurred!',
+			});
+		}
+		// Short circuits to returning error if the provided program isn't in the DB
+		if (count == 0) {
+			return res.status(404).json({
+				status: 'error',
+				message: 'Unable to find program ' + req.body.program,
+			});
+		}
+
+		if (req.body.focus_items) {
+			Analytic.find()
+				.where('program').equals(req.body.program)
+				.populate('student')
+				.where('focus_item').in(req.body.focus_items)
+				.populate('focus_item')
+				.then(function (analytics) {
+					let cleansed_analytics = [];
+					for (a of analytics) {
+						if (mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id)){
+							cleansed_analytics.push(a)
+		
+						}
+					}
+					return res.status(200).json({
+						status: 'ok',
+						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
+					});
+				})
+				.catch(err => {
+					return res.status(500).json({
+						status: 'error',
+						error: err,
+						message: 'An unexpected internal server error has occurred!',
+					});
+				});
+		} else if (req.body.focus_item) {
+			Analytic.find()
+				.where('program').equals(req.body.program)
+				.populate('student')
+				.where('focus_item').equals(req.body.focus_item)
+				.populate('focus_item')
+				.then(function (analytics) {
+					let cleansed_analytics = [];
+					for (a of analytics) {
+						if (mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id)){
+							cleansed_analytics.push(a)
+						}
+					}
+
+					return res.status(200).json({
+						status: 'ok',
+						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
+					});
+				})
+				.catch(err => {
+					return res.status(500).json({
+						status: 'error',
+						error: err,
+						message: 'An unexpected internal server error has occurred!',
+					});
+				});
+		} else {
+			Analytic.find()
+				.where('program').equals(req.body.program)
+				.populate('student')
+				.populate('focus_item')
+				.then(function (analytics) {
+					let cleansed_analytics = [];
+					for (a of analytics) {
+						if (mongoose.Types.ObjectId(a.student.teacher).equals(req.user._id)){
+							cleansed_analytics.push(a)
+		
+						}
+					}
+					
+					return res.status(200).json({
+						status: 'ok',
+						focus_items: sortAnalyticsIntoFocusItemStructure(cleansed_analytics)
+					});
+				})
+				.catch(err => {
+					// console.log(err)
+					return res.status(500).json({
+						status: 'error',
+						error: err,
+						message: 'An unexpected internal server error has occurred!',
+					});
+				});
+		}
+	});
+};
+
+function sortAnalyticsIntoFocusItemStructure(analytics) {
+	const focus_items_set = new Set();
+	for (a of analytics) {
+		if (!focus_item_list_contains(a.focus_item, focus_items_set)) {
+			fc = a.focus_item.toObject()
+			fc['analytics'] = [];
+			focus_items_set.add(fc);
+		}
+		
+	}
+	
+
+	const focus_items_list = Array.from(focus_items_set);
+	const focus_items_return_list = new Array();
+	// console.log(focus_items_list)
+	for (fc of focus_items_list) {
+		// console.log(fc)
+		// fc['analytics'] = [];
+		for (an of analytics) {
+			// console.log(an.focus_item._id + ' : ' + focus_item._id + ' : '+  mongoose.Types.ObjectId(an.focus_item._id).equals(focus_item._id))
+			if (mongoose.Types.ObjectId(an.focus_item._id).equals(focus_item._id)) {
+				// console.log("Pushing: " + an)
+				an.focus_item = an.focus_item._id;
+				fc.analytics.push(an);
+
+			}
+		}
+
+		focus_items_return_list.push(fc);
+	}
+	// console.log(focus_items_return_list.length)
+	return focus_items_return_list
+}
+
+function focus_item_list_contains(fc, fc_list) {
+	for (f of fc_list) {
+		if (mongoose.Types.ObjectId(fc._id).equals(f._id)) {
+			return true
+		}
+	}
+	return false
 }

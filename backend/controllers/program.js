@@ -1,5 +1,7 @@
 const Program = require('mongoose').model('Program');
 const FocusItem = require('mongoose').model('Focus_Item');
+const Analytic = require('mongoose').model('Analytic');
+const Mongoose = require('mongoose');
 
 module.exports.getAll = (req, res) => {
 	Program.find({})
