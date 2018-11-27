@@ -230,9 +230,14 @@ class Students extends Component {
 									</Link>,
 								]}>
 								<List.Item.Meta
+									
 									title={
+										
 										<Link to={`/students/${student._id}`}>
-											{student.student_id}
+										{student.student_name === null || !('student_name' in student) ? 
+											student.student_id : 
+											student.student_name
+										}
 										</Link>
 									}
 									description=""
