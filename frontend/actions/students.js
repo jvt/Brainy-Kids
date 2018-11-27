@@ -22,9 +22,11 @@ const loadStudentsLoading = () => {
 	};
 };
 
-const loadStudentsNames = () => {
+module.exports.loadStudentName = (student_name,student_id) => {
 	return {
-		type: types.LOAD_STUDENTS_NAMES,
+		type: types.LOAD_STUDENT_NAME,
+		student_name,
+		student_id
 	};
 };
 
@@ -50,9 +52,6 @@ module.exports.loadStudents = () => {
 	};
 };
 
-module.exports.loadStudentNames = names_json => {
-	return null;
-}
 
 module.exports.appendStudent = student => {
 	return {

@@ -148,7 +148,7 @@ class Students extends Component {
 	}
 
 	fileToJson(file) {
-		const { students } = this.props;
+		const { students, loadStudentName } = this.props;
 		var fr = new FileReader();
 
 		var nameMap = new Map();
@@ -164,8 +164,9 @@ class Students extends Component {
 			}
 			for (var n = 0; n < students.length; n++) {
 				var s = students[n]['student_id'];
-				if (nameMap.get(s) !== null) {
-					students[n]['student_name'] = nameMap.get(s);
+				if (nameMap.get(s) !== null && s !== null) {
+					// students[n]['student_name'] = nameMap.get(s);
+					loadStudentName(nameMap.get(s), s);
 				}
 			}
 		};
@@ -202,8 +203,7 @@ class Students extends Component {
 						//data={e => console.log(e)}
 						onChange={this.onChange}
 						beforeUpload={file => {
-							var names_json = this.fileToJson(file);
-							console.log(names_json);
+							this.fileToJson(file);
 							return false;
 						}}>
 						<Button>Upload Excel File</Button>
