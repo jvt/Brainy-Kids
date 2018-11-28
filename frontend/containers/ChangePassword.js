@@ -121,6 +121,8 @@ class ChangePassword extends Component {
 	}
 
 	render() {
+		const { getFieldDecorator } = this.props.form;
+
 		const formItemLayout = {
 			labelCol: null,
 			wrapperCol: null,
