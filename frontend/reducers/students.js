@@ -34,6 +34,18 @@ export default function reducer(state = initialState, action) {
 				...state,
 				data: state.data.concat([action.student]), // Turn this into an array so we can use the .concat() method
 			};
+		
+		case types.LOAD_STUDENT_NAME:
+			const studentToChange = state.data.filter(item => item.student_id === action.student_id);
+			const withoutEdit = state.data.filter(item => item.student_id !== action.student_id);
+			studentToChange[0]['student_name'] = action.student_name;
+			const concat_arr = withoutEdit.concat(studentToChange);
+			return {
+				...state,
+				loading: false,
+				data: concat_arr,
+				error: null,
+			};
 
 		default:
 			return state;

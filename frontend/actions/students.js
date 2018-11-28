@@ -22,6 +22,14 @@ const loadStudentsLoading = () => {
 	};
 };
 
+module.exports.loadStudentName = (student_name,student_id) => {
+	return {
+		type: types.LOAD_STUDENT_NAME,
+		student_name,
+		student_id
+	};
+};
+
 module.exports.loadStudents = () => {
 	return (dispatch, getState) => {
 		dispatch(loadStudentsLoading());
@@ -43,6 +51,7 @@ module.exports.loadStudents = () => {
 			});
 	};
 };
+
 
 module.exports.appendStudent = student => {
 	return {
