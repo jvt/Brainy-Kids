@@ -32,7 +32,7 @@ export default function reducer(state = initialState, action) {
 		case types.APPEND_STUDENT:
 			return {
 				...state,
-				data: state.data.concat([action.student]), // Turn this into an array so we can use the .concat() method
+				data: sortStudents(state.data.concat([action.student])), // Turn this into an array so we can use the .concat() method
 			};
 
 		case types.LOAD_STUDENT_NAME:
