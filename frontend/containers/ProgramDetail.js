@@ -204,6 +204,7 @@ class ProgramDetail extends Component {
 						{mode === SUBUNIT && 'Sub-Units'}
 						{mode === FOCUS_ITEMS && 'Focus Items'}
 					</h2>
+					<Divider />
 					{listData.length === 0 ? (
 						<div>
 							<p>

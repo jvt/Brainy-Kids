@@ -246,7 +246,7 @@ class ProgramFocusItemDetail extends Component {
 			<div>
 				<PageFormat
 					page="programs"
-					title={`${program.name} — ${focus_item.name}`}
+					title={`${program.name} (${focus_item.name})`}
 					breadcrumb={
 						<PageBreadcrumb
 							program={program}
@@ -255,6 +255,12 @@ class ProgramFocusItemDetail extends Component {
 							focus_item={focus_item}
 						/>
 					}>
+					<h2
+						style={{
+							fontWeight: 300,
+						}}>
+						Students
+					</h2>
 					<Divider />
 					{analytics !== null && (
 						<List
