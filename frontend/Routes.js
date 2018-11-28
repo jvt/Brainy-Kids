@@ -21,34 +21,32 @@ import NotFound from './containers/NotFound';
 
 const Routes = () => {
 	return (
-		<div>
-			<Switch>
-				<Route path="/" exact component={LoginPage} />
-				<Route path="/register" exact component={Register} />
-				<AuthGuard path="/dashboard" exact component={Dashboard} />
-				<AuthGuard path="/programs" exact component={Programs} />
-				<AuthGuard
-					path="/program/:id"
-					exact
-					component={ProgramDetail}
-				/>
-				<AuthGuard
-					path="/program/:id/:focus_item"
-					exact
-					component={ProgramFocusItemDetail}
-				/>
-				<AuthGuard path="/students" exact component={Students} />
-				<AuthGuard path="/students/:id" exact component={StudentShow} />
-				<AuthGuard path="/account" exact component={Account} />
-				<AuthGuard
-					path="/account/password"
-					exact
-					component={ChangePassword}
-				/>
-				<Route path="/logout" exact component={LogoutPage} />
-				<Route path="*" component={NotFound} />
-			</Switch>
-		</div>
+		<Switch>
+			<Route path="/" exact component={LoginPage} />
+			<Route path="/register" exact component={Register} />
+			<AuthGuard path="/dashboard" exact component={Dashboard} />
+			<AuthGuard path="/programs" exact component={Programs} />
+			<AuthGuard
+				path="/program/:id/:unit?/:subunit?"
+				exact
+				component={ProgramDetail}
+			/>
+			<AuthGuard
+				path="/program/:id/:unit/:subunit/:focus_item"
+				exact
+				component={ProgramFocusItemDetail}
+			/>
+			<AuthGuard path="/students" exact component={Students} />
+			<AuthGuard path="/students/:id" exact component={StudentShow} />
+			<AuthGuard path="/account" exact component={Account} />
+			<AuthGuard
+				path="/account/password"
+				exact
+				component={ChangePassword}
+			/>
+			<Route path="/logout" exact component={LogoutPage} />
+			<Route path="*" component={NotFound} />
+		</Switch>
 	);
 };
 

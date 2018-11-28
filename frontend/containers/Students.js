@@ -35,7 +35,6 @@ const PopoverComponent = () => {
 	);
 };
 
-
 class Students extends Component {
 	constructor(props) {
 		super(props);
@@ -130,13 +129,10 @@ class Students extends Component {
 	}
 
 	onChange(e) {
-		console.log(e);
 		const reader = new FileReader();
 
 		reader.onload = (input => {
-			return function(e) {
-				console.log(e);
-			};
+			return function(e) {};
 		})(e.file);
 
 		reader.readAsDataURL(e.file);
@@ -155,23 +151,29 @@ class Students extends Component {
 		var nameMap = new Map();
 		fr.onload = function(e) {
 			var lines = e.target.result.split('\n');
-			for (var i=0; i < lines.length; i++) {
-				var currentline=lines[i].split(",");
+			for (var i = 0; i < lines.length; i++) {
+				var currentline = lines[i].split(',');
 				var teacher_id_from_csv = currentline[0].substr(0, 3);
 				if (currentline[0].length === 0 && currentline[1].length <= 1) {
 					continue;
 				} else if (currentline[0].length !== 6) {
-					var error_text = "The line containing " + currentline[1] + 
-					" should be of format 001001 where the first 3" +
-					" digits are the teacher id and the last 3 are student id.";
+					var error_text =
+						'The line containing ' +
+						currentline[1] +
+						' should be of format 001001 where the first 3' +
+						' digits are the teacher id and the last 3 are student id.';
 					message.error(error_text);
 					continue;
 				}
 				if (teacher_id_from_csv === teacher.teacher_id) {
-					var csv_id = currentline[0].substr(currentline[0].length - 3);
+					var csv_id = currentline[0].substr(
+						currentline[0].length - 3
+					);
 					nameMap.set(csv_id, currentline[1]);
 				} else {
-					var error_text = currentline[1] + " does not have the correct 3 digit teacher_id";
+					var error_text =
+						currentline[1] +
+						' does not have the correct 3 digit teacher_id';
 					message.error(error_text);
 				}
 			}
@@ -183,8 +185,7 @@ class Students extends Component {
 			}
 		};
 		fr.readAsText(file);
-	}	
-
+	}
 
 	render() {
 		const { teacher, students, loading, error } = this.props;
@@ -242,13 +243,12 @@ class Students extends Component {
 									</Link>,
 								]}>
 								<List.Item.Meta
-									
 									title={
 										<Link to={`/students/${student._id}`}>
-										{student.student_name === null || !('student_name' in student) ? 
-											student.student_id : 
-											student.student_name
-										}
+											{student.student_name === null ||
+											!('student_name' in student)
+												? student.student_id
+												: student.student_name}
 										</Link>
 									}
 									description=""

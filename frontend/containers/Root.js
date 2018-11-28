@@ -13,17 +13,13 @@ const Root = ({ store, persistor, history }) => {
 		<Provider store={store}>
 			<PersistGate loading={null} persistor={persistor}>
 				<ConnectedRouter history={history}>
-					<div style={{ minHeight: '100vh', width: '100%' }}>
-						<main>
-							<Helmet>
-								<meta charSet="utf-8" />
-								<title>Brainy Kids</title>
-							</Helmet>
-							<Routes />
-							{process.env.NODE_ENV !== 'production' && (
-								<DevTools />
-							)}
-						</main>
+					<div style={{ height: '100%', width: '100%' }}>
+						<Helmet>
+							<meta charSet="utf-8" />
+							<title>Brainy Kids</title>
+						</Helmet>
+						<Routes />
+						{process.env.NODE_ENV !== 'production' && <DevTools />}
 					</div>
 				</ConnectedRouter>
 			</PersistGate>

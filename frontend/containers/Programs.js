@@ -45,7 +45,29 @@ class Programs extends Component {
 										</Button>,
 									]}>
 									<List.Item.Meta
-										title={program.name}
+										title={
+											<div
+												style={{
+													flex: 1,
+													flexDirection: 'row',
+												}}>
+												<Icon
+													type={
+														program.type ===
+														'website'
+															? 'desktop'
+															: 'mobile'
+													}
+												/>
+												<p
+													style={{
+														display: 'inline-block',
+														marginLeft: 10,
+													}}>
+													{program.name}
+												</p>
+											</div>
+										}
 										description={program.description}
 									/>
 								</List.Item>
