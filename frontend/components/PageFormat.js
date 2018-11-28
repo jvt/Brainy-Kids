@@ -16,7 +16,10 @@ export default function PageFormat({
 	return (
 		<Row type="flex" justify="space-between">
 			<SideNav active={page} />
-			<Col xs={24} sm={24} md={18}>
+			<Col
+				xs={{ span: 24, offset: 0 }}
+				sm={{ span: 21, offset: 3 }}
+				md={{ span: 18, offset: 6 }}>
 				{breadcrumb ? (
 					<Card style={{ marginBottom: 10 }}>{breadcrumb}</Card>
 				) : null}
