@@ -200,7 +200,9 @@ class ProgramDetail extends Component {
 						style={{
 							fontWeight: 300,
 						}}>
-						Focus Items
+						{mode === UNIT && 'Units'}
+						{mode === SUBUNIT && 'Sub-Units'}
+						{mode === FOCUS_ITEMS && 'Focus Items'}
 					</h2>
 					{listData.length === 0 ? (
 						<div>
