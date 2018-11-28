@@ -1,10 +1,22 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, List, Icon, Button, Popover, Upload } from 'antd';
+import {
+	Button,
+	Modal,
+	Row,
+	Col,
+	Card,
+	List,
+	Popover,
+	Upload,
+	notification,
+	Icon,
+} from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import PageFormat from '../components/PageFormat';
+import NewStudentModal from '../components/NewStudentModal';
 
 import actions from '../actions';
 
@@ -25,6 +37,83 @@ const PopoverComponent = () => {
 class Students extends Component {
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			modalVisibility: false,
+			createStudentLoading: false,
+			student_id: '',
+		};
+
+		this.createStudent = this.createStudent.bind(this);
+		this.newStudentOnChange = this.newStudentOnChange.bind(this);
+		this.setModalVisibility = this.setModalVisibility.bind(this);
+	}
+
+	createStudent() {
+		const { token, students } = this.props;
+		const { student_id } = this.state;
+		if (!student_id || student_id.length !== 3) {
+			return notification.error({
+				message: 'Uh oh!',
+				description: 'Please enter a 3-digit student ID number',
+			});
+		}
+
+		const alreadyUsedCheck = students.find(s => {
+			return s.student_id === student_id;
+		});
+
+		if (alreadyUsedCheck) {
+			return notification.error({
+				message: 'Uh oh!',
+				description: 'That student ID is already in use.',
+			});
+		}
+
+		this.setState({ createStudentLoading: true });
+
+		fetch(`/api/student`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				teacher: this.props.teacher._id,
+				student_id,
+			}),
+		})
+			.then(res => res.json())
+			.then(json => {
+				this.setState({ createStudentLoading: false });
+				if (json.status === 'ok') {
+					this.props.appendStudent(json.student);
+					notification.success({
+						message: 'Success!',
+						description:
+							'That student has been created successfully!',
+					});
+					this.setModalVisibility(false);
+				} else {
+					notification.error({
+						message: 'Uh oh!',
+						description:
+							json.errors && json.errors.length > 0
+								? json.errors[0].msg
+								: json.message ||
+								  'An unexpected system error has occurred.',
+					});
+				}
+			})
+			.catch(err => {
+				console.error(err);
+				this.setState({ createStudentLoading: true });
+				notification.error({
+					message: 'System error',
+					description:
+						"Uh oh! An unexpected system error has occurred. We're sorry!",
+				});
+			});
 	}
 
 	componentWillMount() {
@@ -32,6 +121,10 @@ class Students extends Component {
 		if (!students) {
 			loadStudents();
 		}
+	}
+
+	setModalVisibility(value) {
+		this.setState({ modalVisibility: value, student_id: '' });
 	}
 
 	onChange(e) {
@@ -47,22 +140,29 @@ class Students extends Component {
 		reader.readAsDataURL(e.file);
 	}
 
+	newStudentOnChange(student_id) {
+		this.setState({
+			student_id: `${student_id}`, // We cast it to a string so we can use .length on it
+		});
+	}
+
 	render() {
 		const { teacher, students, loading, error } = this.props;
 
-		if (error) {
-			return (
-				<PageFormat page="students" loading={loading}>
-					<p>{error}</p>
-				</PageFormat>
-			);
-		}
+		const { createStudentLoading } = this.state;
 
 		return (
 			<PageFormat
 				page="students"
 				loading={loading}
-				popover={<PopoverComponent />}>
+				popover={<PopoverComponent />}
+				extra={
+					<Button
+						type="primary"
+						onClick={() => this.setModalVisibility(true)}>
+						New Student
+					</Button>
+				}>
 				<div
 					style={{
 						width: '100%',
@@ -80,29 +180,38 @@ class Students extends Component {
 						<Button>Upload Excel File</Button>
 					</Upload>
 				</div>
-				<List
-					itemLayout="horizontal"
-					dataSource={students}
-					renderItem={student => (
-						<List.Item
-							actions={[
-								<Link to={`/students/${student._id}`}>
-									View Student
-								</Link>,
-							]}>
-							<List.Item.Meta
-								title={
-									<Link to={`/students/${student._id}`}>
-										<b>{`${teacher.teacher_id}${
-											student.student_id
-										}`}</b>
-									</Link>
-								}
-								description=""
-							/>
-						</List.Item>
-					)}
+				<NewStudentModal
+					visible={this.state.modalVisibility}
+					loading={createStudentLoading}
+					onOk={this.createStudent}
+					onCancel={() => this.setModalVisibility(false)}
+					onChange={this.newStudentOnChange}
 				/>
+				{!students || students.length === 0 ? (
+					<p>You have no students in your classes yet.</p>
+				) : (
+					<List
+						itemLayout="horizontal"
+						dataSource={students}
+						renderItem={student => (
+							<List.Item
+								actions={[
+									<Link to={`/students/${student._id}`}>
+										View Student
+									</Link>,
+								]}>
+								<List.Item.Meta
+									title={
+										<Link to={`/students/${student._id}`}>
+											{student.student_id}
+										</Link>
+									}
+									description=""
+								/>
+							</List.Item>
+						)}
+					/>
+				)}
 			</PageFormat>
 		);
 	}
@@ -114,6 +223,7 @@ const mapStateToProps = state => {
 		students: state.students.data,
 		loading: state.students.loading,
 		error: state.students.error,
+		token: state.teacher.token,
 	};
 };
 

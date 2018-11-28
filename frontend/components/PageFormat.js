@@ -11,6 +11,7 @@ export default function PageFormat({
 	children,
 	loading,
 	breadcrumb,
+	extra,
 }) {
 	return (
 		<Row type="flex" justify="space-between">
@@ -20,12 +21,26 @@ export default function PageFormat({
 					<Card style={{ marginBottom: 10 }}>{breadcrumb}</Card>
 				) : null}
 				<Card>
-					<h1 style={{ display: 'inline-block' }}>
-						{title
-							? title
-							: page.charAt(0).toUpperCase() + page.slice(1)}
-					</h1>
-					{popover ? popover : null}
+					<Row
+						style={{
+							display: 'flex',
+							flex: 1,
+							flexDirection: 'row',
+							justifyContent: 'space-between',
+						}}>
+						<div style={{ flex: 1 }}>
+							<h1 style={{ display: 'inline-block' }}>
+								{title
+									? title
+									: page.charAt(0).toUpperCase() +
+									  page.slice(1)}
+							</h1>
+							{popover ? popover : null}
+						</div>
+						<div style={{ flex: 1, textAlign: 'right' }}>
+							{extra}
+						</div>
+					</Row>
 					{loading ? (
 						<div style={{ width: '100%', textAlign: 'center' }}>
 							<Icon
