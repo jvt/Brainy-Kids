@@ -154,6 +154,12 @@ class Students extends Component {
 			var lines = e.target.result.split('\n');
 			for (var i = 0; i < lines.length; i++) {
 				var currentline = lines[i].split(',');
+				if (currentline[0].length === 4) {
+					currentline[0] = '00' + currentline[0];
+					console.log(currentline[0]);
+				} else if (currentline[0].length === 5) {
+					currentline[0] = '0' + currentline[0];
+				}
 				var teacher_id_from_csv = currentline[0].substr(0, 3);
 				if (currentline[0].length === 0 && currentline[1].length <= 1) {
 					continue;
