@@ -15,6 +15,7 @@ import {
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { CSVLink, CSVDownload } from "react-csv";
 
 import PageFormat from '../components/PageFormat';
 import NewStudentModal from '../components/NewStudentModal';
@@ -187,22 +188,51 @@ class Students extends Component {
 		fr.readAsText(file);
 	}
 
+	genFile() {
+		const { teacher, students } = this.props;
+		var csv_arr = [];
+		students.forEach(function(s){
+			let first = teacher.teacher_id.toString() + s.student_id.toString();
+			let second = "<Insert Student Name Here>";
+			let temp = [first, second];
+			csv_arr.push(temp);
+		});
+		return csv_arr;
+		
+	}
+
 	render() {
 		const { teacher, students, loading, error } = this.props;
 
 		const { createStudentLoading } = this.state;
-
+		var csv_arr = this.genFile();
 		return (
 			<PageFormat
 				page="students"
 				loading={loading}
 				popover={<PopoverComponent />}
 				extra={
-					<Button
-						type="primary"
-						onClick={() => this.setModalVisibility(true)}>
-						New Student
-					</Button>
+					<div>
+						<CSVLink filename='students_template' data={csv_arr}>
+							<Button 
+								style={{
+									marginLeft: 5,
+									marginRight: 5,
+								}}
+								type="secondary">
+								Download Class CSV
+							</Button>
+						</CSVLink>
+						<Button
+							style={{
+								marginLeft: 5,
+								marginRight: 5,
+							}}
+							type="primary"
+							onClick={() => this.setModalVisibility(true)}>
+							New Student
+						</Button>
+					</div>
 				}>
 				<div
 					style={{
