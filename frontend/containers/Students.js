@@ -44,6 +44,7 @@ class Students extends Component {
 			modalVisibility: false,
 			createStudentLoading: false,
 			student_id: '',
+			csv: [],
 		};
 
 		this.createStudent = this.createStudent.bind(this);
@@ -156,7 +157,6 @@ class Students extends Component {
 				var currentline = lines[i].split(',');
 				if (currentline[0].length === 4) {
 					currentline[0] = '00' + currentline[0];
-					console.log(currentline[0]);
 				} else if (currentline[0].length === 5) {
 					currentline[0] = '0' + currentline[0];
 				}
@@ -194,7 +194,7 @@ class Students extends Component {
 		fr.readAsText(file);
 	}
 
-	genFile() {
+	genCsvArr() {
 		const { teacher, students } = this.props;
 		var csv_arr = [];
 		students.forEach(function(s){
@@ -203,15 +203,15 @@ class Students extends Component {
 			let temp = [first, second];
 			csv_arr.push(temp);
 		});
-		return csv_arr;
+		this.setState({csv: csv_arr});
 		
 	}
 
 	render() {
 		const { teacher, students, loading, error } = this.props;
 
-		const { createStudentLoading } = this.state;
-		var csv_arr = this.genFile();
+		const { createStudentLoading, csv } = this.state;
+
 		return (
 			<PageFormat
 				page="students"
@@ -219,13 +219,14 @@ class Students extends Component {
 				popover={<PopoverComponent />}
 				extra={
 					<div>
-						<CSVLink filename='students_template' data={csv_arr}>
+						<CSVLink filename='students_template' data={csv}>
 							<Button 
 								style={{
 									marginLeft: 5,
 									marginRight: 5,
 								}}
-								type="secondary">
+								type="secondary"
+								onClick={this.genCsvArr.bind(this)}>
 								Download Class CSV
 							</Button>
 						</CSVLink>
