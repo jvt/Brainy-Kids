@@ -204,7 +204,6 @@ class Students extends Component {
 			csv_arr.push(temp);
 		});
 		this.setState({csv: csv_arr});
-		
 	}
 
 	render() {
@@ -219,21 +218,32 @@ class Students extends Component {
 				popover={<PopoverComponent />}
 				extra={
 					<div>
+						<Upload
+							style={{
+								margin: 5,
+							}}
+							accept={'.csv'}
+							onChange={this.onChange}
+							showUploadList={false}
+							beforeUpload={file => {
+								this.fileToJson(file);
+								return false;
+							}}>
+							<Button>Upload Names</Button>
+						</Upload>
 						<CSVLink filename='students_template' data={csv}>
 							<Button 
 								style={{
-									marginLeft: 5,
-									marginRight: 5,
+									margin: 5,
 								}}
 								type="secondary"
 								onClick={this.genCsvArr.bind(this)}>
-								Download Class CSV
+								Download Names Template
 							</Button>
 						</CSVLink>
 						<Button
 							style={{
-								marginLeft: 5,
-								marginRight: 5,
+								margin: 5,
 							}}
 							type="primary"
 							onClick={() => this.setModalVisibility(true)}>
@@ -241,7 +251,7 @@ class Students extends Component {
 						</Button>
 					</div>
 				}>
-				<div
+				{/* <div
 					style={{
 						width: '100%',
 						backgroundColor: 'rgb(245, 245, 245)',
@@ -249,16 +259,8 @@ class Students extends Component {
 						paddingBottom: 10,
 						textAlign: 'center',
 					}}>
-					<Upload
-						accept={'.csv'}
-						onChange={this.onChange}
-						beforeUpload={file => {
-							this.fileToJson(file);
-							return false;
-						}}>
-						<Button>Upload CSV File</Button>
-					</Upload>
-				</div>
+					
+				</div> */}
 				<NewStudentModal
 					visible={this.state.modalVisibility}
 					loading={createStudentLoading}
