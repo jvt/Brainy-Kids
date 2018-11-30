@@ -48,24 +48,21 @@ No build necessary for this application.
 3. Open your browser and go to this URL: `localhost:3000`
 4. Enjoy our application!
 
-## Install Guide Novermbre 30th: v1.0.0 (For Teacher Portal) ?? Do we need to write anything about this one?
-
-
-## Common issues
-
+### Troubleshooting
 1. The program will exit on startup if it is unable to find an instance of MongoDB running at the set URI. Be sure that the instance of MongoDB is running before you start the program.
 2. If the program crashes on startup with error messages mentioning the word "dependicies" run `npm install` in the root directory of the project again.
+
+## Install Guide Novermbre 30th: v1.0.0 (For Teacher Portal) ?? Do we need to write anything about this one?
+
 
 ## Developer notes
 
 ### Viewing the Redux store
-
 1.  From any page on the website, press `CTRL + h` (Configured in `/frontend/components/DevTools.js`) to open the Redux DevTools panel
 2.  From here, you can view the global state of the application.
 3.  To move the window around, press `CTRL + w`
 
 ### Running API Tests
-
 1.  From a terminal window, run `npm run test` or `npm test` (both do the same thing)
 2.  Let the tests run, it will generate a coverage window in the terminal once all the tests have completed running
 
