@@ -52,7 +52,7 @@ No build necessary for this application.
 1. The program will exit on startup if it is unable to find an instance of MongoDB running at the set URI. Be sure that the instance of MongoDB is running before you start the program.
 2. If the program crashes on startup with error messages mentioning the word "dependicies" run `npm install` in the root directory of the project again.
 
-## Install Guide Novermbre 30th: v1.0.0 (For Teacher Portal) ?? Do we need to write anything about this one?
+## Install Guide Novermber 30th: v1.0.0 (For Teacher Portal) ?? Do we need to write anything about this one?
 
 
 ## Developer notes
