@@ -17,7 +17,7 @@ This is the codebase for the Brainy Kids backend and administration panel. This 
 2.  Open the repository (`cd Brainy-Kidz`)
 3.  Install the dependencies (`npm install`)
 4.  Duplicate `.env.example` and rename it to `.env`
-5.  Open the `.env` file and add a JWT_SECRET. It can be any string.
+5.  Open the `.env` file and add a JWT_SECRET. It should be a random series of letters / numbers. This string is used to encrypt all the tokens for access to the site.
 6.  Also set `MONGODB_URI` to either point to your local machine or wherever your MongoDB is.
 7.  Make sure your instance of MongoDB is running
 8.  Start the application with `npm run dev`
@@ -37,7 +37,7 @@ Now other users should be able to access the application by navigating to it in 
 3. Our application provides secured access to all information. Authentication of users is done through the use of Json Web Token (JWT)
 4. If you are a teacher, there is a web interface designed specifically for you. It facilitates you in managing your students' accounts and monitoring their learning progresses.
 5. Concerned about FERPA regulations for sensitive information regarding your students, Our application is not storing any of the identifiable information at any time.
-6. ??? I need a description about the CSV upload here ???
+6. You can upload data on students, focues items, program, analytics from csv files.
 7. In addition, anlytics to assess learning performances of each and all of your students is supported, and you can easily access these analytics in your web portal.
 
 ### Bug Fixes  
