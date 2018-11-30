@@ -20,28 +20,36 @@ This is the codebase for the Brainy Kids backend and administration panel. This 
 ### Known Bugs
 [None]
 
-## Install Guide Novermbre 30th: v1.0.0
+## Install Guide Novermbre 30th: v1.0.0 (For REST API)
 ### Pre-requisites
-1. You must have Node.js installed
-## Pre-requisites
+1. You must have Node.js installed before proceeding. Run `node --version` in your terminal and expect to see a version number printed out
+2. You must have npm installed. Run `npm --version` in your terminal and expect to see a version number printed out
+3. You must have the latest version of MongoDB set up either locally or point it to a remote server (see "Installation")
 
-1.  Make sure you have Node.js installed (Make sure `node --version` prints out a version number)
-2.  Make sure you have the latest version of MongoDB set up either locally or point it to a remote server (see "Getting Started")
-3.  If you want to install this for actual use, make sure you install it on a server that can be accessed by any computer that wants to use it. This usually means the server should have a static IP address and correct port forwarding/firewall configuration.
+### Download
+https://github.com/jvt/Brainy-Kids
 
-## Getting started
+### Dependencies
+1. Launch a new terminal and navigate to the root directory of this repository (you should see `package.json` when you run `ls` in the terminal)
+2. Run `npm install` to install all dependencies
 
-1.  Clone this repository (`git clone git@github.com:jvt/Brainy-Kidz.git`)
-2.  Open the repository (`cd Brainy-Kidz`)
-3.  Install the dependencies (`npm install`)
-4.  Duplicate `.env.example` and rename it to `.env`
-5.  Open the `.env` file and add a JWT_SECRET
-6.  Also set `MONGODB_URI` to either point to your local machine or wherever your MongoDB is.
-7.  Make sure your instance of MongoDB is running
-8.  Start the application with `npm run dev`
-9.  Navigate your browser to `localhost:3000`
+### Build
+No build necessary for this application.
 
-Now other users should be able to access the application by navigating to it in their web-browser.
+### Installation
+1. Navigate to the root directory (where `package.json` locates)
+2. Duplicate `.env.example` and rename it to `.env`
+3. Open the `.env` file and add a JWT_SECRET
+4. Also set `MONGODB_URI` to either point to your local machine or wherever your MongoDB is.
+
+### Running Application
+1. Make sure your instance of MongoDB is running
+2. Run `npm start` to start the application ??? shouldn't `npm start` be the convension for release?
+3. Open your browser and go to this URL: `localhost:3000`
+4. Enjoy our application!
+
+## Install Guide Novermbre 30th: v1.0.0 (For Teacher Portal) ?? Do we need to write anything about this one?
+
 
 ## Common issues
 
