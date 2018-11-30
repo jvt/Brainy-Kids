@@ -15,6 +15,7 @@ import {
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { CSVLink, CSVDownload } from "react-csv";
 
 import PageFormat from '../components/PageFormat';
 import NewStudentModal from '../components/NewStudentModal';
@@ -43,6 +44,7 @@ class Students extends Component {
 			modalVisibility: false,
 			createStudentLoading: false,
 			student_id: '',
+			csv: [],
 		};
 
 		this.createStudent = this.createStudent.bind(this);
@@ -153,6 +155,11 @@ class Students extends Component {
 			var lines = e.target.result.split('\n');
 			for (var i = 0; i < lines.length; i++) {
 				var currentline = lines[i].split(',');
+				if (currentline[0].length === 4) {
+					currentline[0] = '00' + currentline[0];
+				} else if (currentline[0].length === 5) {
+					currentline[0] = '0' + currentline[0];
+				}
 				var teacher_id_from_csv = currentline[0].substr(0, 3);
 				if (currentline[0].length === 0 && currentline[1].length <= 1) {
 					continue;
@@ -187,10 +194,22 @@ class Students extends Component {
 		fr.readAsText(file);
 	}
 
+	genCsvArr() {
+		const { teacher, students } = this.props;
+		var csv_arr = [];
+		students.forEach(function(s){
+			let first = teacher.teacher_id.toString() + s.student_id.toString();
+			let second = "<Insert Student Name Here>";
+			let temp = [first, second];
+			csv_arr.push(temp);
+		});
+		this.setState({csv: csv_arr});
+	}
+
 	render() {
 		const { teacher, students, loading, error } = this.props;
 
-		const { createStudentLoading } = this.state;
+		const { createStudentLoading, csv } = this.state;
 
 		return (
 			<PageFormat
@@ -198,13 +217,41 @@ class Students extends Component {
 				loading={loading}
 				popover={<PopoverComponent />}
 				extra={
-					<Button
-						type="primary"
-						onClick={() => this.setModalVisibility(true)}>
-						New Student
-					</Button>
+					<div>
+						<Upload
+							style={{
+								margin: 5,
+							}}
+							accept={'.csv'}
+							onChange={this.onChange}
+							showUploadList={false}
+							beforeUpload={file => {
+								this.fileToJson(file);
+								return false;
+							}}>
+							<Button>Upload Names</Button>
+						</Upload>
+						<CSVLink filename='students_template' data={csv}>
+							<Button 
+								style={{
+									margin: 5,
+								}}
+								type="secondary"
+								onClick={this.genCsvArr.bind(this)}>
+								Download Names Template
+							</Button>
+						</CSVLink>
+						<Button
+							style={{
+								margin: 5,
+							}}
+							type="primary"
+							onClick={() => this.setModalVisibility(true)}>
+							New Student
+						</Button>
+					</div>
 				}>
-				<div
+				{/* <div
 					style={{
 						width: '100%',
 						backgroundColor: 'rgb(245, 245, 245)',
@@ -212,16 +259,8 @@ class Students extends Component {
 						paddingBottom: 10,
 						textAlign: 'center',
 					}}>
-					<Upload
-						accept={'.csv'}
-						onChange={this.onChange}
-						beforeUpload={file => {
-							this.fileToJson(file);
-							return false;
-						}}>
-						<Button>Upload CSV File</Button>
-					</Upload>
-				</div>
+					
+				</div> */}
 				<NewStudentModal
 					visible={this.state.modalVisibility}
 					loading={createStudentLoading}
