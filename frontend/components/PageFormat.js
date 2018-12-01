@@ -11,6 +11,7 @@ export default function PageFormat({
 	children,
 	loading,
 	breadcrumb,
+	boldTitle,
 	extra,
 }) {
 	return (
@@ -33,10 +34,18 @@ export default function PageFormat({
 						}}>
 						<div style={{ flex: 1 }}>
 							<h1 style={{ display: 'inline-block' }}>
-								{title
-									? title
-									: page.charAt(0).toUpperCase() +
-									  page.slice(1)}
+								{boldTitle ? (
+									<b>
+										{title
+											? title
+											: page.charAt(0).toUpperCase() +
+											  page.slice(1)}
+									</b>
+								) : title ? (
+									title
+								) : (
+									page.charAt(0).toUpperCase() + page.slice(1)
+								)}
 							</h1>
 							{popover ? popover : null}
 						</div>

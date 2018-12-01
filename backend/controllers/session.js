@@ -144,17 +144,24 @@ module.exports.login = async (req, res) => {
 };
 
 module.exports.loginStudent = async (req, res) => {
-    const INCORRECT_MESSAGE = 'Your id / password combination is incorrect.';
+    const INCORRECT_MESSAGE = 'Invalid student ID.';
 
-    if (!req.body.student_id) {
+    if (!req.body.id) {
         return res.status(400).json({
             status: 'error',
-            message: 'Missing required body parameter `student_id`',
+            message: 'Missing required body parameter `id`',
+        });
+    }
+
+    if (req.body.id.length !== 6) {
+        return res.status(400).json({
+            status: 'error',
+            message: INCORRECT_MESSAGE,
         });
     }
 
     const teacher = await Teacher.findOne({
-        teacher_id: req.body.student_id.substring(0, 3),
+        teacher_id: req.body.id.substring(0, 3),
     });
 
     if (!teacher) {
@@ -172,7 +179,7 @@ module.exports.loginStudent = async (req, res) => {
 
     const student = await Student.findOne({
         teacher: teacher._id,
-        student_id: req.body.student_id.substring(3),
+        student_id: req.body.id.substring(3),
     });
 
     if (!student) {

@@ -8,10 +8,67 @@ const initialState = {
 
 export default function reducer(state = initialState, action) {
 	switch (action.type) {
+		case types.LOGOUT:
+			return initialState;
+
 		case types.LOAD_STUDENTS:
 			return {
 				...state,
 				loading: true,
+			};
+
+		case types.LOAD_STUDENTS_SUCCESS:
+			return {
+				...state,
+				loading: false,
+				data: sortStudents(action.students),
+				error: null,
+			};
+
+		case types.LOAD_STUDENTS_ERROR:
+			return {
+				...state,
+				loading: false,
+				error: action.error,
+			};
+
+		case types.DELETE_STUDENT:
+			const studentsLoading = state.data.map(s => {
+				if (s._id === action.id) {
+					return Object.assign({}, s, { queuedForDeletion: true });
+				}
+				return s;
+			});
+
+			return {
+				...state,
+				data: sortStudents(studentsLoading),
+			};
+
+		case types.DELETE_STUDENT_SUCCESS:
+			const studentsFiltered = state.data.filter(s => {
+				return s._id !== action.id;
+			});
+
+			return {
+				...state,
+				data: sortStudents(studentsFiltered),
+			};
+
+		case types.DELETE_STUDENT_ERROR:
+			const studentsLoadingError = state.data.map(s => {
+				if (s._id === action.id) {
+					return Object.assign({}, s, {
+						queuedForDeletion: false,
+						error: action.error,
+					});
+				}
+				return s;
+			});
+
+			return {
+				...state,
+				data: studentsLoadingError,
 			};
 
 		case types.LOAD_STUDENTS_SUCCESS:

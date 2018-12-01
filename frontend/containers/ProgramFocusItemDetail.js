@@ -54,6 +54,23 @@ const PageBreadcrumb = ({ program, unit, subunit, focus_item }) => {
 };
 
 const AnalyticRow = ({ student, analytic }) => {
+	let A1Label;
+	let A1;
+	let A2Label;
+	let A2;
+
+	if (analytic.correct_on) {
+		A1Label = 'Time Spent';
+		A1 = analytic.time_spent;
+		A2Label = 'Correct On';
+		A2 = analytic.correct_on;
+	} else {
+		A1Label = 'Time Watching';
+		A1 = analytic.time_watching;
+		A2Label = 'Total Video Time';
+		A2 = analytic.total_video_time;
+	}
+
 	return (
 		<Row>
 			<Col xs={24} sm={24} md={10} lg={10} xl={10}>
@@ -81,9 +98,9 @@ const AnalyticRow = ({ student, analytic }) => {
 				xl={7}
 				style={{ textAlign: 'center' }}>
 				<h3>
-					<b>{analytic.time_spent}</b>
+					<b>{A1}</b>
 				</h3>
-				<p>Time Spent</p>
+				<p>{A1Label}</p>
 			</Col>
 			<Col
 				xs={24}
@@ -93,9 +110,9 @@ const AnalyticRow = ({ student, analytic }) => {
 				xl={7}
 				style={{ textAlign: 'center' }}>
 				<h3>
-					<b>{analytic.correct_on}</b>
+					<b>{A2}</b>
 				</h3>
-				<p>Correct On</p>
+				<p>{A2Label}</p>
 			</Col>
 			<Divider />
 		</Row>

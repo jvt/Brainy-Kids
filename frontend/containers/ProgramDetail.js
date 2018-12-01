@@ -187,6 +187,7 @@ class ProgramDetail extends Component {
 				<PageFormat
 					page="programs"
 					title={program.name}
+					boldTitle
 					breadcrumb={
 						<PageBreadcrumb
 							program={program}

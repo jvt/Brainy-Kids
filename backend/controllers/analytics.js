@@ -149,10 +149,10 @@ module.exports.analytics = (req, res) => {
 			});
 		}
 		// Short circuits to returning error if the provided program isn't in the DB
-		if (count == 0) {
+		if (count === 0) {
 			return res.status(404).json({
 				status: 'error',
-				message: 'Unable to find program ' + req.body.program,
+				message: `Unable to find program ${req.body.program}`,
 			});
 		}
 
@@ -260,6 +260,66 @@ module.exports.analytics = (req, res) => {
 					});
 				});
 		}
+	});
+};
+
+module.exports.analyticsForStudent = (req, res) => {
+	if (!req.user.teacher_id) {
+		return res.status(401).json({
+			status: 'error',
+			message: "You don't have permission for this",
+		});
+	}
+
+	Student.countDocuments({ _id: req.body.student }, function(err, count) {
+		if (err) {
+			return res.status(500).json({
+				status: 'error',
+				error: err,
+				message: 'An unexpected internal server error has occurred!',
+			});
+		}
+		// Short circuits to returning error if the provided program isn't in the DB
+		if (count === 0) {
+			return res.status(404).json({
+				status: 'error',
+				message: 'Unable to find student',
+			});
+		}
+
+		Analytic.find({
+			student: req.body.student,
+		})
+			.populate('student')
+			.populate('focus_item')
+			.exec()
+			.then(analytics => {
+				console.log(analytics);
+				let cleansed_analytics = [];
+				for (a of analytics) {
+					console.log(a);
+					if (
+						mongoose.Types.ObjectId(a.student.teacher).equals(
+							req.user._id
+						)
+					) {
+						console.log('true');
+						cleansed_analytics.push(a);
+					}
+				}
+				return res.status(200).json({
+					status: 'ok',
+					focus_items: cleansed_analytics,
+				});
+			})
+			.catch(err => {
+				return res.status(500).json({
+					status: 'error',
+					error: err,
+					message:
+						'An unexpected internal server error has occurred!',
+				});
+			});
 	});
 };
 

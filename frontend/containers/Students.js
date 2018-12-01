@@ -215,11 +215,12 @@ class Students extends Component {
 					<Upload
 						accept={'.csv'}
 						onChange={this.onChange}
+						showUploadList={false}
 						beforeUpload={file => {
 							this.fileToJson(file);
 							return false;
 						}}>
-						<Button>Upload CSV File</Button>
+						<Button>Upload Student Names CSV</Button>
 					</Upload>
 				</div>
 				<NewStudentModal
@@ -236,24 +237,25 @@ class Students extends Component {
 						itemLayout="horizontal"
 						dataSource={students}
 						renderItem={student => (
-							<List.Item
-								actions={[
-									<Link to={`/students/${student._id}`}>
-										View Student
-									</Link>,
-								]}>
-								<List.Item.Meta
-									title={
-										<Link to={`/students/${student._id}`}>
-											{student.student_name === null ||
-											!('student_name' in student)
-												? student.student_id
-												: student.student_name}
-										</Link>
-									}
-									description=""
-								/>
-							</List.Item>
+							<Link to={`/student/${student._id}`}>
+								<List.Item
+									actions={[<Button>View Student</Button>]}>
+									<List.Item.Meta
+										title={
+											<p>
+												{student.student_name ===
+													null ||
+												!('student_name' in student)
+													? '<Name not set>'
+													: student.student_name}
+											</p>
+										}
+										description={`ID: ${
+											student.student_id
+										}`}
+									/>
+								</List.Item>
+							</Link>
 						)}
 					/>
 				)}

@@ -4,7 +4,12 @@ const controllers = require('./controllers');
 var validation = require('./helpers/validation');
 // We disable sessions since we want to validate the token on each request
 const PASSPORT_OPTIONS = { session: false };
-const { body, check, oneOf, validationResult } = require('express-validator/check');
+const {
+	body,
+	check,
+	oneOf,
+	validationResult,
+} = require('express-validator/check');
 
 module.exports = (app, passport) => {
 	/**
@@ -48,7 +53,7 @@ module.exports = (app, passport) => {
 	app.post(
 		'/api/session/student',
 		[
-			check('student_id', 'Must contain an student_id.').exists(),
+			check('id', 'Must contain an id.').exists(),
 			validation.validate(validationResult),
 		],
 		controllers.session.loginStudent
@@ -310,6 +315,7 @@ module.exports = (app, passport) => {
 		],
 		controllers.analytics.hearatale
 	);
+
 	app.post(
 		'/api/analytics/application',
 		[
@@ -323,6 +329,17 @@ module.exports = (app, passport) => {
 		],
 		controllers.analytics.application
 	);
+
+	app.post(
+		'/api/analytics/student',
+		[
+			passport.authenticate('jwt', PASSPORT_OPTIONS),
+			check('student', 'Must contain an student.').exists(),
+			validation.validate(validationResult),
+		],
+		controllers.analytics.analyticsForStudent
+	);
+
 	app.post(
 		'/api/analytics/focusitem',
 		[
@@ -332,19 +349,24 @@ module.exports = (app, passport) => {
 		],
 		controllers.analytics.focusItem
 	);
+
 	app.get(
-		'/api/analytics/program', 
-		[passport.authenticate('jwt', PASSPORT_OPTIONS),
-		check('program').isMongoId(),
-		body().custom(body => {
-			if (body.focus_item && body.focus_items) {
-				throw new Error('Specify only focus_item or focus_items, not both')
-			}
-			return Promise.resolve();
-		}),
-		validation.validate(validationResult)], 
+		'/api/analytics/program',
+		[
+			passport.authenticate('jwt', PASSPORT_OPTIONS),
+			check('program').isMongoId(),
+			body().custom(body => {
+				if (body.focus_item && body.focus_items) {
+					throw new Error(
+						'Specify only focus_item or focus_items, not both'
+					);
+				}
+				return Promise.resolve();
+			}),
+			validation.validate(validationResult),
+		],
 		controllers.analytics.analytics
-	); 
+	);
 
 	app.get('/api/*', [], controllers.static.apiError);
 
