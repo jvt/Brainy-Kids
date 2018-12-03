@@ -1,7 +1,8 @@
-html, body {
+html,
+body {
 	height: 100%;
-	margin:0;
-	padding:0;
+	margin: 0;
+	padding: 0;
 	background-color: rgb(245, 245, 245) !important;
 }
 
@@ -11,8 +12,18 @@ html, body {
 	display: table;
 }
 
-h1, h2, h3, h4, h5, h6, p, i, b, span, label {
-	font-family: "Raleway", sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+i,
+b,
+span,
+label {
+	font-family: 'Raleway', sans-serif;
 }
 
 h1 {
@@ -20,7 +31,7 @@ h1 {
 }
 
 .center {
-	text-align: center;	
+	text-align: center;
 }
 
 .textLeft {
@@ -32,7 +43,36 @@ h1 {
 }
 
 .clearfix::after {
-    content: "";
-    clear: both;
-    display: table;
+	content: '';
+	clear: both;
+	display: table;
+}
+
+.ant-list-item {
+	-webkit-transition: background-color 0.45s; /* Safari */
+	transition: background-color 0.45s;
+	padding-left: 10px;
+}
+
+.ant-list-item:hover {
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+.highlight-on-hover {
+	-webkit-transition: background-color 0.45s; /* Safari */
+	transition: background-color 0.45s;
+}
+
+.highlight-on-hover:hover {
+	cursor: pointer;
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+.border-bottom {
+	border-bottom: 1px solid #e8e8e8;
+}
+
+.row-padded {
+	padding-top: 24px;
+	padding-bottom: 24px;
 }

@@ -37,7 +37,7 @@ const Routes = () => {
 				component={ProgramFocusItemDetail}
 			/>
 			<AuthGuard path="/students" exact component={Students} />
-			<AuthGuard path="/students/:id" exact component={StudentShow} />
+			<AuthGuard path="/student/:id" exact component={StudentShow} />
 			<AuthGuard path="/account" exact component={Account} />
 			<AuthGuard
 				path="/account/password"

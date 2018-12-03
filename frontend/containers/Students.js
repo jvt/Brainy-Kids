@@ -15,7 +15,7 @@ import {
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink, CSVDownload } from 'react-csv';
 
 import PageFormat from '../components/PageFormat';
 import NewStudentModal from '../components/NewStudentModal';
@@ -25,8 +25,18 @@ import actions from '../actions';
 const PopoverComponent = () => {
 	return (
 		<Popover
-			style={{ width: 400, display: 'inline-block' }}
-			content="To ensure student privacy, we do not store student names in our database. To view the student names on this page, you'll need to upload the Excel sheet which will correlate the student IDs to their respective names. This spreadsheet will never be uploaded to our servers."
+			style={{ display: 'inline-block' }}
+			content={
+				<p style={{ maxWidth: 400 }}>
+					To ensure student privacy, we do not store student names in
+					our database.<br />
+					<br />To view the student names on this page, you'll need to
+					upload the Excel sheet which will correlate the student IDs
+					to their respective names.<br />
+					<br />This spreadsheet will <b>not</b> be uploaded to our
+					servers.
+				</p>
+			}
 			title="Why are there no names?">
 			<Icon
 				type="info-circle"
@@ -197,13 +207,13 @@ class Students extends Component {
 	genCsvArr() {
 		const { teacher, students } = this.props;
 		var csv_arr = [];
-		students.forEach(function(s){
+		students.forEach(function(s) {
 			let first = teacher.teacher_id.toString() + s.student_id.toString();
-			let second = "<Insert Student Name Here>";
+			let second = '<Insert Student Name Here>';
 			let temp = [first, second];
 			csv_arr.push(temp);
 		});
-		this.setState({csv: csv_arr});
+		this.setState({ csv: csv_arr });
 	}
 
 	render() {
@@ -231,8 +241,8 @@ class Students extends Component {
 							}}>
 							<Button>Upload Names</Button>
 						</Upload>
-						<CSVLink filename='students_template' data={csv}>
-							<Button 
+						<CSVLink filename="students_template" data={csv}>
+							<Button
 								style={{
 									margin: 5,
 								}}
@@ -259,7 +269,6 @@ class Students extends Component {
 						paddingBottom: 10,
 						textAlign: 'center',
 					}}>
-					
 				</div> */}
 				<NewStudentModal
 					visible={this.state.modalVisibility}
@@ -275,24 +284,25 @@ class Students extends Component {
 						itemLayout="horizontal"
 						dataSource={students}
 						renderItem={student => (
-							<List.Item
-								actions={[
-									<Link to={`/students/${student._id}`}>
-										View Student
-									</Link>,
-								]}>
-								<List.Item.Meta
-									title={
-										<Link to={`/students/${student._id}`}>
-											{student.student_name === null ||
-											!('student_name' in student)
-												? student.student_id
-												: student.student_name}
-										</Link>
-									}
-									description=""
-								/>
-							</List.Item>
+							<Link to={`/student/${student._id}`}>
+								<List.Item
+									actions={[<Button>View Student</Button>]}>
+									<List.Item.Meta
+										title={
+											<p>
+												{student.student_name ===
+													null ||
+												!('student_name' in student)
+													? '<Name not set>'
+													: student.student_name}
+											</p>
+										}
+										description={`ID: ${
+											student.student_id
+										}`}
+									/>
+								</List.Item>
+							</Link>
 						)}
 					/>
 				)}

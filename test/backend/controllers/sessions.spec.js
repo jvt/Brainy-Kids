@@ -145,6 +145,21 @@ describe('POST /api/session/student', function() {
             })
             .expect(400, done);
     });
+    it('errors out if not given 6 character student_id', function(done) {
+        request(app)
+            .post('/api/session/student')
+            .send({
+                id: '74',
+            })
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(function(res) {
+                expect(res.body).to.be.an('object');
+                expect(res.body.status).to.be.a('string');
+                expect(res.body.status).to.equal('error');
+            })
+            .expect(400, done);
+    });
     it('errors out if the teacher cant be found', function(done) {
         sinon
             .mock(Teacher)
@@ -154,7 +169,7 @@ describe('POST /api/session/student', function() {
         request(app)
             .post('/api/session/student')
             .send({
-                student_id: '999123',
+                id: '999123',
             })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -162,7 +177,6 @@ describe('POST /api/session/student', function() {
                 expect(res.body).to.be.an('object');
                 expect(res.body.status).to.be.a('string');
                 expect(res.body.status).to.equal('error');
-                expect(res.body.message).to.be.a('string');
             })
             .expect(403, done);
     });
@@ -180,7 +194,7 @@ describe('POST /api/session/student', function() {
         request(app)
             .post('/api/session/student')
             .send({
-                student_id: '999123',
+                id: '999123',
             })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -206,7 +220,7 @@ describe('POST /api/session/student', function() {
         request(app)
             .post('/api/session/student')
             .send({
-                student_id: '999123',
+                id: '999123',
             })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)

@@ -22,11 +22,54 @@ const loadStudentsLoading = () => {
 	};
 };
 
-module.exports.loadStudentName = (student_name,student_id) => {
+module.exports.loadStudentName = (student_name, student_id) => {
 	return {
 		type: types.LOAD_STUDENT_NAME,
 		student_name,
-		student_id
+		student_id,
+	};
+};
+
+const deleteStudentLoading = id => {
+	return {
+		type: types.DELETE_STUDENT,
+		id,
+	};
+};
+
+const deleteStudentSuccess = id => {
+	return {
+		type: types.DELETE_STUDENT_SUCCESS,
+		id,
+	};
+};
+
+const deleteStudentError = (id, error) => {
+	return {
+		type: types.DELETE_STUDENT_ERROR,
+		error,
+	};
+};
+
+module.exports.deleteStudent = id => {
+	return (dispatch, getState) => {
+		dispatch(deleteStudentLoading(id));
+		fetch(`/api/student/${id}`, {
+			method: 'DELETE',
+			headers: util.generateAPIHeaders(getState),
+		})
+			.then(res => res.json())
+			.then(json => {
+				if (json.status !== 'ok') {
+					console.log(json.message);
+					return dispatch(deleteStudentSuccess(json.message));
+				}
+				return dispatch(deleteStudentSuccess(id));
+			})
+			.catch(err => {
+				console.error(err);
+				return dispatch(deleteStudentError(err));
+			});
 	};
 };
 
@@ -51,7 +94,6 @@ module.exports.loadStudents = () => {
 			});
 	};
 };
-
 
 module.exports.appendStudent = student => {
 	return {

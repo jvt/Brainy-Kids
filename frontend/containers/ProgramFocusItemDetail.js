@@ -21,6 +21,8 @@ import { generateAPIHeadersWithToken } from '../helpers/util';
 
 import PageFormat from '../components/PageFormat';
 
+import AnalyticRow from '../components/AnalyticRow';
+
 import { Link, withRouter } from 'react-router-dom';
 import NotFound from './NotFound';
 
@@ -53,58 +55,13 @@ const PageBreadcrumb = ({ program, unit, subunit, focus_item }) => {
 	);
 };
 
-const AnalyticRow = ({ student, analytic }) => {
-	return (
-		<Row>
-			<Col xs={24} sm={24} md={10} lg={10} xl={10}>
-				<h3>
-					<Link
-						to={`/student/${student._id}`}
-						style={{
-							color: 'rgba(0, 0, 0, 0.65)',
-							textDecoration: 'underline',
-						}}>
-						<b>
-							{student.student_name
-								? student.student_name
-								: student.student_id}
-						</b>
-					</Link>
-				</h3>
-				<p>Student</p>
-			</Col>
-			<Col
-				xs={24}
-				sm={24}
-				md={7}
-				lg={7}
-				xl={7}
-				style={{ textAlign: 'center' }}>
-				<h3>
-					<b>{analytic.time_spent}</b>
-				</h3>
-				<p>Time Spent</p>
-			</Col>
-			<Col
-				xs={24}
-				sm={24}
-				md={7}
-				lg={7}
-				xl={7}
-				style={{ textAlign: 'center' }}>
-				<h3>
-					<b>{analytic.correct_on}</b>
-				</h3>
-				<p>Correct On</p>
-			</Col>
-			<Divider />
-		</Row>
-	);
-};
-
 const NoAnalyticRow = ({ student }) => {
 	return (
-		<Row>
+		<Row
+			style={{
+				paddingTop: 24,
+				paddingBottom: 24,
+			}}>
 			<Col xs={24} sm={24} md={10} lg={10} xl={10}>
 				<h3>
 					<Link
@@ -128,7 +85,9 @@ const NoAnalyticRow = ({ student }) => {
 				md={14}
 				lg={14}
 				xl={14}
-				style={{ textAlign: 'center' }}>
+				style={{
+					textAlign: 'center',
+				}}>
 				<p>Student has not completed this focus item</p>
 			</Col>
 			<Divider />
@@ -261,7 +220,7 @@ class ProgramFocusItemDetail extends Component {
 						}}>
 						Students
 					</h2>
-					<Divider />
+					<Divider style={{ marginBottom: 0 }} />
 					{analytics !== null && (
 						<List
 							itemLayout="horizontal"
