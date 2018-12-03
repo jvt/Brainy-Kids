@@ -10,6 +10,7 @@ import { routerMiddleware } from 'react-router-redux';
 
 import thunk from 'redux-thunk';
 
+import DevTools from '../components/DevTools';
 import rootReducer from '../reducers/index';
 
 /**
@@ -19,10 +20,22 @@ import rootReducer from '../reducers/index';
  * refreshes
  */
 const blacklistSystemActions = createBlacklistFilter('system', ['loading']);
+const blacklistTeacherActions = createBlacklistFilter('teacher', ['data']);
+// const blacklistStudentsAction = createBlacklistFilter('students', ['data']);
+const blacklistProgramActions = createBlacklistFilter('programs', [
+	'loading',
+	'error',
+	'data',
+]);
 
 const persistConfig = {
 	key: 'root',
-	transforms: [blacklistSystemActions],
+	transforms: [
+		blacklistSystemActions,
+		blacklistTeacherActions,
+		// blacklistStudentsAction,
+		blacklistProgramActions,
+	],
 	storage,
 };
 
@@ -33,7 +46,10 @@ export function configureStore(history) {
 
 	const store = createStore(
 		persistedReducer,
-		compose(applyMiddleware(...middleware))
+		compose(
+			applyMiddleware(...middleware),
+			DevTools.instrument()
+		)
 	);
 
 	const persistor = persistStore(store);
