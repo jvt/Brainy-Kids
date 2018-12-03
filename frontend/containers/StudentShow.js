@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, List, Icon, Progress, Button, message } from 'antd';
+import {
+	Row,
+	Col,
+	Card,
+	List,
+	Icon,
+	Divider,
+	Progress,
+	Button,
+	message,
+	notification,
+} from 'antd';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -12,6 +23,9 @@ import NotFound from './NotFound';
 import moment from 'moment';
 
 import actions from '../actions';
+import util from '../helpers/util';
+
+import AnalyticRow from '../components/AnalyticRow';
 
 const DeleteButton = props => {
 	return (
@@ -24,17 +38,85 @@ const DeleteButton = props => {
 	);
 };
 
+const NoAnalytics = () => {
+	return (
+		<div>
+			<Divider />
+			<Row>
+				<p style={{ textAlign: 'center' }}>
+					Student has not completed any focus items yet
+				</p>
+			</Row>
+		</div>
+	);
+};
+
+const AnalyticsRows = ({ analytics }) => {
+	const lastEvent = analytics[0].createdAt;
+	return (
+		<Row>
+			<p>
+				<b>Last Activity Date:</b> {moment(lastEvent).format('llll')}
+			</p>
+			<Divider />
+			<h2>Recently Completed</h2>
+			{analytics.map((a, i) => (
+				<AnalyticRow key={i} analytic={a} program={a.program} />
+			))}
+		</Row>
+	);
+};
+
 class StudentShow extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			loading: false,
+			loading: true,
+			analytics: null,
 		};
 		this.deleteStudent = this.deleteStudent.bind(this);
 	}
 
 	deleteStudent(id) {
 		this.props.deleteStudent(id);
+	}
+
+	componentWillMount() {
+		const { students, match, token } = this.props;
+		const { analytics } = this.state;
+		if (!students || students.length === 0) {
+			this.setState({ loading: true });
+			this.props.loadStudents();
+		}
+		if (analytics === null) {
+			this.setState({ loading: true });
+			fetch(`/api/analytics/mostRecent`, {
+				method: 'POST',
+				headers: util.generateAPIHeadersWithToken(token),
+				body: JSON.stringify({
+					student: match.params.id,
+				}),
+			})
+				.then(res => res.json())
+				.then(json => {
+					this.setState({ loading: false });
+					if (json.status !== 'ok') {
+						notification.error({
+							message: 'Uh oh',
+							description: json.message,
+						});
+						return;
+					} else {
+						this.setState({ analytics: json.analytics });
+					}
+				})
+				.catch(err => {
+					notification.error({
+						message: 'Uh oh',
+						description: 'An unexpected server error has occurred',
+					});
+				});
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -53,16 +135,12 @@ class StudentShow extends Component {
 
 	render() {
 		const { students, match } = this.props;
+		const { loading, analytics } = this.state;
 		const studentObjectIdParam = match.params.id;
-
-		if (!students || students.length === 0) {
-			this.setState({ loading: true });
-			this.props.loadStudents();
-		}
 
 		const student = students.find(s => s._id === studentObjectIdParam);
 
-		if (!student) {
+		if (!student && !loading) {
 			message.success('Student has been successfully deleted');
 			this.props.history.push('/students');
 			return <div />;
@@ -89,21 +167,12 @@ class StudentShow extends Component {
 							}
 						/>
 					}
-					loading={this.state.loading}>
-					{/*<p>
-						<b>Last Activity Date:</b>{' '}
-						{moment(user.lastEvent).format('MMMM Do, YYYY')}
-					</p>*/}
-					{/*<Row
-						type="flex"
-						justify="space-between"
-						style={{
-							width: '100%',
-							borderTop: '1px solid rgba(0,0,0,0.1)',
-							paddingTop: 10,
-						}}>
-						<h3>Recent Focus Items</h3>
-					</Row>*/}
+					loading={loading}>
+					{!analytics || (analytics.length === 0 && <NoAnalytics />)}
+					{analytics &&
+						analytics.length > 0 && (
+							<AnalyticsRows analytics={analytics} />
+						)}
 				</PageFormat>
 			</div>
 		);
@@ -112,6 +181,7 @@ class StudentShow extends Component {
 
 const mapStateToProps = state => {
 	return {
+		token: state.teacher.token,
 		students: state.students ? state.students.data : [],
 	};
 };

@@ -170,14 +170,14 @@ class ProgramDetail extends Component {
 				const units = program.focus_items.filter(
 					fi => fi.unit === match.params.unit
 				);
-				listData = this.uniqueBy(units, 'subunit');
+				listData = this.uniqueBy(units, 'sub_unit');
 			} else {
 				// We have both a unit AND subunit
 				mode = FOCUS_ITEMS;
 				listData = program.focus_items.filter(
 					fi =>
 						fi.unit === match.params.unit &&
-						fi.subunit === match.params.subunit
+						fi.sub_unit === match.params.subunit
 				);
 			}
 		}

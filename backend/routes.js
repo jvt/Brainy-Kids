@@ -331,7 +331,7 @@ module.exports = (app, passport) => {
 	);
 
 	app.post(
-		'/api/analytics/student',
+		'/api/analytics/mostRecent',
 		[
 			passport.authenticate('jwt', PASSPORT_OPTIONS),
 			check('student', 'Must contain an student.').exists(),

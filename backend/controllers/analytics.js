@@ -15,10 +15,10 @@ module.exports.hearatale = (req, res) => {
 	});
 
 	if (req.body.created_at) {
-		analytic.created_at = req.body.created_at;
+		analytic.createdAt = req.body.created_at;
 	}
 	if (req.body.updated_at) {
-		analytic.updated_at = req.body.updated_at;
+		analytic.updatedAt = req.body.updated_at;
 	}
 
 	analytic
@@ -48,10 +48,10 @@ module.exports.application = (req, res) => {
 	});
 
 	if (req.body.created_at) {
-		analytic.created_at = req.body.created_at;
+		analytic.createdAt = req.body.created_at;
 	}
 	if (req.body.updated_at) {
-		analytic.updated_at = req.body.updated_at;
+		analytic.updatedAt = req.body.updated_at;
 	}
 
 	analytic
@@ -290,26 +290,27 @@ module.exports.analyticsForStudent = (req, res) => {
 		Analytic.find({
 			student: req.body.student,
 		})
+			.sort({ createdAt: 'desc' })
+			.limit(10)
 			.populate('student')
 			.populate('focus_item')
+			.populate('program')
 			.exec()
 			.then(analytics => {
-				console.log(analytics);
 				let cleansed_analytics = [];
 				for (a of analytics) {
-					console.log(a);
 					if (
 						mongoose.Types.ObjectId(a.student.teacher).equals(
 							req.user._id
 						)
 					) {
-						console.log('true');
 						cleansed_analytics.push(a);
 					}
 				}
+
 				return res.status(200).json({
 					status: 'ok',
-					focus_items: cleansed_analytics,
+					analytics: cleansed_analytics,
 				});
 			})
 			.catch(err => {

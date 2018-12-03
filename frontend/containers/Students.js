@@ -24,8 +24,18 @@ import actions from '../actions';
 const PopoverComponent = () => {
 	return (
 		<Popover
-			style={{ width: 400, display: 'inline-block' }}
-			content="To ensure student privacy, we do not store student names in our database. To view the student names on this page, you'll need to upload the Excel sheet which will correlate the student IDs to their respective names. This spreadsheet will never be uploaded to our servers."
+			style={{ display: 'inline-block' }}
+			content={
+				<p style={{ maxWidth: 400 }}>
+					To ensure student privacy, we do not store student names in
+					our database.<br />
+					<br />To view the student names on this page, you'll need to
+					upload the Excel sheet which will correlate the student IDs
+					to their respective names.<br />
+					<br />This spreadsheet will <b>not</b> be uploaded to our
+					servers.
+				</p>
+			}
 			title="Why are there no names?">
 			<Icon
 				type="info-circle"
