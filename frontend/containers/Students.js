@@ -243,7 +243,7 @@ class Students extends Component {
 							}}>
 							<Button>Upload Names</Button>
 						</Upload>
-						<CSVLink filename="students_template" data={csv}>
+						<CSVLink filename="students_template.csv" data={csv}>
 							<Button
 								style={{
 									margin: 5,
