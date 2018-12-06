@@ -173,7 +173,7 @@ class Students extends Component {
 					s_id = '0' + s_id;
 				}
 				var teacher_id_from_csv = s_id.substr(0, 3);
-				if (s_id.length === 0 && currentline[1].length <= 1) {
+				if (s_id.length === 0 || currentline.length === 0 || currentline.length === 1) {
 					continue;
 				} else if (s_id.length !== 6) {
 					var error_text =
