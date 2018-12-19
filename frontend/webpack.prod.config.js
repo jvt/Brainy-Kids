@@ -22,11 +22,17 @@ module.exports = {
 				exclude: /node_modules/,
 			},
 			{
-				test: /\.less/,
-				loader: 'style-loader!css-loader!less-loader',
-				options: {
-					javascriptEnabled: true,
-				},
+				test: /\.less$/,
+				use: [
+					{ loader: 'style-loader' },
+					{ loader: 'css-loader' },
+					{
+						loader: 'less-loader',
+						options: {
+							javascriptEnabled: true,
+						},
+					},
+				],
 			},
 			{ test: /\.css/, loader: 'style-loader!css-loader' },
 			{
@@ -46,7 +52,7 @@ module.exports = {
 		extensions: ['.js', '.less', '.css'],
 	},
 	output: {
-		path: path.join(__dirname, '/public'),
+		path: path.join(__dirname, '..', '/public'),
 		publicPath: '/',
 		filename: 'bundle.js',
 	},
