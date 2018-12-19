@@ -21,7 +21,13 @@ module.exports = {
 				},
 				exclude: /node_modules/,
 			},
-			{ test: /\.less/, loader: 'style-loader!css-loader!less-loader' },
+			{
+				test: /\.less/,
+				loader: 'style-loader!css-loader!less-loader',
+				options: {
+					javascriptEnabled: true,
+				},
+			},
 			{ test: /\.css/, loader: 'style-loader!css-loader' },
 			{
 				test: /\.(png|jpg|gif)$/,
