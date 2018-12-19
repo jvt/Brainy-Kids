@@ -20,6 +20,18 @@ require('./backend/db');
 
 const passport = require('./backend/passport').initialize(app);
 
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+	if (req.method === 'OPTIONS') {
+		return res.status(200).send('OK');
+	} else {
+		return next();
+	}
+});
+
 require('./backend/routes')(app, passport);
 
 app.listen(PORT, error => {
