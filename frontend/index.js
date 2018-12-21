@@ -1,3 +1,7 @@
+import 'babel-polyfill';
+import 'url-search-params-polyfill';
+import 'whatwg-fetch';
+
 // React
 import React from 'react';
 import { render } from 'react-dom';
