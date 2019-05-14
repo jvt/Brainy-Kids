@@ -312,7 +312,7 @@ module.exports.forgotPasswordPost = async (req, res) => {
 module.exports.forgotPasswordGet = async (req, res) => {
 
     const DEFAULT_NEW_PASSWORD = 'youshouldreallychangethis';
-    console.log(req.query);
+    
     Teacher.findById(req.query.tid)
         .then(teacher => {
             if (teacher) {
@@ -329,17 +329,6 @@ module.exports.forgotPasswordGet = async (req, res) => {
                             });
                         }
                     });
-                    // teacher.update({password: hash(DEFAULT_NEW_PASSWORD), password_reset_model: null})
-                    //     .then(teacher => {
-                    //         return res.json({
-                    //             status: 'ok',
-                    //             message: 'Your new password is: ' + DEFAULT_NEW_PASSWORD
-                    //         })
-                    //     })
-                    //     .catch(error => unexpectedError(error, res));
-                    
-                    
-
                 } else {
                     return res.status(401).json({
                         status: 'error',
