@@ -24,6 +24,13 @@ const schema = mongoose.Schema(
 			required: true,
             select: false
 		},
+
+		// Pointer to password reset model
+		password_reset_model: {
+			type: mongoose.Schema.Types.ObjectId, 
+			ref: 'PasswordReset',
+			required: false
+		},
 	},
 	{
 		timestamps: true,
