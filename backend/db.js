@@ -26,6 +26,7 @@ require('./models/focus_item');
 require('./models/analytic');
 require('./models/program');
 require('./models/student');
+require('./models/password_reset');
 
 // Bind connection to error event (to get notification of connection errors)
 db.on('error', err => {

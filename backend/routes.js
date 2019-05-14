@@ -82,6 +82,26 @@ module.exports = (app, passport) => {
 		],
 		controllers.session.resetPassword
 	);
+
+	app.post(
+		'/api/session/forgotpassword',
+		[
+			check('email', 'Must contain an email.').exists(),
+			validation.validate(validationResult),
+		],
+		controllers.session.forgotPasswordPost
+	);
+
+	app.get(
+		'/api/session/forgotpassword',
+		[
+			check('tid', 'Must contain teacher id reference.').exists(),
+			check('pid', 'Must contain password id reference.').exists(),
+			validation.validate(validationResult),
+		],
+		controllers.session.forgotPasswordGet
+	);
+
 	app.get(
 		'/api/session/info',
 		[
