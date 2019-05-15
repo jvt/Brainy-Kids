@@ -5,6 +5,7 @@ import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 
 import AuthGuard from './components/AuthGuard';
 
+import ForgotPassword from './containers/ForgotPassword';
 import Account from './containers/Account';
 import ChangePassword from './containers/ChangePassword';
 import LoginPage from './containers/LoginPage';
@@ -17,6 +18,7 @@ import ProgramFocusItemDetail from './containers/ProgramFocusItemDetail';
 import Students from './containers/Students';
 import StudentShow from './containers/StudentShow';
 
+
 import NotFound from './containers/NotFound';
 
 const Routes = () => {
@@ -24,6 +26,7 @@ const Routes = () => {
 		<Switch>
 			<Route path="/" exact component={LoginPage} />
 			<Route path="/register" exact component={Register} />
+			<Route path="/forgot" exact component={ForgotPassword} />
 			<AuthGuard path="/dashboard" exact component={Dashboard} />
 			<AuthGuard path="/programs" exact component={Programs} />
 			<AuthGuard
