@@ -273,12 +273,12 @@ module.exports.forgotPasswordPost = async (req, res) => {
                                 var transporter = nodemailer.createTransport({
                                     service: 'gmail',
                                     auth: {
-                                        user: 'brainyhearatale@gmail.com',
-                                        pass: '38Brainy38'
+                                        user: process.env.NODEMAILER_EMAIL,
+                                        pass: process.env.NODEMAILER_PASSWORD
                                     }
                                 });
                                 var mailOptions = {
-                                    from: 'brainyhearatale@gmail.com',
+                                    from: process.env.NODEMAILER_EMAIL,
                                     to: teacher.email,
                                     subject: 'Brainy Kids Password Reset',
                                     text: 'You requested ! Follow this link to reset: https://teacherportal.hearatale.com/api/session/forgotpassword?tid=' + teacher._id +'?pid=' + passwordResetModel._id
