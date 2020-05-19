@@ -165,15 +165,17 @@ class Students extends Component {
 			var lines = e.target.result.split('\n');
 			for (var i = 0; i < lines.length; i++) {
 				var currentline = lines[i].split(',');
-				if (currentline[0].length === 4) {
-					currentline[0] = '00' + currentline[0];
-				} else if (currentline[0].length === 5) {
-					currentline[0] = '0' + currentline[0];
+				var s_id = currentline[0].replace(/[^0-9]/g, '');
+				console.log(s_id);
+				if (s_id.length === 4) {
+					s_id = '00' + s_id;
+				} else if (s_id.length === 5) {
+					s_id = '0' + s_id;
 				}
-				var teacher_id_from_csv = currentline[0].substr(0, 3);
-				if (currentline[0].length === 0 && currentline[1].length <= 1) {
+				var teacher_id_from_csv = s_id.substr(0, 3);
+				if (s_id.length === 0 || currentline.length === 0 || currentline.length === 1) {
 					continue;
-				} else if (currentline[0].length !== 6) {
+				} else if (s_id.length !== 6) {
 					var error_text =
 						'The line containing ' +
 						currentline[1] +
@@ -183,8 +185,8 @@ class Students extends Component {
 					continue;
 				}
 				if (teacher_id_from_csv === teacher.teacher_id) {
-					var csv_id = currentline[0].substr(
-						currentline[0].length - 3
+					var csv_id = s_id.substr(
+						s_id.length - 3
 					);
 					nameMap.set(csv_id, currentline[1]);
 				} else {
@@ -241,7 +243,7 @@ class Students extends Component {
 							}}>
 							<Button>Upload Names</Button>
 						</Upload>
-						<CSVLink filename="students_template" data={csv}>
+						<CSVLink filename="students_template.csv" data={csv}>
 							<Button
 								style={{
 									margin: 5,
